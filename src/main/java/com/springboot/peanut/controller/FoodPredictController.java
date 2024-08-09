@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/predict-api")
+@RequestMapping("/api/predict-api")
 @RequiredArgsConstructor
 public class FoodPredictController {
     private final FoodAIService foodAIService;
