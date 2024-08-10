@@ -9,7 +9,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class SignUpResultDto{
+public class ResultDto {
     private boolean success;
 
     private int code;
