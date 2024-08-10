@@ -6,11 +6,13 @@ import com.springboot.peanut.dao.AuthDao;
 import com.springboot.peanut.dto.CommonResponse;
 import com.springboot.peanut.dto.signDto.AdditionalInfoDto;
 import com.springboot.peanut.dto.signDto.KakaoResponseDto;
+import com.springboot.peanut.dto.signDto.ResultDto;
 import com.springboot.peanut.dto.signDto.SignInResultDto;
-import com.springboot.peanut.dto.signDto.SignUpResultDto;
 import com.springboot.peanut.entity.User;
 import com.springboot.peanut.jwt.JwtProvider;
+import com.springboot.peanut.repository.UserRepository;
 import com.springboot.peanut.service.AuthService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -19,21 +21,22 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
     private final AuthDao authDao;
     private final JwtProvider jwtProvider;
 
-    public AuthServiceImpl(AuthDao authDao, JwtProvider jwtProvider) {
-        this.authDao = authDao;
-        this.jwtProvider = jwtProvider;
-    }
+    private final UserRepository userRepository;
+
+
 
     @Value("${kakao.client.id}")
     private String clientKey;
@@ -155,15 +158,36 @@ public class AuthServiceImpl implements AuthService {
         return signInResultDto;
     }
 
-    private void setSuccess(SignInResultDto signInResultDto) {
-        signInResultDto.setSuccess(true);
-        signInResultDto.setCode(CommonResponse.SUCCESS.getCode());
-        signInResultDto.setMsg(CommonResponse.SUCCESS.getMsg());
+    @Override
+    public ResultDto kakao_additionalInfo(AdditionalInfoDto additionalInfoDto , HttpServletRequest request) {
+        String info = jwtProvider.getUsername(request.getHeader("X-AUTH-TOKEN"));
+        User user = userRepository.getByEmail(info);
+        ResultDto resultDto = new ResultDto();
+        if(user != null){
+            user.setNickName(additionalInfoDto.getNickName());
+            user.setHeight(additionalInfoDto.getHeight());
+            user.setWeight(additionalInfoDto.getWeight());
+            user.setUpdate_At(LocalDateTime.now());
+
+            authDao.KakaoUserSave(user);
+
+
+            setSuccess(resultDto);
+        }else{
+            setFail(resultDto);
+        }
+        return resultDto;
     }
 
-    private void setFail(SignInResultDto signInResultDto) {
-        signInResultDto.setSuccess(false);
-        signInResultDto.setCode(CommonResponse.Fail.getCode());
-        signInResultDto.setMsg(CommonResponse.Fail.getMsg());
+    private void setSuccess(ResultDto resultDto) {
+        resultDto.setSuccess(true);
+        resultDto.setCode(CommonResponse.SUCCESS.getCode());
+        resultDto.setMsg(CommonResponse.SUCCESS.getMsg());
+    }
+
+    private void setFail(ResultDto resultDto) {
+        resultDto.setSuccess(false);
+        resultDto.setCode(CommonResponse.Fail.getCode());
+        resultDto.setMsg(CommonResponse.Fail.getMsg());
     }
 }
