@@ -40,5 +40,11 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).body(resultDto);
     }
 
+    @PutMapping("/kakao/add-info")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    public ResponseEntity<ResultDto> kakao_additionalInfo(AdditionalInfoDto additionalInfoDto , HttpServletRequest request){
+        ResultDto resultDto = authService.kakao_additionalInfo(additionalInfoDto,request);
+        return ResponseEntity.status(HttpStatus.OK).body(resultDto);
+    }
 
 }

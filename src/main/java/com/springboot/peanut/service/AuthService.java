@@ -13,4 +13,5 @@ public interface AuthService {
     ResultDto kakao_additionalInfo(AdditionalInfoDto additionalInfoDto, HttpServletRequest request);
 
 
+    ResultDto kakao_additionalInfo(AdditionalInfoDto additionalInfoDto , HttpServletRequest request);
 }
