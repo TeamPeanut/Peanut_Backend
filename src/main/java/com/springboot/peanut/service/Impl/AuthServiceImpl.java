@@ -158,6 +158,7 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.getByEmail(info);
         ResultDto resultDto = new ResultDto();
         if(user != null){
+
         user.setNickName(additionalInfoDto.getNickName());
         user.setHeight(additionalInfoDto.getHeight());
         user.setWeight(additionalInfoDto.getWeight());
@@ -167,6 +168,7 @@ public class AuthServiceImpl implements AuthService {
 
 
         setSuccess(resultDto);
+
         }else{
             setFail(resultDto);
         }
