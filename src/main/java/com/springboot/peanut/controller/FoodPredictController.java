@@ -24,7 +24,7 @@ public class FoodPredictController {
     public ResponseEntity<FoodPredictResponseDto> BlockPlay(
             @RequestPart("foodImage") MultipartFile foodImage) throws IOException {
 
-        FoodPredictResponseDto results = foodAIService.foodPredict(foodImage);
+        FoodPredictResponseDto results = foodAIService.FoodNamePredict(foodImage);
         return ResponseEntity.status(HttpStatus.OK).body(results);
 
     }

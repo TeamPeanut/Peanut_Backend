@@ -37,7 +37,7 @@ public class FoodAIServiceImpl implements FoodAIService {
     }
 
     @Override
-    public FoodPredictResponseDto foodPredict(MultipartFile foodImage) {
+    public FoodPredictResponseDto FoodNamePredict(MultipartFile foodImage) {
         FoodPredictResponseDto foodPredictResponseDto = null;
         try {
             String imageUrl = s3Uploader.uploadImage(foodImage, "peanut/before");
