@@ -74,7 +74,10 @@ public class AuthServiceImpl implements AuthService {
             );
             log.info("[kakao login] authorizecode issued successfully");
             Map<String, Object> responseMap = objectMapper.readValue(response.getBody(), new TypeReference<Map<String, Object>>() {});
-            return ResponseEntity.ok(responseMap);
+
+            Object accessToken = responseMap.get("access_token");
+
+            return ResponseEntity.ok(kakao_SignIn((String)accessToken));
 
         } catch (Exception e) {
             e.printStackTrace();

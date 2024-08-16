@@ -11,7 +11,4 @@ public interface AuthService {
     ResponseEntity<?> getKakaoUserInfo(String authorizeCode);
     SignInResultDto kakao_SignIn(String authorizeCode);
     ResultDto kakao_additionalInfo(AdditionalInfoDto additionalInfoDto, HttpServletRequest request);
-
-
-    ResultDto kakao_additionalInfo(AdditionalInfoDto additionalInfoDto , HttpServletRequest request);
 }
