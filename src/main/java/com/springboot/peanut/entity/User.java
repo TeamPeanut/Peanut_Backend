@@ -1,6 +1,7 @@
 package com.springboot.peanut.entity;
 
 import lombok.*;
+import org.springframework.data.annotation.Persistent;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -42,6 +43,12 @@ public class User implements UserDetails {
 
     private String weight;
 
+    private String password;
+
+    private boolean verified = false;
+
+    private String loginMethod;
+
     private LocalDateTime create_At;
 
     private LocalDateTime update_At;
@@ -59,7 +66,7 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return null;
+        return this.password;
     }
 
     @Override
