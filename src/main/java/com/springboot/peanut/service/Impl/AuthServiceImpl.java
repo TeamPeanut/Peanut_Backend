@@ -138,7 +138,9 @@ public class AuthServiceImpl implements AuthService {
                     .gender(kakaoUserInfoResponse.getGender())
                     .birth(kakaoUserInfoResponse.getBirth())
                     .profileUrl(kakaoUserInfoResponse.getProfileUrl())
+                    .loginMethod("Kakao")
                     .create_At(LocalDateTime.now())
+                    .update_At(LocalDateTime.now())
                     .build();
 
             authDao.KakaoUserSave(newUser);
