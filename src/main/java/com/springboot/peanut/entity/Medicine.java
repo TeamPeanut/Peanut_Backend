@@ -36,4 +36,23 @@ public class Medicine {
     @JoinColumn(name = "user_id")
     private User user;
 
+
+    public static Medicine createMedicine(String medicineName , User user){
+        Medicine medicine = new Medicine();
+        medicine.medicineName=medicineName;
+        medicine.alam = false;
+        medicine.create_At = LocalDate.now();
+        medicine.user = user;
+        return medicine;
+    }
+
+    public void setAlam(boolean alam){
+        this.alam=alam;
+    }
+
+    public void addIntake(Intake intake){
+        intakes.add(intake);
+        intake.setMedicine(this);
+    }
+
 }

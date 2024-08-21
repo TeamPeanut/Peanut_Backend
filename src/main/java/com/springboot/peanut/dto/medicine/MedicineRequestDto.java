@@ -1,10 +1,9 @@
-package com.springboot.peanut.dto.Medicine;
+package com.springboot.peanut.dto.medicine;
 
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.ElementCollection;
 import java.util.List;
 
 @Data

@@ -1,7 +1,6 @@
 package com.springboot.peanut.controller;
 
-import com.springboot.peanut.dao.IntakeDao;
-import com.springboot.peanut.dto.Medicine.MedicineRequestDto;
+import com.springboot.peanut.dto.medicine.MedicineRequestDto;
 import com.springboot.peanut.dto.signDto.ResultDto;
 import com.springboot.peanut.service.MedicineService;
 import io.swagger.annotations.ApiImplicitParam;

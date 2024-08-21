@@ -1,7 +1,7 @@
 package com.springboot.peanut.controller;
 
-import com.springboot.peanut.dto.BloodSugarDto.BloodSugarRequestDto;
-import com.springboot.peanut.dto.BloodSugarDto.BloodSugarResponseDto;
+import com.springboot.peanut.dto.bloodSugar.BloodSugarRequestDto;
+import com.springboot.peanut.dto.bloodSugar.BloodSugarResponseDto;
 import com.springboot.peanut.service.BloodSugarService;
 import io.swagger.annotations.ApiImplicitParam;
 import lombok.RequiredArgsConstructor;

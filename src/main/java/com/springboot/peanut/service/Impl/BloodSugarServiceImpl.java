@@ -1,8 +1,8 @@
 package com.springboot.peanut.service.Impl;
 
 import com.springboot.peanut.dao.BloodSugarDao;
-import com.springboot.peanut.dto.BloodSugarDto.BloodSugarRequestDto;
-import com.springboot.peanut.dto.BloodSugarDto.BloodSugarResponseDto;
+import com.springboot.peanut.dto.bloodSugar.BloodSugarRequestDto;
+import com.springboot.peanut.dto.bloodSugar.BloodSugarResponseDto;
 import com.springboot.peanut.entity.BloodSugar;
 import com.springboot.peanut.entity.User;
 import com.springboot.peanut.jwt.JwtProvider;

@@ -40,33 +40,38 @@ public class SignServiceImpl implements SignService {
 
 
     @Override
-    public ResultDto SignUp(SignUpDto signUpDto,HttpServletRequest request) {
-        User user = (User)request.getSession().getAttribute("user");
+    public ResultDto SignUp(SignUpDto signUpDto, HttpServletRequest request) {
+        User user = (User) request.getSession().getAttribute("user");
         ResultDto resultDto = new ResultDto();
-        if(user != null){
-            user.setUserName(signUpDto.getName());
-            user.setGender(signUpDto.getGender());
-            user.setBirth(signUpDto.getBirth());
-            user.setPassword(passwordEncoder.encode(signUpDto.getPassword()));
-            user.setWeight(signUpDto.getWeight());
-            user.setHeight(signUpDto.getHeight());
-            user.setNickName(signUpDto.getNickname());
-            user.setPhoneNumber(signUpDto.getPhoneNumber());
+
+        if (user != null) {
+            // User 객체 내부에 상태 변경 메서드들을 사용
+            user.saveProfile(
+                    signUpDto.getName(),
+                    signUpDto.getGender(),
+                    signUpDto.getBirth(),
+                    signUpDto.getNickname(),
+                    signUpDto.getPhoneNumber(),
+                    signUpDto.getHeight(),
+                    signUpDto.getWeight(),
+                    passwordEncoder.encode(signUpDto.getPassword())
+            );
             user.setLoginMethod("Normal");
-            user.setCreate_At(LocalDateTime.now());
-            user.setUpdate_At(LocalDateTime.now());
+            user.updateTimestamps(LocalDateTime.now());
+
             signDao.saveSignUpInfo(user);
 
             resultDto.setDetailMessage("회원가입 완료");
             setSuccess(resultDto);
-        }else{
-            resultDto.setDetailMessage("회원가입  실패");
+        } else {
+            resultDto.setDetailMessage("회원가입 실패");
             setFail(resultDto);
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("User not found in session");
         }
 
         return resultDto;
     }
+
 
     @Override
     public Map<String, String> sendSimpleMessage(String email, HttpServletRequest request) throws Exception {

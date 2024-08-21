@@ -1,9 +1,7 @@
-package com.springboot.peanut.dto.BloodSugarDto;
+package com.springboot.peanut.dto.bloodSugar;
 
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.LocalDate;
 
 @Getter
 @Setter
