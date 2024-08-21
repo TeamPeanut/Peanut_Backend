@@ -1,9 +1,8 @@
 package com.springboot.peanut.dao;
 
-import com.springboot.peanut.entity.CurrentBloodSugar;
-import com.springboot.peanut.entity.FastingBloodSugar;
+import com.springboot.peanut.entity.BloodSugar;
+
 
 public interface BloodSugarDao {
-    void saveFastingBloodSugar(FastingBloodSugar fastingBloodSugar);
-    void saveCurrentBloodSugar(CurrentBloodSugar currentBloodSuger);
+    void saveBloodSugar(BloodSugar bloodSugar);
 }

@@ -7,9 +7,13 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-public class CurrentResponseDto {
+public class BloodSugarResponseDto {
     private Long id;
-    private int current_blood_sugar;
-    private LocalDate record_time;
+
+    private String current_blood_sugar;
+
+    private String measurementTime;
+
+    private String memo;
 
 }
