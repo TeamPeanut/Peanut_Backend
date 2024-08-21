@@ -3,14 +3,12 @@ package com.springboot.peanut.service.Impl;
 import com.springboot.peanut.dao.IntakeDao;
 import com.springboot.peanut.dao.MedicineDao;
 import com.springboot.peanut.dto.CommonResponse;
-import com.springboot.peanut.dto.Medicine.MedicineRequestDto;
+import com.springboot.peanut.dto.medicine.MedicineRequestDto;
 import com.springboot.peanut.dto.signDto.ResultDto;
 import com.springboot.peanut.entity.Intake;
 import com.springboot.peanut.entity.Medicine;
 import com.springboot.peanut.entity.User;
 import com.springboot.peanut.jwt.JwtProvider;
-import com.springboot.peanut.repository.IntakeRepository;
-import com.springboot.peanut.repository.MedicineRepository;
 import com.springboot.peanut.repository.UserRepository;
 import com.springboot.peanut.service.MedicineService;
 import lombok.RequiredArgsConstructor;
@@ -35,28 +33,27 @@ public class MedicineServiceImpl implements MedicineService {
         String info = jwtProvider.getUsername(request.getHeader("X-AUTH-TOKEN"));
         User user = userRepository.getByEmail(info);
         log.info("[user] : {}",user);
-        Medicine medicine = new Medicine();
-        Intake intake = new Intake();
         ResultDto resultDto = new ResultDto();
 
 
-        if(user != null){
-            medicine.setMedicineName(medicineRequestDto.getMedicineName());
-            medicine.setAlam(medicine.isAlam());
-            medicine.setCreate_At(LocalDate.now());
-            medicine.setUser(user);
-            medicine.setCreate_At(LocalDate.now());
+        if (user != null) {
+            // Medicine 객체 생성
+            Medicine medicine = Medicine.createMedicine(medicineRequestDto.getMedicineName(),user);
+            medicine.setAlam(medicineRequestDto.isAlam());  // 필요에 따라 알람 설정
             medicineDao.saveMedicineInfo(medicine);
-            log.info("[medicineInfo] : {}",medicine);
+            log.info("[medicineInfo] : {}", medicine);
 
-            intake.setIntakeTime(medicineRequestDto.getIntakeTime());
-            intake.setIntakeDays(medicineRequestDto.getIntakeDays());
-            intake.setIntakeNumber(medicineRequestDto.getIntakeNumber());
-            intake.setCreate_At(LocalDate.now());
-            intake.setUser(user);
-            intake.setMedicine(medicine);
+            // Intake 객체 생성 및 Medicine에 추가
+            Intake intake = Intake.createIntake(
+                    medicineRequestDto.getIntakeDays(),
+                    medicineRequestDto.getIntakeNumber(),
+                    medicineRequestDto.getIntakeTime(),
+                    user,
+                    medicine
+            );
+            medicine.addIntake(intake);
             intakeDao.saveIntakeInfo(intake);
-            log.info("[intakeInfo] : {}",intake);
+            log.info("[intakeInfo] : {}", intake);
 
             resultDto.setDetailMessage("약 정보 입력 완료!");
             setSuccess(resultDto);

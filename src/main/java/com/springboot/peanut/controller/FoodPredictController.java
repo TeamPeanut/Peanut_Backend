@@ -1,6 +1,6 @@
 package com.springboot.peanut.controller;
 
-import com.springboot.peanut.dto.FoodPredictResponseDto;
+import com.springboot.peanut.dto.foodPredict.FoodPredictResponseDto;
 import com.springboot.peanut.service.FoodAIService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 @RestController

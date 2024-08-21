@@ -1,7 +1,7 @@
 package com.springboot.peanut.service;
 
-import com.springboot.peanut.dto.BloodSugarDto.BloodSugarRequestDto;
-import com.springboot.peanut.dto.BloodSugarDto.BloodSugarResponseDto;
+import com.springboot.peanut.dto.bloodSugar.BloodSugarRequestDto;
+import com.springboot.peanut.dto.bloodSugar.BloodSugarResponseDto;
 
 
 import javax.servlet.http.HttpServletRequest;

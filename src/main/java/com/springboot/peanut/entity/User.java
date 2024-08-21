@@ -1,5 +1,7 @@
 package com.springboot.peanut.entity;
 
+import com.springboot.peanut.dto.signDto.AdditionalInfoDto;
+import com.springboot.peanut.dto.signDto.KakaoResponseDto;
 import lombok.*;
 import org.springframework.data.annotation.Persistent;
 import org.springframework.security.core.GrantedAuthority;
@@ -102,5 +104,51 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    public void saveProfile(String name, String gender, String birth, String nickname, String phoneNumber, String height, String weight, String encodedPassword) {
+        this.userName = name;
+        this.gender = gender;
+        this.birth = birth;
+        this.nickName = nickname;
+        this.phoneNumber = phoneNumber;
+        this.height = height;
+        this.weight = weight;
+        this.password = encodedPassword;
+    }
+
+    public static User createKakaoUser(KakaoResponseDto kakaoUserInfoResponse) {
+        return User.builder()
+                .email(kakaoUserInfoResponse.getEmail())
+                .userName(kakaoUserInfoResponse.getUserName())
+                .phoneNumber(kakaoUserInfoResponse.getPhoneNumber())
+                .gender(kakaoUserInfoResponse.getGender())
+                .birth(kakaoUserInfoResponse.getBirth())
+                .profileUrl(kakaoUserInfoResponse.getProfileUrl())
+                .loginMethod("Kakao")
+                .create_At(LocalDateTime.now())
+                .update_At(LocalDateTime.now())
+                .build();
+    }
+
+
+    public void addKakaoAdditionalInfo(AdditionalInfoDto additionalInfoDto) {
+        this.nickName = additionalInfoDto.getNickName();
+        this.height = additionalInfoDto.getHeight();
+        this.weight = additionalInfoDto.getWeight();
+        this.update_At = LocalDateTime.now();
+    }
+
+
+    // 로그인 방법 설정 메서드
+    public void setLoginMethod(String loginMethod) {
+        this.loginMethod = loginMethod;
+    }
+
+    // 타임스탬프 업데이트 메서드
+    public void updateTimestamps(LocalDateTime currentTime) {
+        this.create_At = currentTime;
+        this.update_At = currentTime;
+    }
+
 
 }

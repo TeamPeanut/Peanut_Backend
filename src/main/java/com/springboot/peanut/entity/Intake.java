@@ -40,6 +40,16 @@ public class Intake {
 //    @ElementCollection
 //    @MapKeyColumn(name = "medicineName")
 //    private Map<String, String> medication = new HashMap<>();
-
+// Intake 생성 메서드
+    public static Intake createIntake(List<String> intakeDays, String intakeNumber, List<String> intakeTime, User user, Medicine medicine) {
+        Intake intake = new Intake();
+         intake.intakeDays = intakeDays;
+         intake.intakeNumber = intakeNumber;
+         intake.intakeTime = intakeTime;
+         intake.create_At = LocalDate.now();
+         intake.user = user;
+         intake.medicine = medicine;
+      return intake;
+}
 
 }

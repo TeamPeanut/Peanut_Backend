@@ -2,8 +2,8 @@ package com.springboot.peanut.service.Impl;
 
 import com.springboot.peanut.S3.S3Uploader;
 import com.springboot.peanut.dao.FoodPredictDao;
-import com.springboot.peanut.dto.FoodPredictDto;
-import com.springboot.peanut.dto.FoodPredictResponseDto;
+import com.springboot.peanut.dto.foodPredict.FoodPredictDto;
+import com.springboot.peanut.dto.foodPredict.FoodPredictResponseDto;
 import com.springboot.peanut.entity.FoodPredict;
 import com.springboot.peanut.service.FoodAIService;
 import lombok.extern.slf4j.Slf4j;

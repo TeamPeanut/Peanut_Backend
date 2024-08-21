@@ -124,29 +124,19 @@ public class AuthServiceImpl implements AuthService {
 
         SignInResultDto signInResultDto = new SignInResultDto();
         if (kakaoUserInfoResponse == null) {
-            setFail(signInResultDto);
-            throw new RuntimeException("Failed to get Kakao user info");
+            return handleSignInFailure(signInResultDto, "Failed to get Kakao user info");
         }
 
         User user = authDao.kakaoUserFind(kakaoUserInfoResponse.getEmail());
 
         if (user == null) {
-            User newUser = User.builder()
-                    .email(kakaoUserInfoResponse.getEmail())
-                    .userName(kakaoUserInfoResponse.getUserName())
-                    .phoneNumber(kakaoUserInfoResponse.getPhoneNumber())
-                    .gender(kakaoUserInfoResponse.getGender())
-                    .birth(kakaoUserInfoResponse.getBirth())
-                    .profileUrl(kakaoUserInfoResponse.getProfileUrl())
-                    .loginMethod("Kakao")
-                    .create_At(LocalDateTime.now())
-                    .update_At(LocalDateTime.now())
-                    .build();
-
-            authDao.KakaoUserSave(newUser);
-            user = newUser;
+            user = User.createKakaoUser(kakaoUserInfoResponse);
+            authDao.KakaoUserSave(user);
             setSuccess(signInResultDto);
             signInResultDto.setDetailMessage("회원가입 완료.");
+        } else {
+            setSuccess(signInResultDto);
+            signInResultDto.setDetailMessage("로그인 성공.");
         }
 
         signInResultDto.setToken(jwtProvider.createToken(user.getEmail(), List.of("ROLE_USER")));
@@ -155,26 +145,21 @@ public class AuthServiceImpl implements AuthService {
         log.info("[SignIn] SignInResultDto: {}", signInResultDto);
 
         return signInResultDto;
+
     }
+
 
     @Override
     public ResultDto kakao_additionalInfo(AdditionalInfoDto additionalInfoDto , HttpServletRequest request) {
         String info = jwtProvider.getUsername(request.getHeader("X-AUTH-TOKEN"));
         User user = userRepository.getByEmail(info);
         ResultDto resultDto = new ResultDto();
-        if(user != null){
 
-        user.setNickName(additionalInfoDto.getNickName());
-        user.setHeight(additionalInfoDto.getHeight());
-        user.setWeight(additionalInfoDto.getWeight());
-        user.setUpdate_At(LocalDateTime.now());
-
-        authDao.KakaoUserSave(user);
-
-
-        setSuccess(resultDto);
-
-        }else{
+        if (user != null) {
+            user.addKakaoAdditionalInfo(additionalInfoDto); // 기존 User 객체를 전달하여 새로운 User 객체 생성
+            authDao.KakaoUserSave(user);
+            setSuccess(resultDto);
+        } else {
             setFail(resultDto);
         }
         return resultDto;
@@ -190,5 +175,10 @@ public class AuthServiceImpl implements AuthService {
         resultDto.setSuccess(false);
         resultDto.setCode(CommonResponse.Fail.getCode());
         resultDto.setMsg(CommonResponse.Fail.getMsg());
+    }
+    private SignInResultDto handleSignInFailure(SignInResultDto signInResultDto, String errorMessage) {
+        setFail(signInResultDto);
+        signInResultDto.setDetailMessage(errorMessage);
+        throw new RuntimeException(errorMessage);
     }
 }
