@@ -57,6 +57,15 @@ public class User implements UserDetails {
     @Builder.Default
     private List<String> roles = new ArrayList<>(List.of("MEMBER"));
 
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<Intake> intakes = new ArrayList<>();
+
+
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<Medicine> medicines = new ArrayList<>();
+
+
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.roles.stream()
