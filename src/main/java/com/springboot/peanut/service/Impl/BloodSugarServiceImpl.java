@@ -1,10 +1,9 @@
 package com.springboot.peanut.service.Impl;
 
 import com.springboot.peanut.dao.BloodSugarDao;
-import com.springboot.peanut.dto.BloodSugarDto.CurrentResponseDto;
-import com.springboot.peanut.dto.BloodSugarDto.FastingResponseDto;
-import com.springboot.peanut.entity.CurrentBloodSugar;
-import com.springboot.peanut.entity.FastingBloodSugar;
+import com.springboot.peanut.dto.BloodSugarDto.BloodSugarRequestDto;
+import com.springboot.peanut.dto.BloodSugarDto.BloodSugarResponseDto;
+import com.springboot.peanut.entity.BloodSugar;
 import com.springboot.peanut.entity.User;
 import com.springboot.peanut.jwt.JwtProvider;
 import com.springboot.peanut.repository.UserRepository;
@@ -22,45 +21,29 @@ public class BloodSugarServiceImpl implements BloodSugarService {
     private final JwtProvider jwtProvider;
     private final UserRepository userRepository;
 
+
     @Override
-    public FastingResponseDto saveFastingBloodSugar(int fasting_blood_sugar, HttpServletRequest request) {
+    public BloodSugarResponseDto saveBloodSugar(BloodSugarRequestDto bloodSugarRequestDto, HttpServletRequest request) {
         String info = jwtProvider.getUsername(request.getHeader("X-AUTH-TOKEN"));
         User user = userRepository.getByEmail(info);
 
-        FastingBloodSugar fastingBloodSugar = new FastingBloodSugar();
-        fastingBloodSugar.setFasting_SugarInfo(fasting_blood_sugar);
-        fastingBloodSugar.setRecord_time(LocalDate.now());
-        fastingBloodSugar.setUser(user);
+        BloodSugar bloodSugar = new BloodSugar();
+        bloodSugar.setBloodSugarLevel(bloodSugarRequestDto.getBlood_sugar());
+        bloodSugar.setMeasurementTime(bloodSugarRequestDto.getMeasurementTime());
+        bloodSugar.setMemo(bloodSugarRequestDto.getMemo());
+        bloodSugar.setCreate_At(LocalDate.now());
+        bloodSugar.setUser(user);
 
-        bloodSugarDao.saveFastingBloodSugar(fastingBloodSugar);
+        bloodSugarDao.saveBloodSugar(bloodSugar);
 
-        FastingResponseDto fastingResponseDto = new FastingResponseDto();
+        BloodSugarResponseDto bloodSugarResponseDto = new BloodSugarResponseDto();
 
-        fastingResponseDto.setId(fastingBloodSugar.getId());
-        fastingResponseDto.setFasting_blood_sugar(fastingBloodSugar.getFasting_SugarInfo());
-        fastingResponseDto.setRecord_time(LocalDate.now());
+        bloodSugarResponseDto.setId(bloodSugar.getId());
+        bloodSugarResponseDto.setCurrent_blood_sugar(bloodSugar.getBloodSugarLevel());
+        bloodSugarResponseDto.setMeasurementTime(bloodSugar.getMeasurementTime());
+        bloodSugarResponseDto.setMemo(bloodSugar.getMemo());
 
-        return fastingResponseDto;
-    }
 
-    @Override
-    public CurrentResponseDto saveCurrentBloodSugar(int current_blood_sugar, HttpServletRequest request) {
-        String info = jwtProvider.getUsername(request.getHeader("X-AUTH-TOKEN"));
-        User user = userRepository.getByEmail(info);
-
-        CurrentBloodSugar currentBloodSugar = new CurrentBloodSugar();
-        currentBloodSugar.setCurrent_blood_sugar(current_blood_sugar);
-        currentBloodSugar.setRecord_time(LocalDate.now());
-        currentBloodSugar.setUser(user);
-
-        bloodSugarDao.saveCurrentBloodSugar(currentBloodSugar);
-
-        CurrentResponseDto currentResponseDto = new CurrentResponseDto();
-
-        currentResponseDto.setId(currentBloodSugar.getId());
-        currentResponseDto.setCurrent_blood_sugar(currentBloodSugar.getCurrent_blood_sugar());
-        currentResponseDto.setRecord_time(LocalDate.now());
-
-        return currentResponseDto;
+        return bloodSugarResponseDto;
     }
 }

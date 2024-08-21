@@ -1,10 +1,8 @@
 package com.springboot.peanut.dao.Impl;
 
 import com.springboot.peanut.dao.BloodSugarDao;
-import com.springboot.peanut.entity.CurrentBloodSugar;
-import com.springboot.peanut.entity.FastingBloodSugar;
-import com.springboot.peanut.repository.CurrentBloodSugarRepository;
-import com.springboot.peanut.repository.FastingBloodSugarRepository;
+import com.springboot.peanut.entity.BloodSugar;
+import com.springboot.peanut.repository.BloodSugarRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,15 +10,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class BloodSugarDaoImpl implements BloodSugarDao {
 
-    private final FastingBloodSugarRepository fastingBloodSugarRepository;
-    private final CurrentBloodSugarRepository currentBloodSugarRepository;
+    private final BloodSugarRepository bloodSugarRepository;
+
 
     @Override
-    public void saveFastingBloodSugar(FastingBloodSugar fastingBloodSugar) {
-        fastingBloodSugarRepository.save(fastingBloodSugar);
-    }
-    @Override
-    public void saveCurrentBloodSugar(CurrentBloodSugar currentBloodSuger) {
-        currentBloodSugarRepository.save(currentBloodSuger);
+    public void saveBloodSugar(BloodSugar BloodSugar) {
+        bloodSugarRepository.save(BloodSugar);
     }
 }

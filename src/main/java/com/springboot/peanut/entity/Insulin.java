@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Getter
@@ -11,19 +12,21 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FastingBloodSugar {
+public class Insulin {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int fasting_SugarInfo;
+    private String productName;
 
-    private LocalDate record_time;
+    private String dosage;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @ElementCollection
+    private List<String> administrationTime;
 
+    private boolean alam = false;
+
+    private LocalDate create_At;
 
 
 }

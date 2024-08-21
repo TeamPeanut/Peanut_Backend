@@ -103,6 +103,4 @@ public class User implements UserDetails {
         return true;
     }
 
-    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
-    private List<FastingBloodSugar> fastingBloodSugars = new ArrayList<>();
 }

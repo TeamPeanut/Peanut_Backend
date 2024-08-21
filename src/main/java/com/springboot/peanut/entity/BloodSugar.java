@@ -10,15 +10,19 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CurrentBloodSugar {
+public class BloodSugar {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int current_blood_sugar;
+    private String bloodSugarLevel;
 
-    private LocalDate record_time;
+    private String measurementTime;
+
+    private String memo;
+
+    private LocalDate create_At;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
