@@ -1,5 +1,7 @@
 package com.springboot.peanut.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -30,6 +32,7 @@ public class Intake {
 
     @ManyToOne
     @JoinColumn(name="medicine_id")
+    @JsonIgnore
     private Medicine medicine;
 
     @ManyToOne(fetch = FetchType.LAZY)

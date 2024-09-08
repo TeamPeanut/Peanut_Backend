@@ -66,6 +66,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Medicine> medicines = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<Insulin> insulin = new ArrayList<>();
+
 
 
     @Override
@@ -105,6 +108,9 @@ public class User implements UserDetails {
         return true;
     }
 
+    public String getUserName() {
+        return this.userName;
+    }
     public void saveProfile(String name, String gender, String birth, String nickname, String phoneNumber, String height, String weight, String encodedPassword) {
         this.userName = name;
         this.gender = gender;

@@ -1,5 +1,6 @@
 package com.springboot.peanut.entity;
 
+import com.springboot.peanut.dto.Insulin.InsulinRequestDto;
 import lombok.*;
 
 import javax.persistence.*;
@@ -28,5 +29,18 @@ public class Insulin {
 
     private LocalDate create_At;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
+    public static Insulin createInsulin(InsulinRequestDto insulinRequestDto,  User user){
+        Insulin insulin = new Insulin();
+        insulin.productName = insulinRequestDto.getProductName();
+        insulin.dosage = insulinRequestDto.getDosage();
+        insulin.administrationTime = insulinRequestDto.getAdministrationTime();
+        insulin.alam = insulinRequestDto.isAlam();
+        insulin.create_At = LocalDate.now();
+        insulin.user = user;
+        return insulin;
+    }
 }

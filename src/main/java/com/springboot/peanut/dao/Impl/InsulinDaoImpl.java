@@ -2,7 +2,7 @@ package com.springboot.peanut.dao.Impl;
 
 import com.springboot.peanut.dao.InsulinDao;
 import com.springboot.peanut.entity.Insulin;
-import com.springboot.peanut.repository.InsulinRepository;
+import com.springboot.peanut.repository.Insulin.InsulinRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
