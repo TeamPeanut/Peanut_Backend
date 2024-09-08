@@ -23,8 +23,8 @@ public class InsulinController {
 
     @PostMapping("/save")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-    public ResponseEntity<InsulinResponseDto> saveInsulinInfo(InsulinRequestDto insulinRequestDto, HttpServletRequest request){
-        InsulinResponseDto insulinResponseDto = insulinService.saveInsulinInfo(insulinRequestDto,request);
-        return ResponseEntity.status(HttpStatus.OK).body(insulinResponseDto);
+    public ResponseEntity<ResultDto> saveInsulinInfo(InsulinRequestDto insulinRequestDto, HttpServletRequest request){
+        ResultDto resultDto = insulinService.saveInsulinInfo(insulinRequestDto,request);
+        return ResponseEntity.status(HttpStatus.OK).body(resultDto);
     }
 }
