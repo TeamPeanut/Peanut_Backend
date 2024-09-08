@@ -1,5 +1,7 @@
 package com.springboot.peanut.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -30,6 +32,7 @@ public class Medicine {
     private LocalDate create_At;
 
     @OneToMany(mappedBy = "medicine",cascade = CascadeType.ALL,orphanRemoval = true)
+    @JsonIgnore
     private List<Intake> intakes = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)

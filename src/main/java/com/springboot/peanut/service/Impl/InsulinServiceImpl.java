@@ -29,37 +29,27 @@ public class InsulinServiceImpl implements InsulinService {
     private final InsulinDao insulinDao;
 
     @Override
-    public InsulinResponseDto saveInsulinInfo(InsulinRequestDto insulinRequestDto, HttpServletRequest request) {
+    public ResultDto saveInsulinInfo(InsulinRequestDto insulinRequestDto, HttpServletRequest request) {
         String info = jwtProvider.getUsername(request.getHeader("X-AUTH-TOKEN"));
         User user = userRepository.getByEmail(info);
         log.info("[user] : {}" ,user);
 
-        Insulin insulin = new Insulin();
         ResultDto resultDto = new ResultDto();
 
 
         if (user != null){
-            insulin.setProductName(insulinRequestDto.getProductName());
-            insulin.setAdministrationTime(insulinRequestDto.getAdministrationTime());
-            insulin.setDosage(insulinRequestDto.getDosage());
-            insulin.setAlam(insulinRequestDto.isAlam());
-            insulin.setCreate_At(LocalDate.now());
+            Insulin insulin = Insulin.createInsulin(insulinRequestDto,user);
 
             insulinDao.saveInsulin(insulin);
+            resultDto.setDetailMessage("회원님의 인슐린 정보가 저장되었습니다.");
+            setSuccess(resultDto);
 
-            InsulinResponseDto insulinResponseDto = new InsulinResponseDto();
-            insulinResponseDto.setId(insulin.getId());
-            insulinResponseDto.setProductName(insulin.getProductName());
-            insulinResponseDto.setAdministrationTime(insulin.getAdministrationTime());
-            insulinResponseDto.setDosage(insulin.getDosage());
-            insulinResponseDto.setAlam(insulin.isAlam());
-
-
-            return insulinResponseDto;
         }else {
+            resultDto.setDetailMessage("인슐린 정보 저장 실패");
+            setFail(resultDto);
             throw  new IllegalArgumentException();
         }
-
+        return resultDto;
     }
     private void setSuccess(ResultDto resultDto) {
         resultDto.setSuccess(true);

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -45,9 +46,25 @@ public class BloodSugarRepositoryCustomImpl implements BloodSugarRepositoryCusto
         BloodSugar closestBloodSugar = jpaQueryFactory
                 .selectFrom(bloodSugar)
                 .where(bloodSugar.user.id.eq(userId))
-                .orderBy(bloodSugar.create_At.asc())  // 시간을 오름차순으로 정렬
+                .orderBy(bloodSugar.create_At.desc())  // 시간을 오름차순으로 정렬
                 .fetchFirst();  // 가장 가까운 하나의 혈당 기록만 가져오기
 
         return Optional.ofNullable(closestBloodSugar);
+    }
+
+    @Override
+    public List<BloodSugar> findTodayBloodSugar(Long userId, LocalDate date) {
+        QBloodSugar bloodSugar = QBloodSugar.bloodSugar;
+        LocalDate today = LocalDate.now();
+
+        LocalDateTime start = today.atStartOfDay();
+        LocalDateTime end = today.atTime(LocalTime.MAX);
+
+
+        return jpaQueryFactory
+                .selectFrom(bloodSugar)
+                .where(bloodSugar.user.id.eq(userId)
+                        .and(bloodSugar.create_At.between(start,end)))
+                .fetch();
     }
 }

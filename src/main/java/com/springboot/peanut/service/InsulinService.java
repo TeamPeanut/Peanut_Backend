@@ -7,5 +7,5 @@ import com.springboot.peanut.dto.signDto.ResultDto;
 import javax.servlet.http.HttpServletRequest;
 
 public interface InsulinService {
-    InsulinResponseDto saveInsulinInfo(InsulinRequestDto insulinRequestDto, HttpServletRequest request);
+    ResultDto saveInsulinInfo(InsulinRequestDto insulinRequestDto, HttpServletRequest request);
 }
