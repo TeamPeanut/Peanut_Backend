@@ -45,7 +45,7 @@ public class MainPageServiceImpl implements MainPageService {
         Optional<BloodSugar> currentBloodSugarLevel = bloodSugarRepository.findClosestBloodSugar(user.getId());
         String currentBloodSugar = currentBloodSugarLevel
                 .map(BloodSugar::getBloodSugarLevel)
-                .orElse("최근에 등록딘 혈당을 찾을 수 없습니다.");
+                .orElse("최근에 등록된 혈당을 찾을 수 없습니다.");
 
         // 생성자로 객체 생성
         return new MainPageGetUserDto(
