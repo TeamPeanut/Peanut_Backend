@@ -2,7 +2,7 @@ package com.springboot.peanut.dao.Impl;
 
 import com.springboot.peanut.dao.BloodSugarDao;
 import com.springboot.peanut.entity.BloodSugar;
-import com.springboot.peanut.repository.BloodSugarRepository;
+import com.springboot.peanut.repository.BloodSugar.BloodSugarRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
