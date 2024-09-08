@@ -33,7 +33,7 @@ public class FoodAIServiceImpl implements FoodAIService {
     public FoodAIServiceImpl(FoodPredictDao foodPredictDao, S3Uploader s3Uploader, WebClient.Builder webClientBuilder) throws IOException {
         this.foodPredictDao = foodPredictDao;
         this.s3Uploader = s3Uploader;
-        this.webClient = webClientBuilder.baseUrl("http://localhost:8000").build();
+        this.webClient = webClientBuilder.baseUrl("http://52.78.145.50:8000").build();
     }
 
     @Override

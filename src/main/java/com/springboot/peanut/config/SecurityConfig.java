@@ -49,8 +49,9 @@ public class SecurityConfig extends  WebSecurityConfigurerAdapter{
                 .and()
                 .authorizeRequests() // 리퀘스트에 대한 사용권한 체크
                 .antMatchers("/api/sign-api/**","/api/auth",
-                        "/api/sign-api/exception","/api/auth/**","/api/main-api/**").permitAll() // 가입 및 로그인 주소는 허용
+                        "/api/sign-api/exception","/api/auth/**").permitAll() // 가입 및 로그인 주소는 허용
                 .antMatchers("/api/predict-api/**").authenticated()
+                .antMatchers("/api/main-api/**").authenticated()
                 .antMatchers("**exception**").permitAll()
                 .and()
                 .exceptionHandling().accessDeniedHandler(new CustomAccessDeniedHandler())

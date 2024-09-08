@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +32,7 @@ public class BloodSugarServiceImpl implements BloodSugarService {
         bloodSugar.setBloodSugarLevel(bloodSugarRequestDto.getBlood_sugar());
         bloodSugar.setMeasurementTime(bloodSugarRequestDto.getMeasurementTime());
         bloodSugar.setMemo(bloodSugarRequestDto.getMemo());
-        bloodSugar.setCreate_At(LocalDate.now());
+        bloodSugar.setCreate_At(LocalDateTime.now());
         bloodSugar.setUser(user);
 
         bloodSugarDao.saveBloodSugar(bloodSugar);
