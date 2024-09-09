@@ -17,13 +17,13 @@ public class MainPageGetUserDto {
     private String currentBloodSugarLevel;
 
 
-    public void MainPageGetUserDto(Long id, String userName, String profileUrl, String fastingBloodSugarLevel, String currentBloodSugarLevel) {
-        this.userId = id;
-        this.userName = userName;
-        this.profileUrl = profileUrl;
-        this.fastingBloodSugarLevel = fastingBloodSugarLevel;
-        this.currentBloodSugarLevel = currentBloodSugarLevel;
-    }
+//    public void MainPageGetUserDto(Long id, String userName, String profileUrl, String fastingBloodSugarLevel, String currentBloodSugarLevel) {
+//        this.userId = id;
+//        this.userName = userName;
+//        this.profileUrl = profileUrl;
+//        this.fastingBloodSugarLevel = fastingBloodSugarLevel;
+//        this.currentBloodSugarLevel = currentBloodSugarLevel;
+//    }
 
 }
 
