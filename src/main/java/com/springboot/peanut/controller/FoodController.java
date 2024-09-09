@@ -1,7 +1,8 @@
 package com.springboot.peanut.controller;
 
-import com.springboot.peanut.dto.foodPredict.FoodDetailInfoDto;
-import com.springboot.peanut.dto.foodPredict.FoodPredictResponseDto;
+import com.springboot.peanut.dto.food.FoodDetailInfoDto;
+import com.springboot.peanut.dto.food.FoodPredictResponseDto;
+import com.springboot.peanut.dto.signDto.ResultDto;
 import com.springboot.peanut.service.FoodAIService;
 import com.springboot.peanut.service.FoodDetailService;
 import io.swagger.annotations.ApiImplicitParam;
@@ -34,9 +35,16 @@ public class FoodController {
 
     @GetMapping("/details")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-    ResponseEntity<List<FoodDetailInfoDto>> getFoodDetailInfo(@RequestParam  List<String> name, HttpServletRequest request){
+    public ResponseEntity<List<FoodDetailInfoDto>> getFoodDetailInfo(@RequestParam  List<String> name, HttpServletRequest request){
         List<FoodDetailInfoDto> foodDetailInfoDto = foodDetailService.getFoodDetailInfo(name,request);
         return ResponseEntity.status(HttpStatus.OK).body(foodDetailInfoDto);
+    }
+
+    @PostMapping("/save-meal")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    public ResponseEntity<ResultDto> createMealInfo(String mealTime, HttpServletRequest request){
+        ResultDto resultDto = foodDetailService.createMealInfo(mealTime,request);
+        return ResponseEntity.status(HttpStatus.OK).body(resultDto);
     }
 
 }
