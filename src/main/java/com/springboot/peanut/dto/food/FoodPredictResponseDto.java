@@ -1,4 +1,4 @@
-package com.springboot.peanut.dto.foodPredict;
+package com.springboot.peanut.dto.food;
 
 import lombok.Getter;
 import lombok.Setter;
