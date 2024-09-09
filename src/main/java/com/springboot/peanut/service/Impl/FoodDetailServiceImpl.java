@@ -5,10 +5,7 @@ import com.springboot.peanut.dto.CommonResponse;
 import com.springboot.peanut.dto.food.FoodDetailInfoDto;
 import com.springboot.peanut.dto.food.MealResponseDto;
 import com.springboot.peanut.dto.signDto.ResultDto;
-import com.springboot.peanut.entity.BloodSugar;
-import com.springboot.peanut.entity.FoodNutrition;
-import com.springboot.peanut.entity.MealInfo;
-import com.springboot.peanut.entity.User;
+import com.springboot.peanut.entity.*;
 import com.springboot.peanut.jwt.JwtProvider;
 import com.springboot.peanut.repository.BloodSugar.BloodSugarRepository;
 import com.springboot.peanut.repository.FoodNutrition.FoodNutritionRepository;
@@ -78,11 +75,9 @@ public class FoodDetailServiceImpl implements FoodDetailService {
 
         // id로 영양성분 데이터 가져오기
         List<FoodNutrition> foodNutritionList = foodNutritionRepository.findAllById(foodNutritionIds);
-        MealInfo mealInfo = MealInfo.builder()
-                .eatTime(mealTime)
-                .expectedBloodSugar(expectedBloodSugar)
-                .foodNutritionList(foodNutritionList)
-                .build();
+
+        MealInfo mealInfo = MealInfo.MealInfo(mealTime,expectedBloodSugar,foodNutritionList,user);
+
         mealDao.save(mealInfo);
 
         // MealInfo 객체 생성
