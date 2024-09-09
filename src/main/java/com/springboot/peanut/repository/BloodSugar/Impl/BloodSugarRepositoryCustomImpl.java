@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-
 public class BloodSugarRepositoryCustomImpl implements BloodSugarRepositoryCustom {
     @Autowired
     private JPAQueryFactory jpaQueryFactory;
