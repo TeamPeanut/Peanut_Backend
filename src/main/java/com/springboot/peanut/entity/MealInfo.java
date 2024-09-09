@@ -31,15 +31,24 @@ public class MealInfo {
     )
     private List<FoodNutrition> foodNutritionList = new ArrayList<>();
 
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+
     public void addFoodNutrition(FoodNutrition foodNutrition) {
         foodNutritionList.add(foodNutrition);
     }
 
     // 생성자 추가
-    public MealInfo(String eatTime, double expectedBloodSugar, List<FoodNutrition> foodNutritionList) {
-        this.eatTime = eatTime;
-        this.expectedBloodSugar = expectedBloodSugar;
-        this.foodNutritionList = foodNutritionList;
+    public static MealInfo MealInfo(String eatTime, double expectedBloodSugar, List<FoodNutrition> foodNutritionList, User user) {
+        MealInfo mealInfo = new MealInfo();
+        mealInfo.eatTime = eatTime;
+        mealInfo.expectedBloodSugar = expectedBloodSugar;
+        mealInfo.foodNutritionList = foodNutritionList;
+        mealInfo.user = user;
+        return mealInfo;
     }
 }
 
