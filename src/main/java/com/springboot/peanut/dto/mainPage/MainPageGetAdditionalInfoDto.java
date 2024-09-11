@@ -13,7 +13,7 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MainPageGetAdditionalInfoDto {
-    private List<Map<String, LocalDateTime>> bloodSugarList;
+    private List<Map<Integer, LocalDateTime>> bloodSugarList;
     private String medicineName;
     private Boolean medicineAlam;
     private String insulinName;

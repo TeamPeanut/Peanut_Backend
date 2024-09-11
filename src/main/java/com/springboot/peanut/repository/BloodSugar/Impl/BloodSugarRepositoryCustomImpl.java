@@ -19,6 +19,7 @@ public class BloodSugarRepositoryCustomImpl implements BloodSugarRepositoryCusto
     @Autowired
     private JPAQueryFactory jpaQueryFactory;
 
+    // 메인페이지 상단
     @Override
     public Optional<BloodSugar> findFastingBloodSugar(Long userId) {
         QBloodSugar bloodSugar = QBloodSugar.bloodSugar;
@@ -30,13 +31,14 @@ public class BloodSugarRepositoryCustomImpl implements BloodSugarRepositoryCusto
         return Optional.ofNullable(jpaQueryFactory
                 .selectFrom(bloodSugar)
                 .where(bloodSugar.user.id.eq(userId)
-                        .and(bloodSugar.measurementTime.eq("공복"))
+                        .and(bloodSugar.measurementCondition.eq("공복"))
                         .and(bloodSugar.create_At.between(start,end)))
                 .fetchOne());
 
 
     }
 
+    // 메인페이지 상단
     @Override
     public Optional<BloodSugar> findClosestBloodSugar(Long userId) {
         QBloodSugar bloodSugar = QBloodSugar.bloodSugar;
@@ -51,19 +53,18 @@ public class BloodSugarRepositoryCustomImpl implements BloodSugarRepositoryCusto
         return Optional.ofNullable(closestBloodSugar);
     }
 
+
     @Override
     public List<BloodSugar> findTodayBloodSugar(Long userId, LocalDate date) {
         QBloodSugar bloodSugar = QBloodSugar.bloodSugar;
-        LocalDate today = LocalDate.now();
 
-        LocalDateTime start = today.atStartOfDay();
-        LocalDateTime end = today.atTime(LocalTime.MAX);
-
-
+        LocalDateTime start = date.atStartOfDay();
+        LocalDateTime end = date.atTime(LocalTime.MAX);
         return jpaQueryFactory
                 .selectFrom(bloodSugar)
                 .where(bloodSugar.user.id.eq(userId)
                         .and(bloodSugar.create_At.between(start,end)))
                 .fetch();
     }
+
 }

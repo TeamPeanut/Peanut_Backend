@@ -22,12 +22,10 @@ public class MedicineRepositoryCustomImpl implements MedicineRepositoryCustom {
     public Optional<Medicine> findByTodayMedicineInfo(Long userId, LocalDate date) {
         QMedicine qMedicine = QMedicine.medicine;
 
-        LocalDate today = LocalDate.now();
-
         return Optional.ofNullable(jpaQueryFactory
                 .selectFrom(qMedicine)
                 .where(qMedicine.user.id.eq(userId)
-                        .and(qMedicine.create_At.eq(today)))
+                        .and(qMedicine.create_At.eq(date)))
                 .fetchOne());
     }
 }

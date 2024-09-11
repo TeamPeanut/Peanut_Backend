@@ -27,7 +27,7 @@ public class SignController {
     }
     @PostMapping("/verified")
     public ResponseEntity<?> verifyEmail(String confirmationCode, HttpServletRequest request){
-        boolean verified = signService.verifyEmail(confirmationCode,request);
+        Map<String,String> verified = signService.verifyEmail(confirmationCode,request);
         return ResponseEntity.status(HttpStatus.OK).body(verified);
     }
     @PostMapping("/sign-up")

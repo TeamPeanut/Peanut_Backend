@@ -1,5 +1,6 @@
 package com.springboot.peanut.controller;
 
+import com.springboot.peanut.dto.food.FoodAllDetailDto;
 import com.springboot.peanut.dto.mainPage.MainPageGetAdditionalInfoDto;
 import com.springboot.peanut.dto.mainPage.MainPageGetUserDto;
 import com.springboot.peanut.service.MainPageService;
@@ -36,4 +37,21 @@ public class MainPageController {
         MainPageGetAdditionalInfoDto mainPageGetAdditionalInfoDto = mainPageService.getAdditionalInfoMainPage(request,date);
         return ResponseEntity.status(HttpStatus.OK).body(mainPageGetAdditionalInfoDto);
     }
+
+    @GetMapping("/get-all-food")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    public ResponseEntity<FoodAllDetailDto> getFoodAllDetail(@RequestParam("date")@DateTimeFormat(iso= DateTimeFormat.ISO.DATE) LocalDate date,HttpServletRequest request) {
+        FoodAllDetailDto foodAllDetailDto = mainPageService.getFoodAllDetail(date,request);
+        return ResponseEntity.status(HttpStatus.OK).body(foodAllDetailDto);
+    }
+
+    @GetMapping("/get-time-food")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    public ResponseEntity<FoodAllDetailDto> getFoodDetailByEatTime(@RequestParam("date")@DateTimeFormat(iso= DateTimeFormat.ISO.DATE) LocalDate date, @RequestParam String eatTime, HttpServletRequest request) {
+        FoodAllDetailDto foodAllDetailDto = mainPageService.getFoodDetailByEatTime(date,eatTime,request);
+        return ResponseEntity.status(HttpStatus.OK).body(foodAllDetailDto);
+    }
 }
+
+
+

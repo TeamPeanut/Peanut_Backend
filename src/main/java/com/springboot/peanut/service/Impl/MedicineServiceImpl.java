@@ -2,7 +2,6 @@ package com.springboot.peanut.service.Impl;
 
 import com.springboot.peanut.dao.IntakeDao;
 import com.springboot.peanut.dao.MedicineDao;
-import com.springboot.peanut.dto.CommonResponse;
 import com.springboot.peanut.dto.medicine.MedicineRequestDto;
 import com.springboot.peanut.dto.signDto.ResultDto;
 import com.springboot.peanut.entity.Intake;
@@ -10,13 +9,13 @@ import com.springboot.peanut.entity.Medicine;
 import com.springboot.peanut.entity.User;
 import com.springboot.peanut.jwt.JwtProvider;
 import com.springboot.peanut.repository.UserRepository;
+import com.springboot.peanut.service.JwtAuthenticationService;
 import com.springboot.peanut.service.MedicineService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -27,12 +26,13 @@ public class MedicineServiceImpl implements MedicineService {
     private final UserRepository userRepository;
     private final MedicineDao medicineDao;
     private final IntakeDao intakeDao;
+    private final JwtAuthenticationService jwtAuthenticationService;
+    private final ResultStatusService resultStatusService;
 
     @Override
     public ResultDto saveMedicineInfo(MedicineRequestDto medicineRequestDto, HttpServletRequest request) {
-        String info = jwtProvider.getUsername(request.getHeader("X-AUTH-TOKEN"));
-        User user = userRepository.getByEmail(info);
-        log.info("[user] : {}",user);
+        User user = jwtAuthenticationService.authenticationToken(request);
+
         ResultDto resultDto = new ResultDto();
 
 
@@ -56,9 +56,9 @@ public class MedicineServiceImpl implements MedicineService {
             log.info("[intakeInfo] : {}", intake);
 
             resultDto.setDetailMessage("약 정보 입력 완료!");
-            setSuccess(resultDto);
+            resultStatusService.setSuccess(resultDto);
         }else{
-            setFail(resultDto);
+            resultStatusService. setFail(resultDto);
             throw new IllegalArgumentException();
         }
 
@@ -66,17 +66,5 @@ public class MedicineServiceImpl implements MedicineService {
     }
 
 
-    private void setSuccess(ResultDto resultDto) {
-        resultDto.setSuccess(true);
-        resultDto.setCode(CommonResponse.SUCCESS.getCode());
-        resultDto.setMsg(CommonResponse.SUCCESS.getMsg());
-
-    }
-
-    private void setFail(ResultDto resultDto) {
-        resultDto.setSuccess(false);
-        resultDto.setCode(CommonResponse.Fail.getCode());
-        resultDto.setMsg(CommonResponse.Fail.getMsg());
-    }
 
 }
