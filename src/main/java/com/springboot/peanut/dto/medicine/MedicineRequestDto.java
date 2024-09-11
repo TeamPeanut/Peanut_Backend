@@ -17,8 +17,6 @@ public class MedicineRequestDto {
 
     private List<String> intakeDays;
 
-    private String intakeNumber;
-
     private List<String> intakeTime;
 
 }

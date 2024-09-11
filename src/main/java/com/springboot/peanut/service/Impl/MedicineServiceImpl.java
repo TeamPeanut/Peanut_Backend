@@ -46,7 +46,6 @@ public class MedicineServiceImpl implements MedicineService {
             // Intake 객체 생성 및 Medicine에 추가
             Intake intake = Intake.createIntake(
                     medicineRequestDto.getIntakeDays(),
-                    medicineRequestDto.getIntakeNumber(),
                     medicineRequestDto.getIntakeTime(),
                     user,
                     medicine
