@@ -1,8 +1,6 @@
 package com.springboot.peanut.service.Impl;
 
-import com.springboot.peanut.S3.S3Uploader;
 import com.springboot.peanut.dao.SignDao;
-import com.springboot.peanut.dto.CommonResponse;
 import com.springboot.peanut.dto.signDto.ResultDto;
 import com.springboot.peanut.dto.signDto.SignInResultDto;
 import com.springboot.peanut.dto.signDto.SignUpDto;
@@ -37,6 +35,7 @@ public class SignServiceImpl implements SignService {
     private final SignDao signDao;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ResultStatusService resultStatusService;
 
 
     @Override
@@ -62,10 +61,10 @@ public class SignServiceImpl implements SignService {
             signDao.saveSignUpInfo(user);
 
             resultDto.setDetailMessage("회원가입 완료");
-            setSuccess(resultDto);
+            resultStatusService.setSuccess(resultDto);
         } else {
             resultDto.setDetailMessage("회원가입 실패");
-            setFail(resultDto);
+            resultStatusService.setFail(resultDto);
             throw new IllegalArgumentException("User not found in session");
         }
 
@@ -110,23 +109,26 @@ public class SignServiceImpl implements SignService {
                 .token(jwtProvider.createToken(String.valueOf(user.getEmail()), user.getRoles()))
                 .build();
         logger.info("[getSignInResult] SignInResultDto 객체에 값 주입");
-        setSuccess(signInResultDto);
+        resultStatusService.setSuccess(signInResultDto);
         signInResultDto.setDetailMessage("로그인 성공");
         return signInResultDto;
     }
 
     @Override
-    public boolean verifyEmail(String confirmationCode, HttpServletRequest request) {
+    public Map<String,String> verifyEmail(String confirmationCode, HttpServletRequest request) {
         String email = (String) request.getSession().getAttribute("email");
         User user = new User();
+        Map<String,String> response = new HashMap<>();
         if(email != null){
             user.setEmail(email);
             user.setVerified(true);
             request.getSession().setAttribute("user",user);
+            response.put("Verified : ", "true");
 
-            return true;
+            return response;
         }
-        return false;
+        response.put("Verified : ", "false");
+        return response;
     }
     private MimeMessage createMessage(String to, String ePw) throws Exception {
         MimeMessage message = javaMailSender.createMimeMessage();
@@ -156,16 +158,4 @@ public class SignServiceImpl implements SignService {
         return String.valueOf(number);
     }
 
-    private void setSuccess(ResultDto resultDto) {
-        resultDto.setSuccess(true);
-        resultDto.setCode(CommonResponse.SUCCESS.getCode());
-        resultDto.setMsg(CommonResponse.SUCCESS.getMsg());
-
-    }
-
-    private void setFail(ResultDto resultDto) {
-        resultDto.setSuccess(false);
-        resultDto.setCode(CommonResponse.Fail.getCode());
-        resultDto.setMsg(CommonResponse.Fail.getMsg());
-    }
 }

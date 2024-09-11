@@ -7,9 +7,11 @@ import lombok.Setter;
 @Setter
 public class BloodSugarRequestDto {
 
-    private String blood_sugar;
+    private String bloodSugarLevel;
 
     private String measurementTime;
+
+    private String measurementCondition;
 
     private String memo;
 

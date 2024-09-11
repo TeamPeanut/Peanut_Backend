@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,9 +24,9 @@ public class MealInfo {
 
     private double expectedBloodSugar;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     @JoinTable(
-            name = "meal_food_nutrition",  // 중간 테이블 생성
+            name = "meal_info_food_nutrition", // 연결 테이블 명시
             joinColumns = @JoinColumn(name = "meal_info_id"),
             inverseJoinColumns = @JoinColumn(name = "food_nutrition_id")
     )
@@ -36,6 +37,8 @@ public class MealInfo {
     @JoinColumn(name = "user_id")
     private User user;
 
+
+    private LocalDate create_At;
 
     public void addFoodNutrition(FoodNutrition foodNutrition) {
         foodNutritionList.add(foodNutrition);
@@ -48,6 +51,7 @@ public class MealInfo {
         mealInfo.expectedBloodSugar = expectedBloodSugar;
         mealInfo.foodNutritionList = foodNutritionList;
         mealInfo.user = user;
+        mealInfo.create_At = LocalDate.now();
         return mealInfo;
     }
 }

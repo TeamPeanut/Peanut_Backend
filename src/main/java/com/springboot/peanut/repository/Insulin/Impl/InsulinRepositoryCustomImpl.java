@@ -19,12 +19,11 @@ public class InsulinRepositoryCustomImpl implements InsulinRepositoryCustom {
     @Override
     public Optional<Insulin> findByTodayInsulinName(Long userId, LocalDate date) {
         QInsulin qInsulin = QInsulin.insulin;
-        LocalDate today = LocalDate.now();
 
         return Optional.ofNullable(jpaQueryFactory
                 .selectFrom(qInsulin)
                 .where(qInsulin.user.id.eq(userId)
-                        .and(qInsulin.create_At.eq(today)))
+                        .and(qInsulin.create_At.eq(date)))
                 .fetchOne());
     }
 }

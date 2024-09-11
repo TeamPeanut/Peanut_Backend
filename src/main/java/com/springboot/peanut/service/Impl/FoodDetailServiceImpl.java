@@ -1,16 +1,13 @@
 package com.springboot.peanut.service.Impl;
 
 import com.springboot.peanut.dao.MealDao;
-import com.springboot.peanut.dto.CommonResponse;
 import com.springboot.peanut.dto.food.FoodDetailInfoDto;
-import com.springboot.peanut.dto.food.MealResponseDto;
 import com.springboot.peanut.dto.signDto.ResultDto;
 import com.springboot.peanut.entity.*;
-import com.springboot.peanut.jwt.JwtProvider;
 import com.springboot.peanut.repository.BloodSugar.BloodSugarRepository;
 import com.springboot.peanut.repository.FoodNutrition.FoodNutritionRepository;
-import com.springboot.peanut.repository.UserRepository;
 import com.springboot.peanut.service.FoodDetailService;
+import com.springboot.peanut.service.JwtAuthenticationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,15 +22,15 @@ import java.util.stream.Collectors;
 @Slf4j
 public class FoodDetailServiceImpl implements FoodDetailService {
 
-    private final JwtProvider jwtProvider;
-    private final UserRepository userRepository;
     private final FoodNutritionRepository foodNutritionRepository;
     private final BloodSugarRepository bloodSugarRepository;
     private final MealDao mealDao;
+    private final JwtAuthenticationService jwtAuthenticationService;
+    private final ResultStatusService resultStatusService;
 
     @Override
     public List<FoodDetailInfoDto> getFoodDetailInfo(List<String> name, HttpServletRequest request) {
-        User user = authenticationToken(request);
+        User user = jwtAuthenticationService.authenticationToken(request);
 
         List<FoodNutrition> foodNutritionList = foodNutritionRepository.findFoodNutritionByFoodName(name);
         log.info("[foodNutritionList] : {} ", foodNutritionList );
@@ -58,13 +55,13 @@ public class FoodDetailServiceImpl implements FoodDetailService {
 
     @Override
     public ResultDto createMealInfo(String mealTime, HttpServletRequest request) {
-        User user = authenticationToken(request);
+        User user = jwtAuthenticationService.authenticationToken(request);
         List<FoodDetailInfoDto> foodDetailInfoDtoList = (List<FoodDetailInfoDto>)request.getSession().getAttribute("foodDetailInfoDtoList");
         double expectedBloodSugar = (double)request.getSession().getAttribute("expectedBloodSugar");
         if (user == null) {
             ResultDto resultDto = new ResultDto();
             resultDto.setDetailMessage("사용자 인증에 실패했습니다.");
-            setFail(resultDto);  // 실패 응답 설정
+            resultStatusService.setFail(resultDto);  // 실패 응답 설정
             return resultDto;
         }
 
@@ -83,7 +80,7 @@ public class FoodDetailServiceImpl implements FoodDetailService {
         // MealInfo 객체 생성
         ResultDto resultDto = new ResultDto();
         resultDto.setDetailMessage("식사 기록 저장 완료!");
-        setSuccess(resultDto);
+        resultStatusService.setSuccess(resultDto);
 
         return resultDto;
     }
@@ -120,23 +117,4 @@ public class FoodDetailServiceImpl implements FoodDetailService {
         return expectedBloodSugar;
     }
 
-    public User authenticationToken(HttpServletRequest request) {
-        String token = jwtProvider.resolveToken(request);
-        String email = jwtProvider.getUsername(token);
-        User user = userRepository.findByEmail(email);
-        return user;
-    }
-
-    private void setSuccess(ResultDto resultDto) {
-        resultDto.setSuccess(true);
-        resultDto.setCode(CommonResponse.SUCCESS.getCode());
-        resultDto.setMsg(CommonResponse.SUCCESS.getMsg());
-
-    }
-
-    private void setFail(ResultDto resultDto) {
-        resultDto.setSuccess(false);
-        resultDto.setCode(CommonResponse.Fail.getCode());
-        resultDto.setMsg(CommonResponse.Fail.getMsg());
-    }
 }

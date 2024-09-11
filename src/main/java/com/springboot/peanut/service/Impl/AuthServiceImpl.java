@@ -3,7 +3,6 @@ package com.springboot.peanut.service.Impl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.peanut.dao.AuthDao;
-import com.springboot.peanut.dto.CommonResponse;
 import com.springboot.peanut.dto.signDto.AdditionalInfoDto;
 import com.springboot.peanut.dto.signDto.KakaoResponseDto;
 import com.springboot.peanut.dto.signDto.ResultDto;
@@ -22,7 +21,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +32,7 @@ public class AuthServiceImpl implements AuthService {
     private final AuthDao authDao;
     private final JwtProvider jwtProvider;
     private final UserRepository userRepository;
+    private final ResultStatusService resultStatusService;
 
 
     @Value("${kakao.client.id}")
@@ -132,15 +131,15 @@ public class AuthServiceImpl implements AuthService {
         if (user == null) {
             user = User.createKakaoUser(kakaoUserInfoResponse);
             authDao.KakaoUserSave(user);
-            setSuccess(signInResultDto);
+            resultStatusService.setSuccess(signInResultDto);
             signInResultDto.setDetailMessage("회원가입 완료.");
         } else {
-            setSuccess(signInResultDto);
+            resultStatusService.setSuccess(signInResultDto);
             signInResultDto.setDetailMessage("로그인 성공.");
         }
 
         signInResultDto.setToken(jwtProvider.createToken(user.getEmail(), List.of("ROLE_USER")));
-        setSuccess(signInResultDto);
+        resultStatusService.setSuccess(signInResultDto);
         signInResultDto.setDetailMessage("로그인 성공.");
         log.info("[SignIn] SignInResultDto: {}", signInResultDto);
 
@@ -158,26 +157,15 @@ public class AuthServiceImpl implements AuthService {
         if (user != null) {
             user.addKakaoAdditionalInfo(additionalInfoDto); // 기존 User 객체를 전달하여 새로운 User 객체 생성
             authDao.KakaoUserSave(user);
-            setSuccess(resultDto);
+            resultStatusService.setSuccess(resultDto);
         } else {
-            setFail(resultDto);
+            resultStatusService.setFail(resultDto);
         }
         return resultDto;
     }
 
-    private void setSuccess(ResultDto resultDto) {
-        resultDto.setSuccess(true);
-        resultDto.setCode(CommonResponse.SUCCESS.getCode());
-        resultDto.setMsg(CommonResponse.SUCCESS.getMsg());
-    }
-
-    private void setFail(ResultDto resultDto) {
-        resultDto.setSuccess(false);
-        resultDto.setCode(CommonResponse.Fail.getCode());
-        resultDto.setMsg(CommonResponse.Fail.getMsg());
-    }
     private SignInResultDto handleSignInFailure(SignInResultDto signInResultDto, String errorMessage) {
-        setFail(signInResultDto);
+        resultStatusService.setFail(signInResultDto);
         signInResultDto.setDetailMessage(errorMessage);
         throw new RuntimeException(errorMessage);
     }

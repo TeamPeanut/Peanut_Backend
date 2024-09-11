@@ -1,5 +1,7 @@
 package com.springboot.peanut.entity;
 
+import com.springboot.peanut.dto.Insulin.InsulinRequestDto;
+import com.springboot.peanut.dto.bloodSugar.BloodSugarRequestDto;
 import lombok.*;
 
 import javax.persistence.*;
@@ -20,9 +22,11 @@ public class BloodSugar {
 
     private String bloodSugarLevel;
 
-    private String measurementTime;
+    private String measurementCondition;
 
     private String memo;
+
+    private String measurementTime;
 
     private LocalDateTime create_At;
 
@@ -30,4 +34,14 @@ public class BloodSugar {
     @JoinColumn(name = "user_id")
     private User user;
 
+    public static BloodSugar createBloodSugar(BloodSugarRequestDto bloodSugarRequestDto, User user){
+        BloodSugar bloodSugar = new BloodSugar();
+        bloodSugar.bloodSugarLevel = bloodSugarRequestDto.getBloodSugarLevel();
+        bloodSugar.measurementTime = bloodSugarRequestDto.getMeasurementTime();
+        bloodSugar.measurementCondition = bloodSugarRequestDto.getMeasurementCondition();
+        bloodSugar.memo = bloodSugarRequestDto.getMemo();
+        bloodSugar.create_At = LocalDateTime.now();
+        bloodSugar.user = user;
+        return bloodSugar;
+    }
 }

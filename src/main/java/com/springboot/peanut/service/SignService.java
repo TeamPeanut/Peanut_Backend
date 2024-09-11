@@ -8,7 +8,7 @@ import java.util.Map;
 
 public interface SignService {
     Map<String,String> sendSimpleMessage(String to, HttpServletRequest request) throws Exception;
-    boolean verifyEmail(String confirmationCode, HttpServletRequest request);
+    Map<String,String> verifyEmail(String confirmationCode, HttpServletRequest request);
 
     ResultDto SignUp (SignUpDto signUpDto,HttpServletRequest request);
 
