@@ -28,4 +28,5 @@ public class BloodSugarController {
         ResultDto resultDto = bloodSugarService.saveBloodSugar(bloodSugarRequestDto,request);
         return ResponseEntity.status(HttpStatus.OK).body(resultDto);
     }
+
 }

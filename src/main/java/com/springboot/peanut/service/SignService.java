@@ -11,7 +11,5 @@ public interface SignService {
     Map<String,String> verifyEmail(String confirmationCode, HttpServletRequest request);
 
     ResultDto SignUp (SignUpDto signUpDto,HttpServletRequest request);
-
-
     ResultDto SignIn(String email, String password);
 }
