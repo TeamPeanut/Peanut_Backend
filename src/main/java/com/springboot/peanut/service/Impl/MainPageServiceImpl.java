@@ -81,7 +81,7 @@ public class MainPageServiceImpl implements MainPageService {
         List<Map<Integer, LocalDateTime>> bloodSugarLevels = bloodSugarList.stream()
                 .map(bloodSugar -> {
                     Map<Integer, LocalDateTime> map = new HashMap<>();
-                    map.put(Integer.parseInt(bloodSugar.getBloodSugarLevel()), bloodSugar.getCreate_At());
+                    map.put(Integer.parseInt(bloodSugar.getBloodSugarLevel()), bloodSugar.getMeasurementTime());
                     return map;
                 })
                 .collect(Collectors.toList());

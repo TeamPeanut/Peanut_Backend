@@ -26,7 +26,7 @@ public class BloodSugar {
 
     private String memo;
 
-    private String measurementTime;
+    private LocalDateTime measurementTime;
 
     private LocalDateTime create_At;
 
@@ -37,7 +37,6 @@ public class BloodSugar {
     public static BloodSugar createBloodSugar(BloodSugarRequestDto bloodSugarRequestDto, User user){
         BloodSugar bloodSugar = new BloodSugar();
         bloodSugar.bloodSugarLevel = bloodSugarRequestDto.getBloodSugarLevel();
-        bloodSugar.measurementTime = bloodSugarRequestDto.getMeasurementTime();
         bloodSugar.measurementCondition = bloodSugarRequestDto.getMeasurementCondition();
         bloodSugar.memo = bloodSugarRequestDto.getMemo();
         bloodSugar.create_At = LocalDateTime.now();
