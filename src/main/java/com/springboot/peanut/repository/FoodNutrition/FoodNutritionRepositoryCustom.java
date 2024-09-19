@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface FoodNutritionRepositoryCustom {
     List<FoodNutrition> findFoodNutritionByFoodName(List<String> foodName);
-    List<FoodNutrition> findFoodNutritionByFoodNameKor(List<String> foodName);
+    List<FoodNutrition> findFoodNutritionByFoodNameKor(String foodName);
 }
