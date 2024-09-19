@@ -3,7 +3,7 @@ package com.springboot.peanut.controller;
 import com.springboot.peanut.dto.food.FoodAllDetailDto;
 import com.springboot.peanut.dto.mainPage.GuardianMainPageGetAdditionalInfoDto;
 import com.springboot.peanut.dto.mainPage.MainPageGetUserDto;
-import com.springboot.peanut.service.GuardianMainPageService;
+import com.springboot.peanut.service.MainPage.GuardianMainPageService;
 import io.swagger.annotations.ApiImplicitParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;

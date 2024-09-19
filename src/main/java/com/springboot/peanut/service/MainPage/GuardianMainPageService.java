@@ -1,4 +1,4 @@
-package com.springboot.peanut.service;
+package com.springboot.peanut.service.MainPage;
 
 import com.springboot.peanut.dto.food.FoodAllDetailDto;
 import com.springboot.peanut.dto.mainPage.GuardianMainPageGetAdditionalInfoDto;

@@ -1,4 +1,4 @@
-package com.springboot.peanut.service.Impl;
+package com.springboot.peanut.service.User.Impl;
 
 import com.springboot.peanut.dao.SignDao;
 import com.springboot.peanut.dto.signDto.ResultDto;
@@ -7,7 +7,8 @@ import com.springboot.peanut.dto.signDto.SignUpDto;
 import com.springboot.peanut.entity.User;
 import com.springboot.peanut.jwt.JwtProvider;
 import com.springboot.peanut.repository.UserRepository;
-import com.springboot.peanut.service.SignService;
+import com.springboot.peanut.service.Result.ResultStatusService;
+import com.springboot.peanut.service.User.SignService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;

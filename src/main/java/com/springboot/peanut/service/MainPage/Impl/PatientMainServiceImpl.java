@@ -1,6 +1,6 @@
-package com.springboot.peanut.service.Impl;
+package com.springboot.peanut.service.MainPage.Impl;
 
-import com.springboot.peanut.service.PatientMainService;
+import com.springboot.peanut.service.MainPage.PatientMainService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

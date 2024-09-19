@@ -1,11 +1,11 @@
-package com.springboot.peanut.service.Impl;
+package com.springboot.peanut.service.Food.Impl;
 
 import com.springboot.peanut.S3.S3Uploader;
 import com.springboot.peanut.dao.FoodPredictDao;
 import com.springboot.peanut.dto.food.FoodPredictDto;
 import com.springboot.peanut.dto.food.FoodPredictResponseDto;
 import com.springboot.peanut.entity.FoodPredict;
-import com.springboot.peanut.service.FoodAIService;
+import com.springboot.peanut.service.Food.FoodAIService;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

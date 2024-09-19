@@ -1,4 +1,4 @@
-package com.springboot.peanut.service;
+package com.springboot.peanut.service.Food;
 
 import com.springboot.peanut.dto.food.FoodNutritionDto;
 import com.springboot.peanut.dto.signDto.ResultDto;

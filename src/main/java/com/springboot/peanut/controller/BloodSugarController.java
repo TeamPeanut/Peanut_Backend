@@ -1,9 +1,8 @@
 package com.springboot.peanut.controller;
 
 import com.springboot.peanut.dto.bloodSugar.BloodSugarRequestDto;
-import com.springboot.peanut.dto.bloodSugar.BloodSugarResponseDto;
 import com.springboot.peanut.dto.signDto.ResultDto;
-import com.springboot.peanut.service.BloodSugarService;
+import com.springboot.peanut.service.User.BloodSugarService;
 import io.swagger.annotations.ApiImplicitParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -1,4 +1,4 @@
-package com.springboot.peanut.service;
+package com.springboot.peanut.service.Jwt;
 
 import com.springboot.peanut.entity.User;
 

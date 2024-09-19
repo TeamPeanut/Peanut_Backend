@@ -1,4 +1,4 @@
-package com.springboot.peanut.service.Impl;
+package com.springboot.peanut.service.User.Impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,7 +10,8 @@ import com.springboot.peanut.dto.signDto.SignInResultDto;
 import com.springboot.peanut.entity.User;
 import com.springboot.peanut.jwt.JwtProvider;
 import com.springboot.peanut.repository.UserRepository;
-import com.springboot.peanut.service.AuthService;
+import com.springboot.peanut.service.Result.ResultStatusService;
+import com.springboot.peanut.service.User.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
