@@ -2,12 +2,13 @@ package com.springboot.peanut.controller;
 
 import com.springboot.peanut.dto.signDto.ResultDto;
 import com.springboot.peanut.dto.signDto.SignUpDto;
-import com.springboot.peanut.service.SignService;
+import com.springboot.peanut.service.User.SignService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,12 +22,11 @@ public class SignController {
     private final SignService signService;
 
     @PostMapping("/send-mail")
-    public ResponseEntity<Map<String, String>> sendSimpleMessage(String email, HttpServletRequest request) throws Exception {
-
+    public ResponseEntity<Map<String, String>> sendSimpleMessage(@RequestParam String email, HttpServletRequest request) throws Exception {
         return ResponseEntity.status(HttpStatus.OK).body(signService.sendSimpleMessage(email,request));
     }
     @PostMapping("/verified")
-    public ResponseEntity<?> verifyEmail(String confirmationCode, HttpServletRequest request){
+    public ResponseEntity<?> verifyEmail(@RequestParam String confirmationCode, HttpServletRequest request){
         Map<String,String> verified = signService.verifyEmail(confirmationCode,request);
         return ResponseEntity.status(HttpStatus.OK).body(verified);
     }

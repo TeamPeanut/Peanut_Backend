@@ -1,9 +1,9 @@
-package com.springboot.peanut.service.Impl;
+package com.springboot.peanut.service.Jwt.Impl;
 
 import com.springboot.peanut.entity.User;
 import com.springboot.peanut.jwt.JwtProvider;
 import com.springboot.peanut.repository.UserRepository;
-import com.springboot.peanut.service.JwtAuthenticationService;
+import com.springboot.peanut.service.Jwt.JwtAuthenticationService;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

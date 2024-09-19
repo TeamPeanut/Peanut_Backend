@@ -24,6 +24,8 @@ public class MealInfo {
 
     private double expectedBloodSugar;
 
+    private String imageUrl;
+
     @ManyToMany
     @JoinTable(
             name = "meal_info_food_nutrition", // 연결 테이블 명시
@@ -40,16 +42,14 @@ public class MealInfo {
 
     private LocalDate create_At;
 
-    public void addFoodNutrition(FoodNutrition foodNutrition) {
-        foodNutritionList.add(foodNutrition);
-    }
 
     // 생성자 추가
-    public static MealInfo MealInfo(String eatTime, double expectedBloodSugar, List<FoodNutrition> foodNutritionList, User user) {
+    public static MealInfo MealInfo(String eatTime, String imageUrl,double expectedBloodSugar, List<FoodNutrition> foodNutritionList, User user) {
         MealInfo mealInfo = new MealInfo();
         mealInfo.eatTime = eatTime;
         mealInfo.expectedBloodSugar = expectedBloodSugar;
         mealInfo.foodNutritionList = foodNutritionList;
+        mealInfo.imageUrl = imageUrl;
         mealInfo.user = user;
         mealInfo.create_At = LocalDate.now();
         return mealInfo;
