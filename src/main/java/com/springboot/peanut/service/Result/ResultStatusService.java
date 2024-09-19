@@ -1,4 +1,4 @@
-package com.springboot.peanut.service.Impl;
+package com.springboot.peanut.service.Result;
 
 import com.springboot.peanut.dto.CommonResponse;
 import com.springboot.peanut.dto.signDto.ResultDto;

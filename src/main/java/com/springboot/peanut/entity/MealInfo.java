@@ -40,9 +40,6 @@ public class MealInfo {
 
     private LocalDate create_At;
 
-    public void addFoodNutrition(FoodNutrition foodNutrition) {
-        foodNutritionList.add(foodNutrition);
-    }
 
     // 생성자 추가
     public static MealInfo MealInfo(String eatTime, double expectedBloodSugar, List<FoodNutrition> foodNutritionList, User user) {

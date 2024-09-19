@@ -1,7 +1,6 @@
-package com.springboot.peanut.service.Impl;
+package com.springboot.peanut.service.Food.Impl;
 
 import com.springboot.peanut.dao.MealDao;
-import com.springboot.peanut.dto.food.FoodDetailInfoDto;
 import com.springboot.peanut.dto.food.FoodNutritionDto;
 import com.springboot.peanut.dto.signDto.ResultDto;
 import com.springboot.peanut.entity.BloodSugar;
@@ -10,8 +9,9 @@ import com.springboot.peanut.entity.MealInfo;
 import com.springboot.peanut.entity.User;
 import com.springboot.peanut.repository.BloodSugar.BloodSugarRepository;
 import com.springboot.peanut.repository.FoodNutrition.FoodNutritionRepository;
-import com.springboot.peanut.service.FoodRecordNormalService;
-import com.springboot.peanut.service.JwtAuthenticationService;
+import com.springboot.peanut.service.Food.FoodRecordNormalService;
+import com.springboot.peanut.service.Result.ResultStatusService;
+import com.springboot.peanut.service.Jwt.JwtAuthenticationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
