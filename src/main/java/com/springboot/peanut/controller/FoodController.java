@@ -1,13 +1,13 @@
 package com.springboot.peanut.controller;
 
-import com.springboot.peanut.dto.food.FoodDetailInfoDto;
-import com.springboot.peanut.dto.food.FoodNutritionDto;
-import com.springboot.peanut.dto.food.FoodPredictResponseDto;
+import com.springboot.peanut.dto.food.*;
 import com.springboot.peanut.dto.signDto.ResultDto;
 import com.springboot.peanut.service.Food.FoodAIService;
+import com.springboot.peanut.service.Food.FoodCheckService;
 import com.springboot.peanut.service.Food.FoodRecordNormalService;
 import io.swagger.annotations.ApiImplicitParam;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.method.P;
@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -24,6 +25,7 @@ import java.util.List;
 public class FoodController {
     private final FoodAIService foodAIService;
     private final FoodRecordNormalService foodRecordNormalService;
+    private final FoodCheckService foodCheckService;
 
 
     @PostMapping("/ai/predict")
@@ -59,7 +61,7 @@ public class FoodController {
 
     @GetMapping("/normal/details")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-    public ResponseEntity<List<FoodNutritionDto>>getFoodNutritionByName(@RequestParam List<String> name, HttpServletRequest request){
+    public ResponseEntity<List<FoodNutritionDto>>getFoodNutritionByName(@RequestParam String name, HttpServletRequest request){
         List<FoodNutritionDto> foodNutritionByName = foodRecordNormalService.getFoodNutritionByName(name,request);
         return ResponseEntity.status(HttpStatus.OK).body(foodNutritionByName);
     }
@@ -69,6 +71,12 @@ public class FoodController {
     ResponseEntity<ResultDto> saveNormalMealInfo(String mealTime, int servingCount, HttpServletRequest request) {
         ResultDto resultDto = foodRecordNormalService.saveNormalMealInfo(mealTime,servingCount,request);
         return ResponseEntity.status(HttpStatus.OK).body(resultDto);
+    }
+    @GetMapping("/food-record-check")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    public ResponseEntity<FoodCheckListDto> getFoodCheckByDate(@RequestParam("date")@DateTimeFormat(iso= DateTimeFormat.ISO.DATE) LocalDate date, HttpServletRequest request) {
+        FoodCheckListDto foodCheckDto = foodCheckService.getFoodCheckByDate(date,request);
+        return ResponseEntity.status(HttpStatus.OK).body(foodCheckDto);
     }
 
 

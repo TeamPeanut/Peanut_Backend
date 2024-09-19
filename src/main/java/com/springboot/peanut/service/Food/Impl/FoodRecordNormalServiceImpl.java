@@ -37,7 +37,7 @@ public class FoodRecordNormalServiceImpl implements FoodRecordNormalService {
     private final S3Uploader s3Uploader;
 
     @Override
-    public List<FoodNutritionDto> getFoodNutritionByName(List<String> name, HttpServletRequest request) {
+    public List<FoodNutritionDto> getFoodNutritionByName(String name, HttpServletRequest request) {
         User user = jwtAuthenticationService.authenticationToken(request);
         log.info("[user] : {} " , user.getEmail());
         List<FoodNutrition> foodNutritionList = foodNutritionRepository.findFoodNutritionByFoodNameKor(name);
