@@ -26,6 +26,8 @@ public class Intake {
     @ElementCollection
     private List<String> intakeTime;
 
+    private boolean intakeStatus = false;
+
     private LocalDate create_At;
 
     @ManyToOne
@@ -47,6 +49,7 @@ public class Intake {
          intake.intakeDays = intakeDays;
          intake.intakeTime = intakeTime;
          intake.create_At = LocalDate.now();
+         intake.intakeStatus = true;
          intake.user = user;
          intake.medicine = medicine;
       return intake;

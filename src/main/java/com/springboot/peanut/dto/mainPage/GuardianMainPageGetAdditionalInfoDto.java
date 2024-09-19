@@ -1,6 +1,5 @@
 package com.springboot.peanut.dto.mainPage;
 
-import com.springboot.peanut.entity.BloodSugar;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -12,7 +11,7 @@ import java.util.Map;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MainPageGetAdditionalInfoDto {
+public class GuardianMainPageGetAdditionalInfoDto {
     private List<Map<Integer, LocalDateTime>> bloodSugarList;
     private String medicineName;
     private Boolean medicineAlam;
