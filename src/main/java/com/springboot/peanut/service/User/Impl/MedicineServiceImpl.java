@@ -1,4 +1,4 @@
-package com.springboot.peanut.service.Impl;
+package com.springboot.peanut.service.User.Impl;
 
 import com.springboot.peanut.dao.IntakeDao;
 import com.springboot.peanut.dao.MedicineDao;
@@ -9,8 +9,9 @@ import com.springboot.peanut.entity.Medicine;
 import com.springboot.peanut.entity.User;
 import com.springboot.peanut.jwt.JwtProvider;
 import com.springboot.peanut.repository.UserRepository;
-import com.springboot.peanut.service.JwtAuthenticationService;
-import com.springboot.peanut.service.MedicineService;
+import com.springboot.peanut.service.Jwt.JwtAuthenticationService;
+import com.springboot.peanut.service.Result.ResultStatusService;
+import com.springboot.peanut.service.User.MedicineService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

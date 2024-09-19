@@ -1,4 +1,4 @@
-package com.springboot.peanut.service;
+package com.springboot.peanut.service.User;
 
 import com.springboot.peanut.dto.medicine.MedicineRequestDto;
 import com.springboot.peanut.dto.signDto.ResultDto;

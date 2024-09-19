@@ -1,19 +1,15 @@
-package com.springboot.peanut.service.Impl;
+package com.springboot.peanut.service.MainPage.Impl;
 
 import com.springboot.peanut.dto.food.FoodAllDetailDto;
-import com.springboot.peanut.dto.mainPage.MainPageGetAdditionalInfoDto;
+import com.springboot.peanut.dto.mainPage.GuardianMainPageGetAdditionalInfoDto;
 import com.springboot.peanut.dto.mainPage.MainPageGetUserDto;
 import com.springboot.peanut.entity.*;
-import com.springboot.peanut.jwt.JwtProvider;
 import com.springboot.peanut.repository.BloodSugar.BloodSugarRepository;
 import com.springboot.peanut.repository.Insulin.InsulinRepository;
 import com.springboot.peanut.repository.MealInfo.MealInfoRepository;
-import com.springboot.peanut.repository.MealRepository;
 import com.springboot.peanut.repository.Medicine.MedicineRepository;
-import com.springboot.peanut.repository.UserRepository;
-import com.springboot.peanut.service.JwtAuthenticationService;
-import com.springboot.peanut.service.MainPageService;
-import io.jsonwebtoken.JwtException;
+import com.springboot.peanut.service.Jwt.JwtAuthenticationService;
+import com.springboot.peanut.service.MainPage.GuardianMainPageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -30,7 +26,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class MainPageServiceImpl implements MainPageService {
+public class GuardianGuardianMainPageServiceImpl implements GuardianMainPageService {
 
     private final BloodSugarRepository bloodSugarRepository;
     private final MedicineRepository medicineRepository;
@@ -64,7 +60,7 @@ public class MainPageServiceImpl implements MainPageService {
     }
 
     @Override
-    public MainPageGetAdditionalInfoDto getAdditionalInfoMainPage(HttpServletRequest request, LocalDate date) {
+    public GuardianMainPageGetAdditionalInfoDto getAdditionalInfoMainPage(HttpServletRequest request, LocalDate date) {
         User user = jwtAuthenticationService.authenticationToken(request);
 
         Optional<Medicine> medicine = medicineRepository.findByTodayMedicineInfo(user.getId(), date);
@@ -86,7 +82,7 @@ public class MainPageServiceImpl implements MainPageService {
                 })
                 .collect(Collectors.toList());
 
-        return new MainPageGetAdditionalInfoDto(
+        return new GuardianMainPageGetAdditionalInfoDto(
                 bloodSugarLevels,
                 medicineName,
                 medicineAlam,

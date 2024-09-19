@@ -1,4 +1,4 @@
-package com.springboot.peanut.service;
+package com.springboot.peanut.service.Food;
 
 import com.springboot.peanut.dto.food.FoodPredictResponseDto;
 import org.springframework.web.multipart.MultipartFile;

@@ -1,12 +1,13 @@
-package com.springboot.peanut.service.Impl;
+package com.springboot.peanut.service.User.Impl;
 
 import com.springboot.peanut.dao.BloodSugarDao;
 import com.springboot.peanut.dto.bloodSugar.BloodSugarRequestDto;
 import com.springboot.peanut.dto.signDto.ResultDto;
 import com.springboot.peanut.entity.BloodSugar;
 import com.springboot.peanut.entity.User;
-import com.springboot.peanut.service.BloodSugarService;
-import com.springboot.peanut.service.JwtAuthenticationService;
+import com.springboot.peanut.service.Jwt.JwtAuthenticationService;
+import com.springboot.peanut.service.Result.ResultStatusService;
+import com.springboot.peanut.service.User.BloodSugarService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoField;
 import java.util.Locale;
 
 @Service
@@ -28,9 +28,11 @@ public class BloodSugarServiceImpl implements BloodSugarService {
         User user = jwtAuthenticationService.authenticationToken(request);
         ResultDto resultDto = new ResultDto();
 
-        LocalDateTime measuredtime = StringToDateTime(bloodSugarRequestDto.getMeasurementTime());
+        LocalDateTime measurementTime = StringToDateTime(bloodSugarRequestDto.getMeasurementTime());
+
         BloodSugar bloodSugar = BloodSugar.createBloodSugar(bloodSugarRequestDto, user);
-        bloodSugar.setMeasurementTime(measuredtime);
+        bloodSugar.setMeasurementTime(measurementTime);
+
         bloodSugarDao.saveBloodSugar(bloodSugar);
         resultStatusService.setSuccess(resultDto);
 
@@ -47,9 +49,6 @@ public class BloodSugarServiceImpl implements BloodSugarService {
         // 현재 날짜에 파싱된 시간 결합
         LocalDateTime dateTime = LocalDateTime.of(LocalDateTime.now().toLocalDate(), time);
 
-
         return dateTime;
-
     }
-
 }

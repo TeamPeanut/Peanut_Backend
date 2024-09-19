@@ -2,7 +2,7 @@ package com.springboot.peanut.controller;
 
 import com.springboot.peanut.dto.medicine.MedicineRequestDto;
 import com.springboot.peanut.dto.signDto.ResultDto;
-import com.springboot.peanut.service.MedicineService;
+import com.springboot.peanut.service.User.MedicineService;
 import io.swagger.annotations.ApiImplicitParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

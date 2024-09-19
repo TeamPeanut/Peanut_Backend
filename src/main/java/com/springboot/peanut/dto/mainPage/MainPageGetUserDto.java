@@ -1,7 +1,5 @@
 package com.springboot.peanut.dto.mainPage;
 
-import com.springboot.peanut.entity.BloodSugar;
-import com.springboot.peanut.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

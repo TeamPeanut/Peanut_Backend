@@ -1,7 +1,6 @@
-package com.springboot.peanut.service;
+package com.springboot.peanut.service.User;
 
 import com.springboot.peanut.dto.bloodSugar.BloodSugarRequestDto;
-import com.springboot.peanut.dto.bloodSugar.BloodSugarResponseDto;
 import com.springboot.peanut.dto.signDto.ResultDto;
 
 

@@ -3,7 +3,6 @@ package com.springboot.peanut.dao.Impl;
 import com.springboot.peanut.dao.FoodPredictDao;
 import com.springboot.peanut.entity.FoodPredict;
 import com.springboot.peanut.repository.FoodPredictRepository;
-import com.springboot.peanut.service.FoodAIService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

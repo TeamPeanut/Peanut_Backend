@@ -1,4 +1,4 @@
-package com.springboot.peanut.service.Impl;
+package com.springboot.peanut.service.Food.Impl;
 
 import com.springboot.peanut.dao.MealDao;
 import com.springboot.peanut.dto.food.FoodDetailInfoDto;
@@ -6,8 +6,9 @@ import com.springboot.peanut.dto.signDto.ResultDto;
 import com.springboot.peanut.entity.*;
 import com.springboot.peanut.repository.BloodSugar.BloodSugarRepository;
 import com.springboot.peanut.repository.FoodNutrition.FoodNutritionRepository;
-import com.springboot.peanut.service.FoodDetailService;
-import com.springboot.peanut.service.JwtAuthenticationService;
+import com.springboot.peanut.service.Food.FoodRecordAIService;
+import com.springboot.peanut.service.Result.ResultStatusService;
+import com.springboot.peanut.service.Jwt.JwtAuthenticationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class FoodDetailServiceImpl implements FoodDetailService {
+public class FoodRecordAIServiceImpl implements FoodRecordAIService {
 
     private final FoodNutritionRepository foodNutritionRepository;
     private final BloodSugarRepository bloodSugarRepository;
@@ -54,7 +55,7 @@ public class FoodDetailServiceImpl implements FoodDetailService {
     }
 
     @Override
-    public ResultDto createMealInfo(String mealTime, HttpServletRequest request) {
+    public ResultDto createAIMealInfo(String mealTime, HttpServletRequest request) {
         User user = jwtAuthenticationService.authenticationToken(request);
         List<FoodDetailInfoDto> foodDetailInfoDtoList = (List<FoodDetailInfoDto>)request.getSession().getAttribute("foodDetailInfoDtoList");
         double expectedBloodSugar = (double)request.getSession().getAttribute("expectedBloodSugar");
@@ -116,5 +117,7 @@ public class FoodDetailServiceImpl implements FoodDetailService {
 
         return expectedBloodSugar;
     }
+
+
 
 }

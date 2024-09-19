@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class FoodNutritionRepositoryCustomImpl implements FoodNutritionRepositoryCustom {
@@ -23,6 +24,16 @@ public class FoodNutritionRepositoryCustomImpl implements FoodNutritionRepositor
         return jpaQueryFactory
                 .selectFrom(qFoodNutrition)
                 .where(qFoodNutrition.englishName.in(foodName))
+                .fetch();
+    }
+
+    @Override
+    public List<FoodNutrition> findFoodNutritionByFoodNameKor(List<String> foodName) {
+        QFoodNutrition qFoodNutrition = QFoodNutrition.foodNutrition;
+
+        return  jpaQueryFactory
+                .selectFrom(qFoodNutrition)
+                .where(qFoodNutrition.name.in(foodName))
                 .fetch();
     }
 }
