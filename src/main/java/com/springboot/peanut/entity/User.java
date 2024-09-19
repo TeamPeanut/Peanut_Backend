@@ -55,6 +55,8 @@ public class User implements UserDetails {
 
     private LocalDateTime update_At;
 
+    private String pcRole;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
     private List<String> roles = new ArrayList<>(List.of("MEMBER"));
