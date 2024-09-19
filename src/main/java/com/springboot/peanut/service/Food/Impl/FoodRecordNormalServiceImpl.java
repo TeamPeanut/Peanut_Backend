@@ -1,5 +1,6 @@
 package com.springboot.peanut.service.Food.Impl;
 
+import com.springboot.peanut.S3.S3Uploader;
 import com.springboot.peanut.dao.MealDao;
 import com.springboot.peanut.dto.food.FoodNutritionDto;
 import com.springboot.peanut.dto.signDto.ResultDto;
@@ -15,8 +16,10 @@ import com.springboot.peanut.service.Jwt.JwtAuthenticationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,6 +34,7 @@ public class FoodRecordNormalServiceImpl implements FoodRecordNormalService {
     private final BloodSugarRepository bloodSugarRepository;
     private final ResultStatusService resultStatusService;
     private final MealDao mealDao;
+    private final S3Uploader s3Uploader;
 
     @Override
     public List<FoodNutritionDto> getFoodNutritionByName(List<String> name, HttpServletRequest request) {
@@ -56,11 +60,31 @@ public class FoodRecordNormalServiceImpl implements FoodRecordNormalService {
     }
 
     @Override
+    public ResultDto saveNormalMealInfoImage(MultipartFile foodImage, HttpServletRequest request) throws IOException {
+        User user = jwtAuthenticationService.authenticationToken(request);
+        String imageUrl = s3Uploader.uploadImage(foodImage,"peanut/before");
+        ResultDto resultDto = new ResultDto();
+
+        if(user == null){
+            resultDto.setDetailMessage("존재하지 않는 회원 입니다.");
+            resultStatusService.setFail(resultDto);
+            return resultDto;
+        }else{
+            resultDto.setDetailMessage("이미지 등록 완료.");
+            resultStatusService.setFail(resultDto);
+            request.getSession().setAttribute("imageUrl", imageUrl);
+            return resultDto;
+
+        }
+    }
+
+    @Override
     public ResultDto saveNormalMealInfo(String mealTime, int servingCount, HttpServletRequest request) {
       User user = jwtAuthenticationService.authenticationToken(request);
       List<FoodNutritionDto> foodNutritionDtoList = (List<FoodNutritionDto>)request.getSession().getAttribute("foodDetailInfoDtoList");
+        String imageUrl = (String)request.getSession().getAttribute("imageUrl");
 
-      if(user == null){
+        if(user == null){
           ResultDto resultDto = new ResultDto();
           resultDto.setDetailMessage("사용자 인증에 실패했습니다.");
           resultStatusService.setFail(resultDto);  // 실패 응답 설정
@@ -75,7 +99,8 @@ public class FoodRecordNormalServiceImpl implements FoodRecordNormalService {
       List<FoodNutrition> foodNutritionList = foodNutritionRepository.findAllById(foodNutritionIds);
 
       double expectedBloodsugar = calculateExpectedBloodSugar(user.getId(), servingCount,foodNutritionList);
-      MealInfo mealInfo = MealInfo.MealInfo(mealTime,expectedBloodsugar,foodNutritionList,user);
+      MealInfo mealInfo = MealInfo.MealInfo(mealTime,imageUrl,expectedBloodsugar,foodNutritionList,user);
+
 
       mealDao.save(mealInfo);
 
