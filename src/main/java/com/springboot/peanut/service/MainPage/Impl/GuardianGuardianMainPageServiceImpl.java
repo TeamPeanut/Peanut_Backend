@@ -1,14 +1,14 @@
 package com.springboot.peanut.service.MainPage.Impl;
 
-import com.springboot.peanut.dto.food.FoodAllDetailDto;
-import com.springboot.peanut.dto.mainPage.GuardianMainPageGetAdditionalInfoDto;
-import com.springboot.peanut.dto.mainPage.MainPageGetUserDto;
-import com.springboot.peanut.entity.*;
-import com.springboot.peanut.repository.BloodSugar.BloodSugarRepository;
-import com.springboot.peanut.repository.Insulin.InsulinRepository;
-import com.springboot.peanut.repository.MealInfo.MealInfoRepository;
-import com.springboot.peanut.repository.Medicine.MedicineRepository;
-import com.springboot.peanut.service.Jwt.JwtAuthenticationService;
+import com.springboot.peanut.data.dto.food.FoodAllDetailDto;
+import com.springboot.peanut.data.dto.mainPage.GuardianMainPageGetAdditionalInfoDto;
+import com.springboot.peanut.data.dto.mainPage.MainPageGetUserDto;
+import com.springboot.peanut.data.entity.*;
+import com.springboot.peanut.data.repository.BloodSugar.BloodSugarRepository;
+import com.springboot.peanut.data.repository.Insulin.InsulinRepository;
+import com.springboot.peanut.data.repository.MealInfo.MealInfoRepository;
+import com.springboot.peanut.data.repository.Medicine.MedicineRepository;
+import com.springboot.peanut.jwt.JwtAuthenticationService;
 import com.springboot.peanut.service.MainPage.GuardianMainPageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

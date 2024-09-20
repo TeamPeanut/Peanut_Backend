@@ -1,8 +1,8 @@
 package com.springboot.peanut.controller;
 
-import com.springboot.peanut.dto.food.FoodAllDetailDto;
-import com.springboot.peanut.dto.mainPage.GuardianMainPageGetAdditionalInfoDto;
-import com.springboot.peanut.dto.mainPage.MainPageGetUserDto;
+import com.springboot.peanut.data.dto.food.FoodAllDetailDto;
+import com.springboot.peanut.data.dto.mainPage.GuardianMainPageGetAdditionalInfoDto;
+import com.springboot.peanut.data.dto.mainPage.MainPageGetUserDto;
 import com.springboot.peanut.service.MainPage.GuardianMainPageService;
 import io.swagger.annotations.ApiImplicitParam;
 import lombok.RequiredArgsConstructor;

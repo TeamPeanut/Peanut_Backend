@@ -1,7 +1,7 @@
 package com.springboot.peanut.service.User;
 
-import com.springboot.peanut.dto.signDto.ResultDto;
-import com.springboot.peanut.dto.signDto.SignUpDto;
+import com.springboot.peanut.data.dto.signDto.ResultDto;
+import com.springboot.peanut.data.dto.signDto.SignUpDto;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
@@ -11,7 +11,5 @@ public interface SignService {
     Map<String,String> verifyEmail(String confirmationCode, HttpServletRequest request);
 
     ResultDto SignUp (SignUpDto signUpDto,HttpServletRequest request);
-
-
     ResultDto SignIn(String email, String password);
 }

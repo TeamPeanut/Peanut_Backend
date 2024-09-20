@@ -1,7 +1,7 @@
 package com.springboot.peanut.controller;
 
-import com.springboot.peanut.dto.bloodSugar.BloodSugarRequestDto;
-import com.springboot.peanut.dto.signDto.ResultDto;
+import com.springboot.peanut.data.dto.bloodSugar.BloodSugarRequestDto;
+import com.springboot.peanut.data.dto.signDto.ResultDto;
 import com.springboot.peanut.service.User.BloodSugarService;
 import io.swagger.annotations.ApiImplicitParam;
 import lombok.RequiredArgsConstructor;
@@ -27,4 +27,5 @@ public class BloodSugarController {
         ResultDto resultDto = bloodSugarService.saveBloodSugar(bloodSugarRequestDto,request);
         return ResponseEntity.status(HttpStatus.OK).body(resultDto);
     }
+
 }
