@@ -1,7 +1,10 @@
 package com.springboot.peanut.controller;
 
-import com.springboot.peanut.dto.food.*;
-import com.springboot.peanut.dto.signDto.ResultDto;
+import com.springboot.peanut.data.dto.food.FoodCheckListDto;
+import com.springboot.peanut.data.dto.food.FoodDetailInfoDto;
+import com.springboot.peanut.data.dto.food.FoodNutritionDto;
+import com.springboot.peanut.data.dto.food.FoodPredictResponseDto;
+import com.springboot.peanut.data.dto.signDto.ResultDto;
 import com.springboot.peanut.service.Food.FoodAIService;
 import com.springboot.peanut.service.Food.FoodCheckService;
 import com.springboot.peanut.service.Food.FoodRecordNormalService;
@@ -10,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.method.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
