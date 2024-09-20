@@ -1,8 +1,10 @@
 package com.springboot.peanut.controller;
 
+import com.springboot.peanut.data.dto.community.CommunityDetailResponseDto;
 import com.springboot.peanut.data.dto.community.CommunityRequestDto;
 import com.springboot.peanut.data.dto.community.CommunityResponseDto;
 import com.springboot.peanut.data.dto.signDto.ResultDto;
+import com.springboot.peanut.service.Community.CommentService;
 import com.springboot.peanut.service.Community.CommunityService;
 import io.swagger.annotations.ApiImplicitParam;
 import lombok.Getter;
@@ -19,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CommunityController {
     private final CommunityService communityService;
+    private final CommentService commentService;
 
     @PostMapping("/create")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
@@ -29,8 +32,8 @@ public class CommunityController {
 
     @GetMapping("/detail")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-    public ResponseEntity<CommunityResponseDto> detailsCommunity(@RequestParam Long id, HttpServletRequest request) {
-        CommunityResponseDto communityResponseDto = communityService.detailsCommunity(id, request);
+    public ResponseEntity<CommunityDetailResponseDto> detailsCommunity(@RequestParam Long id, HttpServletRequest request) {
+        CommunityDetailResponseDto communityResponseDto = communityService.detailsCommunity(id, request);
         return ResponseEntity.status(HttpStatus.OK).body(communityResponseDto);
     }
     @GetMapping("/all/details")
@@ -39,4 +42,11 @@ public class CommunityController {
         List<CommunityResponseDto> communityResponseDtos = communityService.getAllCommunity(request);
         return ResponseEntity.status(HttpStatus.OK).body(communityResponseDtos);
         }
+    @PostMapping("/comment")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    public ResponseEntity<ResultDto> createComment(String comment, Long id,HttpServletRequest request) {
+        ResultDto resultDto = commentService.createComment(comment, id, request);
+        return ResponseEntity.status(HttpStatus.OK).body(resultDto);
+    }
+
     }

@@ -1,22 +1,19 @@
 package com.springboot.peanut.data.dto.community;
 
-import com.springboot.peanut.data.entity.Comment;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Getter
-@Setter
 @AllArgsConstructor
-public class CommunityResponseDto {
+public class CommentResponseDto {
     private Long id;
     private Long userId;
-    private String title;
     private String content;
+    private String userName;
     private String imageUrl;
-    private String name;
-    private String gender;
-    private int like;
+    private LocalDateTime createTime;
+
 }
