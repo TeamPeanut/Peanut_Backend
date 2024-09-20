@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
-public class CommunityResponseDto {
+public class CommunityDetailResponseDto {
     private Long id;
     private Long userId;
     private String title;
@@ -19,4 +19,5 @@ public class CommunityResponseDto {
     private String name;
     private String gender;
     private int like;
+    private List<CommentResponseDto> comments;
 }

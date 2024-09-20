@@ -1,6 +1,7 @@
 package com.springboot.peanut.service.Community.Impl;
 
 import com.springboot.peanut.data.dao.CommunityDao;
+import com.springboot.peanut.data.dto.community.CommunityDetailResponseDto;
 import com.springboot.peanut.data.dto.community.CommunityRequestDto;
 import com.springboot.peanut.data.dto.community.CommunityResponseDto;
 import com.springboot.peanut.data.dto.signDto.ResultDto;
@@ -43,11 +44,11 @@ public class CommunityServiceImpl implements CommunityService {
     }
 
     @Override
-    public CommunityResponseDto detailsCommunity(Long id, HttpServletRequest request) {
+    public CommunityDetailResponseDto detailsCommunity(Long id, HttpServletRequest request) {
         User user = jwtAuthenticationService.authenticationToken(request);
         log.info("[user] : {} " , user);
-        CommunityResponseDto communityResponseDto = communityDao.getCommunityById(id);
-        return communityResponseDto;
+        CommunityDetailResponseDto communityDetailResponseDto = communityDao.getCommunityById(id);
+        return communityDetailResponseDto;
     }
 
     @Override
