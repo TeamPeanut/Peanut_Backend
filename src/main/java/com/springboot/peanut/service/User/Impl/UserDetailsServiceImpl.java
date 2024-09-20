@@ -3,7 +3,7 @@ package com.springboot.peanut.service.User.Impl;
 
 
 
-import com.springboot.peanut.repository.UserRepository;
+import com.springboot.peanut.data.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
