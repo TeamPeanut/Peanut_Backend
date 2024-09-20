@@ -1,17 +1,17 @@
 package com.springboot.peanut.service.Food.Impl;
 
 import com.springboot.peanut.S3.S3Uploader;
-import com.springboot.peanut.dao.FoodPredictDao;
-import com.springboot.peanut.dao.MealDao;
-import com.springboot.peanut.dto.food.FoodDetailInfoDto;
-import com.springboot.peanut.dto.food.FoodPredictDto;
-import com.springboot.peanut.dto.food.FoodPredictResponseDto;
-import com.springboot.peanut.dto.signDto.ResultDto;
-import com.springboot.peanut.entity.*;
-import com.springboot.peanut.repository.BloodSugar.BloodSugarRepository;
-import com.springboot.peanut.repository.FoodNutrition.FoodNutritionRepository;
+import com.springboot.peanut.data.dao.FoodPredictDao;
+import com.springboot.peanut.data.dao.MealDao;
+import com.springboot.peanut.data.dto.food.FoodDetailInfoDto;
+import com.springboot.peanut.data.dto.food.FoodPredictDto;
+import com.springboot.peanut.data.dto.food.FoodPredictResponseDto;
+import com.springboot.peanut.data.dto.signDto.ResultDto;
+import com.springboot.peanut.data.entity.*;
+import com.springboot.peanut.data.repository.BloodSugar.BloodSugarRepository;
+import com.springboot.peanut.data.repository.FoodNutrition.FoodNutritionRepository;
 import com.springboot.peanut.service.Food.FoodAIService;
-import com.springboot.peanut.service.Jwt.JwtAuthenticationService;
+import com.springboot.peanut.jwt.JwtAuthenticationService;
 import com.springboot.peanut.service.Result.ResultStatusService;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;

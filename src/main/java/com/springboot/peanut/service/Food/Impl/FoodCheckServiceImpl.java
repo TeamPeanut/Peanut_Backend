@@ -1,16 +1,13 @@
 package com.springboot.peanut.service.Food.Impl;
 
-import com.springboot.peanut.dto.food.FoodCheckDto;
-import com.springboot.peanut.dto.food.FoodCheckListDto;
-import com.springboot.peanut.dto.signDto.ResultDto;
-import com.springboot.peanut.entity.FoodNutrition;
-import com.springboot.peanut.entity.MealInfo;
-import com.springboot.peanut.entity.User;
-import com.springboot.peanut.jwt.JwtProvider;
-import com.springboot.peanut.repository.MealInfo.MealInfoRepository;
+import com.springboot.peanut.data.dto.food.FoodCheckDto;
+import com.springboot.peanut.data.dto.food.FoodCheckListDto;
+import com.springboot.peanut.data.entity.FoodNutrition;
+import com.springboot.peanut.data.entity.MealInfo;
+import com.springboot.peanut.data.entity.User;
+import com.springboot.peanut.data.repository.MealInfo.MealInfoRepository;
 import com.springboot.peanut.service.Food.FoodCheckService;
-import com.springboot.peanut.service.Jwt.JwtAuthenticationService;
-import com.springboot.peanut.service.Result.ResultStatusService;
+import com.springboot.peanut.jwt.JwtAuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
