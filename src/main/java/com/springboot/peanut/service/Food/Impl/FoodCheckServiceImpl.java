@@ -47,9 +47,10 @@ public class FoodCheckServiceImpl implements FoodCheckService {
 
             // 예상 혈당 상승량에 따른 피드백 설정
             String feedback = getFeedbackByBloodSugar(expectedBloodSugar);
+            String imageUrl = mealInfo.getImageUrl();
 
             // 새로운 FoodCheckDto 생성 후 리스트에 추가
-            FoodCheckDto foodCheckDto = new FoodCheckDto(foodNames, foodEatTime, feedback);
+            FoodCheckDto foodCheckDto = new FoodCheckDto(foodNames, foodEatTime, feedback, imageUrl);
             foodCheckDtoList.add(foodCheckDto);
         }
 

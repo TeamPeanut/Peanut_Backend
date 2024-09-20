@@ -11,6 +11,8 @@ public class FoodCheckDto {
 
     private List<String> foodName;
 
+    private String imageUrl;
+
     private String eatTime;
 
     private String feedBack;
