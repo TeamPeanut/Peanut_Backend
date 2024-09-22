@@ -26,7 +26,7 @@ public class FoodNutritionRepositoryCustomImpl implements FoodNutritionRepositor
     }
 
     @Override
-    public List<FoodNutrition> findFoodNutritionByFoodNameKor(String foodName) {
+    public List<FoodNutrition> findFoodNutritionByFoodNameKor(List<String> foodName) {
         QFoodNutrition qFoodNutrition = QFoodNutrition.foodNutrition;
 
         return  jpaQueryFactory

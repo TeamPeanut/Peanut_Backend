@@ -63,14 +63,14 @@ public class FoodController {
 
     @GetMapping("/normal/details")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-    public ResponseEntity<List<FoodNutritionDto>>getFoodNutritionByName(@RequestParam String name, HttpServletRequest request){
+    public ResponseEntity<List<FoodNutritionDto>>getFoodNutritionByName(@RequestParam List<String> name, HttpServletRequest request){
         List<FoodNutritionDto> foodNutritionByName = foodRecordNormalService.getFoodNutritionByName(name,request);
         return ResponseEntity.status(HttpStatus.OK).body(foodNutritionByName);
     }
 
     @PostMapping("/normal/save-meal")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-    ResponseEntity<ResultDto> saveNormalMealInfo(String mealTime, int servingCount, HttpServletRequest request) {
+    ResponseEntity<ResultDto> saveNormalMealInfo(String mealTime, @RequestParam List<Integer> servingCount, HttpServletRequest request) {
         ResultDto resultDto = foodRecordNormalService.saveNormalMealInfo(mealTime,servingCount,request);
         return ResponseEntity.status(HttpStatus.OK).body(resultDto);
     }
