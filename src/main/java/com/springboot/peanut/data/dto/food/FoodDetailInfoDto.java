@@ -15,7 +15,8 @@ public class FoodDetailInfoDto {
     private double fat;            // 지방 (g)
     private double cholesterol;    // 콜레스테롤 (mg)
     private double giIndex;        // GI 지수
-    private double glIndex;        // GL 지수
-    private double expectedBloodSugar;
+    private double glIndex;
+    private double expectedBloodSugar; // GL 지수
+    private int servingCount;
 
 }

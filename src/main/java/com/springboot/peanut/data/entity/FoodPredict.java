@@ -5,6 +5,7 @@ import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -24,6 +25,18 @@ public class FoodPredict {
 
     private String accuracy;
 
+    private LocalDate create_At;
+
     @Transient
     private MultipartFile image;
+
+    public static FoodPredict createFoodPredict(String foodName ,String imageUrl, String accuracy) {
+        FoodPredict foodPredict = new FoodPredict();
+        foodPredict.setFoodName(foodName);
+        foodPredict.setImageUrl(imageUrl);
+        foodPredict.setAccuracy(accuracy);
+        foodPredict.create_At = LocalDate.now();
+        return foodPredict;
+    }
+
 }

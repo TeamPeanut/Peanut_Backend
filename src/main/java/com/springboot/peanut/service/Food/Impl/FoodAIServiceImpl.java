@@ -25,12 +25,8 @@ import reactor.core.publisher.Mono;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
-
 @Service
 @Slf4j
 public class FoodAIServiceImpl implements FoodAIService {
@@ -58,7 +54,7 @@ public class FoodAIServiceImpl implements FoodAIService {
     }
 
     @Override
-    public FoodPredictResponseDto FoodNamePredict(MultipartFile foodImage,HttpServletRequest request) {
+    public FoodPredictResponseDto FoodNamePredict(MultipartFile foodImage, HttpServletRequest request) {
         FoodPredictResponseDto foodPredictResponseDto = null;
         try {
             String imageUrl = s3Uploader.uploadImage(foodImage, "peanut/before");
@@ -77,15 +73,16 @@ public class FoodAIServiceImpl implements FoodAIService {
             logger.info("Received Response: {}", foodPredictResponseDto);
 
             if (foodPredictResponseDto != null) {
-                FoodPredict foodPredict = new FoodPredict();
-                foodPredict.setFoodName(foodPredictResponseDto.getPredictions().stream().map(FoodPredictDto::getFoodName).collect(Collectors.toList()).toString());
-                foodPredict.setAccuracy(foodPredictResponseDto.getPredictions().stream().map(p -> String.valueOf(p.getAccuracy())).collect(Collectors.toList()).toString());
-                foodPredict.setImageUrl(foodPredictResponseDto.getImage_url());
-                foodPredictDao.saveFoodPredictResults(foodPredict);
+                List<String> recognizedFoodNames = foodPredictResponseDto.getPredictions().stream()
+                        .map(FoodPredictDto::getFoodName)
+                        .collect(Collectors.toList());
 
-                logger.info("Saved FoodPredict Result: {}", foodPredict);
+                // 인식된 음식을 세션에 자동으로 저장
+                addFoodsToSession(recognizedFoodNames, request);
 
+                logger.info("Saved FoodPredict Result: {}", recognizedFoodNames);
             }
+
             request.getSession().setAttribute("imageUrl", foodPredictResponseDto.getImage_url());
         } catch (WebClientException | IOException e) {
             logger.error("Error occurred while fetching results: ", e);
@@ -96,43 +93,59 @@ public class FoodAIServiceImpl implements FoodAIService {
     }
 
     @Override
-    public List<FoodDetailInfoDto> getFoodDetailInfo(List<String> name, HttpServletRequest request) {
-        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
+    public List<FoodDetailInfoDto> getFoodDetailInfo(HttpServletRequest request) {
+        List<FoodDetailInfoDto> foodDetailInfoDtoList = (List<FoodDetailInfoDto>) request.getSession().getAttribute("foodDetailInfoDtoList");
+        if (foodDetailInfoDtoList == null) {
+            return new ArrayList<>(); // 세션에 음식 정보가 없으면 빈 리스트 반환
+        }
+        return foodDetailInfoDtoList; // 세션에 저장된 모든 음식 정보 반환
+    }
 
-        List<FoodNutrition> foodNutritionList = foodNutritionRepository.findFoodNutritionByFoodName(name);
-        log.info("[foodNutritionList] : {} ", foodNutritionList );
-        double expectedBloodSugar = calculateExpectedBloodSugar(user.get().getId(),foodNutritionList);
-        List<FoodDetailInfoDto> foodDetailInfoDtoList = foodNutritionList.stream().map(foodNutrition ->
-                new FoodDetailInfoDto(
-                        foodNutrition.getId(),
-                        foodNutrition.getName(),
-                        foodNutrition.getCarbohydrate(),
-                        foodNutrition.getProtein(),
-                        foodNutrition.getFat(),
-                        foodNutrition.getCholesterol(),
-                        foodNutrition.getGlIndex(),
-                        foodNutrition.getGiIndex(),
-                        expectedBloodSugar
-                )).collect(Collectors.toList());
+    // 사용자 직접 추가 음식 정보 저장
+    @Override
+    public ResultDto addCustomFood(String foodName, int servingCount, HttpServletRequest request) {
+        List<FoodDetailInfoDto> foodDetailInfoDtoList = (List<FoodDetailInfoDto>) request.getSession().getAttribute("foodDetailInfoDtoList");
+        ResultDto resultDto = new ResultDto();
+        if (foodDetailInfoDtoList == null) {
+            foodDetailInfoDtoList = new ArrayList<>();
+        }
 
+        Optional<FoodNutrition> foodNutritionOptional = foodNutritionRepository.findByName(foodName);
+        if (foodNutritionOptional.isPresent()) {
+            FoodNutrition foodNutrition = foodNutritionOptional.get();
+            double expectedBloodSugar = calculateBloodSugarIncrease(foodNutrition, servingCount);
+            foodDetailInfoDtoList.add(new FoodDetailInfoDto(
+                    foodNutrition.getId(),
+                    foodNutrition.getName(),
+                    foodNutrition.getCarbohydrate(),
+                    foodNutrition.getProtein(),
+                    foodNutrition.getFat(),
+                    foodNutrition.getCholesterol(),
+                    foodNutrition.getGlIndex(),
+                    foodNutrition.getGiIndex(),
+                    expectedBloodSugar,
+                    servingCount
+            ));
+            resultDto.setDetailMessage("음식 추가 완료");
+            resultStatusService.setSuccess(resultDto);
+        }
         request.getSession().setAttribute("foodDetailInfoDtoList", foodDetailInfoDtoList);
-        request.getSession().setAttribute("expectedBloodSugar", expectedBloodSugar);
-        return foodDetailInfoDtoList;
+        return resultDto;
     }
 
     @Override
     public ResultDto createAIMealInfo(String mealTime, HttpServletRequest request) {
         Optional<User> user = jwtAuthenticationService.authenticationToken(request);
         List<FoodDetailInfoDto> foodDetailInfoDtoList = (List<FoodDetailInfoDto>)request.getSession().getAttribute("foodDetailInfoDtoList");
-        double expectedBloodSugar = (double)request.getSession().getAttribute("expectedBloodSugar");
 
-        String imageUrl = (String)request.getSession().getAttribute("imageUrl");
-        if (user == null) {
+        if (user.isEmpty() || foodDetailInfoDtoList == null) {
             ResultDto resultDto = new ResultDto();
-            resultDto.setDetailMessage("사용자 인증에 실패했습니다.");
+            resultDto.setDetailMessage("사용자 인증에 실패했거나 음식 정보가 없습니다.");
             resultStatusService.setFail(resultDto);  // 실패 응답 설정
             return resultDto;
         }
+
+        String imageUrl = (String)request.getSession().getAttribute("imageUrl");
 
         // 음식 영양성분 아이디만 가져오기
         List<Long> foodNutritionIds = foodDetailInfoDtoList.stream()
@@ -142,7 +155,7 @@ public class FoodAIServiceImpl implements FoodAIService {
         // id로 영양성분 데이터 가져오기
         List<FoodNutrition> foodNutritionList = foodNutritionRepository.findAllById(foodNutritionIds);
 
-        MealInfo mealInfo = MealInfo.createMeal(mealTime,imageUrl,expectedBloodSugar,foodNutritionList,user.get());
+        MealInfo mealInfo = MealInfo.createMeal(mealTime, imageUrl, calculateTotalExpectedBloodSugar(user.get().getId(), foodNutritionList, foodDetailInfoDtoList), foodNutritionList, user.get());
 
         mealDao.save(mealInfo);
 
@@ -153,40 +166,57 @@ public class FoodAIServiceImpl implements FoodAIService {
 
         return resultDto;
     }
+    // 인식된 음식을 세션에 저장하는 메서드
+    private void addFoodsToSession(List<String> foodNames, HttpServletRequest request) {
+        List<FoodDetailInfoDto> foodDetailInfoDtoList = (List<FoodDetailInfoDto>) request.getSession().getAttribute("foodDetailInfoDtoList");
 
-    public double calculateExpectedBloodSugar(Long userId, List<FoodNutrition> foodNutritionList) {
-        // 사용자 아이디로 최근 혈당 기록 가져오기
+        if (foodDetailInfoDtoList == null) {
+            foodDetailInfoDtoList = new ArrayList<>();
+        }
+
+        // 음식 이름으로 영양 정보 조회 후 세션에 저장
+        List<FoodNutrition> foodNutritionList = foodNutritionRepository.findFoodNutritionByFoodName(foodNames);
+        for (FoodNutrition food : foodNutritionList) {
+            double expectedBloodSugar = calculateBloodSugarIncrease(food, 1); // 기본 인분 수를 1로 지정
+            foodDetailInfoDtoList.add(new FoodDetailInfoDto(
+                    food.getId(),
+                    food.getName(),
+                    food.getCarbohydrate(),
+                    food.getProtein(),
+                    food.getFat(),
+                    food.getCholesterol(),
+                    food.getGlIndex(),
+                    food.getGiIndex(),
+                    expectedBloodSugar,
+                    1 // 기본 인분 수를 1로 저장
+            ));
+        }
+
+        request.getSession().setAttribute("foodDetailInfoDtoList", foodDetailInfoDtoList);
+    }
+    // 총 혈당 상승량 계산 메서드
+    private double calculateTotalExpectedBloodSugar(Long userId, List<FoodNutrition> foodNutritionList, List<FoodDetailInfoDto> foodDetailInfoDtoList) {
         Optional<BloodSugar> currentBloodSugar = bloodSugarRepository.findClosestBloodSugar(userId);
         log.info("[currentBloodSugar] : {} ", currentBloodSugar );
+
         if (!currentBloodSugar.isPresent()) {
             throw new RuntimeException("최근 등록된 혈당 기록이 없습니다.");
         }
 
-        // 현재 혈당 값을 가져옴
-        double currentBloodSugarinfo = Double.parseDouble(currentBloodSugar.get().getBloodSugarLevel());
         double totalBloodSugarIncrease = 0.0;
-
-        // 음식의 GI, GL, 탄수화물 정보를 기반으로 혈당 상승량 계산
-        for (FoodNutrition food : foodNutritionList) {
-            // GL 계산
-            double gl = (food.getGiIndex() * food.getCarbohydrate()) / 100.0;
-
-            // 예상 혈당 상승량 계산 (GL * 1.8)
-            double bloodSugarIncrease = gl * 1.8;
-
-            // 총 혈당 상승량에 더하기
-            totalBloodSugarIncrease += bloodSugarIncrease;
+        for (FoodDetailInfoDto foodDetail : foodDetailInfoDtoList) {
+            Optional<FoodNutrition> food = foodNutritionRepository.findById(foodDetail.getFoodId());
+            if (food.isPresent()) {
+                totalBloodSugarIncrease += calculateBloodSugarIncrease(food.get(), foodDetail.getServingCount());
+            }
         }
-        // 평균 혈당 상승량 계산
-        double averageBloodSugarIncrease = totalBloodSugarIncrease / foodNutritionList.size();
 
-        // 최종 예상 혈당 계산 (현재 혈당 + 평균 혈당 상승량)
-        double expectedBloodSugar = currentBloodSugarinfo + averageBloodSugarIncrease;
-
-        return expectedBloodSugar;
+        return Double.parseDouble(currentBloodSugar.get().getBloodSugarLevel()) + totalBloodSugarIncrease;
     }
 
-
-
+    // 개별 음식의 혈당 상승량 계산 메서드
+    private double calculateBloodSugarIncrease(FoodNutrition food, int servingCount) {
+        double gl = (food.getGiIndex() * food.getCarbohydrate()) / 100.0;
+        return gl * 1.8 * servingCount; // GL * 1.8 * 서빙수
+    }
 }
-

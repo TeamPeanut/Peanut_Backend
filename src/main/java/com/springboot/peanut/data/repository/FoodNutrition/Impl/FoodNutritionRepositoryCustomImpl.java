@@ -21,7 +21,8 @@ public class FoodNutritionRepositoryCustomImpl implements FoodNutritionRepositor
 
         return jpaQueryFactory
                 .selectFrom(qFoodNutrition)
-                .where(qFoodNutrition.englishName.in(foodName))
+                .where(qFoodNutrition.englishName.in(foodName)
+                        .or(qFoodNutrition.name.in(foodName)))
                 .fetch();
     }
 
