@@ -11,8 +11,9 @@ import java.util.List;
 
 public interface FoodAIService {
     FoodPredictResponseDto FoodNamePredict(MultipartFile image,HttpServletRequest request)throws IOException;
-    List<FoodDetailInfoDto> getFoodDetailInfo(List<String> name , HttpServletRequest request);
+    List<FoodDetailInfoDto> getFoodDetailInfo(HttpServletRequest request);
 
-    ResultDto createAIMealInfo(String mealTime, HttpServletRequest request);
+     ResultDto createAIMealInfo(String mealTime, HttpServletRequest request);
+     ResultDto addCustomFood(String foodName, int servingCount, HttpServletRequest request);
 
-}
+    }
