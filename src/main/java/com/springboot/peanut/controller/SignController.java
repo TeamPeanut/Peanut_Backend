@@ -1,15 +1,12 @@
 package com.springboot.peanut.controller;
 
-import com.springboot.peanut.dto.signDto.ResultDto;
-import com.springboot.peanut.dto.signDto.SignUpDto;
+import com.springboot.peanut.data.dto.signDto.ResultDto;
+import com.springboot.peanut.data.dto.signDto.SignUpDto;
 import com.springboot.peanut.service.User.SignService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
@@ -39,7 +36,7 @@ public class SignController {
     public ResponseEntity<ResultDto> SignIn(String email, String password){
         ResultDto resultDto = signService.SignIn(email,password);
         return ResponseEntity.status(HttpStatus.OK).body(resultDto);
-
     }
+
 
 }

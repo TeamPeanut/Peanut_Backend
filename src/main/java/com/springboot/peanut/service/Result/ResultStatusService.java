@@ -1,7 +1,7 @@
 package com.springboot.peanut.service.Result;
 
-import com.springboot.peanut.dto.CommonResponse;
-import com.springboot.peanut.dto.signDto.ResultDto;
+import com.springboot.peanut.data.dto.CommonResponse;
+import com.springboot.peanut.data.dto.signDto.ResultDto;
 import org.springframework.stereotype.Service;
 
 @Service

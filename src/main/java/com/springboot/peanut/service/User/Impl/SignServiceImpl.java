@@ -1,12 +1,12 @@
 package com.springboot.peanut.service.User.Impl;
 
-import com.springboot.peanut.dao.SignDao;
-import com.springboot.peanut.dto.signDto.ResultDto;
-import com.springboot.peanut.dto.signDto.SignInResultDto;
-import com.springboot.peanut.dto.signDto.SignUpDto;
-import com.springboot.peanut.entity.User;
+import com.springboot.peanut.data.dao.SignDao;
+import com.springboot.peanut.data.dto.signDto.ResultDto;
+import com.springboot.peanut.data.dto.signDto.SignInResultDto;
+import com.springboot.peanut.data.dto.signDto.SignUpDto;
+import com.springboot.peanut.data.entity.User;
 import com.springboot.peanut.jwt.JwtProvider;
-import com.springboot.peanut.repository.UserRepository;
+import com.springboot.peanut.data.repository.UserRepository;
 import com.springboot.peanut.service.Result.ResultStatusService;
 import com.springboot.peanut.service.User.SignService;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -96,18 +97,18 @@ public class SignServiceImpl implements SignService {
     @Override
     public ResultDto SignIn(String email, String password) {
         // 로그인 로직
-        User user = userRepository.findByEmail(email);
+        Optional<User> user = userRepository.findByEmail(email);
         logger.info("[user] : {}", user);
-        logger.info("[user] : {}", user.getPassword());
+        logger.info("[user] : {}", user.get().getPassword());
 
-        if (!passwordEncoder.matches(password, user.getPassword())) {
+        if (!passwordEncoder.matches(password, user.get().getPassword())) {
             throw new RuntimeException("Invalid credentials");
         }
         logger.info("[getSignInResult] 패스워드 일치");
 
         logger.info("[getSignInResult] SignInResultDto 객체 생성");
         SignInResultDto signInResultDto = new SignInResultDto().builder()
-                .token(jwtProvider.createToken(String.valueOf(user.getEmail()), user.getRoles()))
+                .token(jwtProvider.createToken(String.valueOf(user.get().getEmail()), user.get().getRoles()))
                 .build();
         logger.info("[getSignInResult] SignInResultDto 객체에 값 주입");
         resultStatusService.setSuccess(signInResultDto);

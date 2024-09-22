@@ -1,8 +1,8 @@
 package com.springboot.peanut.service.Food;
 
-import com.springboot.peanut.dto.food.FoodDetailInfoDto;
-import com.springboot.peanut.dto.food.FoodPredictResponseDto;
-import com.springboot.peanut.dto.signDto.ResultDto;
+import com.springboot.peanut.data.dto.food.FoodDetailInfoDto;
+import com.springboot.peanut.data.dto.food.FoodPredictResponseDto;
+import com.springboot.peanut.data.dto.signDto.ResultDto;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;

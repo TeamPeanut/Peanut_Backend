@@ -1,7 +1,7 @@
 package com.springboot.peanut.controller;
 
-import com.springboot.peanut.dto.Insulin.InsulinRequestDto;
-import com.springboot.peanut.dto.signDto.ResultDto;
+import com.springboot.peanut.data.dto.Insulin.InsulinRequestDto;
+import com.springboot.peanut.data.dto.signDto.ResultDto;
 import com.springboot.peanut.service.User.InsulinService;
 import io.swagger.annotations.ApiImplicitParam;
 import lombok.RequiredArgsConstructor;

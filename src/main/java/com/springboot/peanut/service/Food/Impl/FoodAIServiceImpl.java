@@ -1,17 +1,17 @@
 package com.springboot.peanut.service.Food.Impl;
 
 import com.springboot.peanut.S3.S3Uploader;
-import com.springboot.peanut.dao.FoodPredictDao;
-import com.springboot.peanut.dao.MealDao;
-import com.springboot.peanut.dto.food.FoodDetailInfoDto;
-import com.springboot.peanut.dto.food.FoodPredictDto;
-import com.springboot.peanut.dto.food.FoodPredictResponseDto;
-import com.springboot.peanut.dto.signDto.ResultDto;
-import com.springboot.peanut.entity.*;
-import com.springboot.peanut.repository.BloodSugar.BloodSugarRepository;
-import com.springboot.peanut.repository.FoodNutrition.FoodNutritionRepository;
+import com.springboot.peanut.data.dao.FoodPredictDao;
+import com.springboot.peanut.data.dao.MealDao;
+import com.springboot.peanut.data.dto.food.FoodDetailInfoDto;
+import com.springboot.peanut.data.dto.food.FoodPredictDto;
+import com.springboot.peanut.data.dto.food.FoodPredictResponseDto;
+import com.springboot.peanut.data.dto.signDto.ResultDto;
+import com.springboot.peanut.data.entity.*;
+import com.springboot.peanut.data.repository.BloodSugar.BloodSugarRepository;
+import com.springboot.peanut.data.repository.FoodNutrition.FoodNutritionRepository;
 import com.springboot.peanut.service.Food.FoodAIService;
-import com.springboot.peanut.service.Jwt.JwtAuthenticationService;
+import com.springboot.peanut.jwt.JwtAuthenticationService;
 import com.springboot.peanut.service.Result.ResultStatusService;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -97,11 +97,11 @@ public class FoodAIServiceImpl implements FoodAIService {
 
     @Override
     public List<FoodDetailInfoDto> getFoodDetailInfo(List<String> name, HttpServletRequest request) {
-        User user = jwtAuthenticationService.authenticationToken(request);
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
 
         List<FoodNutrition> foodNutritionList = foodNutritionRepository.findFoodNutritionByFoodName(name);
         log.info("[foodNutritionList] : {} ", foodNutritionList );
-        double expectedBloodSugar = calculateExpectedBloodSugar(user.getId(),foodNutritionList);
+        double expectedBloodSugar = calculateExpectedBloodSugar(user.get().getId(),foodNutritionList);
         List<FoodDetailInfoDto> foodDetailInfoDtoList = foodNutritionList.stream().map(foodNutrition ->
                 new FoodDetailInfoDto(
                         foodNutrition.getId(),
@@ -122,9 +122,10 @@ public class FoodAIServiceImpl implements FoodAIService {
 
     @Override
     public ResultDto createAIMealInfo(String mealTime, HttpServletRequest request) {
-        User user = jwtAuthenticationService.authenticationToken(request);
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
         List<FoodDetailInfoDto> foodDetailInfoDtoList = (List<FoodDetailInfoDto>)request.getSession().getAttribute("foodDetailInfoDtoList");
         double expectedBloodSugar = (double)request.getSession().getAttribute("expectedBloodSugar");
+
         String imageUrl = (String)request.getSession().getAttribute("imageUrl");
         if (user == null) {
             ResultDto resultDto = new ResultDto();
@@ -141,7 +142,7 @@ public class FoodAIServiceImpl implements FoodAIService {
         // id로 영양성분 데이터 가져오기
         List<FoodNutrition> foodNutritionList = foodNutritionRepository.findAllById(foodNutritionIds);
 
-        MealInfo mealInfo = MealInfo.MealInfo(mealTime,imageUrl,expectedBloodSugar,foodNutritionList,user);
+        MealInfo mealInfo = MealInfo.createMeal(mealTime,imageUrl,expectedBloodSugar,foodNutritionList,user.get());
 
         mealDao.save(mealInfo);
 

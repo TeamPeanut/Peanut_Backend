@@ -1,11 +1,11 @@
 package com.springboot.peanut.service.User.Impl;
 
-import com.springboot.peanut.dao.BloodSugarDao;
-import com.springboot.peanut.dto.bloodSugar.BloodSugarRequestDto;
-import com.springboot.peanut.dto.signDto.ResultDto;
-import com.springboot.peanut.entity.BloodSugar;
-import com.springboot.peanut.entity.User;
-import com.springboot.peanut.service.Jwt.JwtAuthenticationService;
+import com.springboot.peanut.data.dao.BloodSugarDao;
+import com.springboot.peanut.data.dto.bloodSugar.BloodSugarRequestDto;
+import com.springboot.peanut.data.dto.signDto.ResultDto;
+import com.springboot.peanut.data.entity.BloodSugar;
+import com.springboot.peanut.data.entity.User;
+import com.springboot.peanut.jwt.JwtAuthenticationService;
 import com.springboot.peanut.service.Result.ResultStatusService;
 import com.springboot.peanut.service.User.BloodSugarService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,12 +26,12 @@ public class BloodSugarServiceImpl implements BloodSugarService {
     private final ResultStatusService resultStatusService;
     @Override
     public ResultDto saveBloodSugar(BloodSugarRequestDto bloodSugarRequestDto, HttpServletRequest request) {
-        User user = jwtAuthenticationService.authenticationToken(request);
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
         ResultDto resultDto = new ResultDto();
 
         LocalDateTime measurementTime = StringToDateTime(bloodSugarRequestDto.getMeasurementTime());
 
-        BloodSugar bloodSugar = BloodSugar.createBloodSugar(bloodSugarRequestDto, user);
+        BloodSugar bloodSugar = BloodSugar.createBloodSugar(bloodSugarRequestDto, user.get());
         bloodSugar.setMeasurementTime(measurementTime);
 
         bloodSugarDao.saveBloodSugar(bloodSugar);
