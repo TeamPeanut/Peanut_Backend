@@ -44,7 +44,7 @@ public class MealInfo {
 
 
     // 생성자 추가
-    public static MealInfo MealInfo(String eatTime, String imageUrl,double expectedBloodSugar, List<FoodNutrition> foodNutritionList, User user) {
+    public static MealInfo createMeal(String eatTime, String imageUrl,double expectedBloodSugar, List<FoodNutrition> foodNutritionList, User user) {
         MealInfo mealInfo = new MealInfo();
         mealInfo.eatTime = eatTime;
         mealInfo.expectedBloodSugar = expectedBloodSugar;

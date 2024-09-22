@@ -142,7 +142,7 @@ public class FoodAIServiceImpl implements FoodAIService {
         // id로 영양성분 데이터 가져오기
         List<FoodNutrition> foodNutritionList = foodNutritionRepository.findAllById(foodNutritionIds);
 
-        MealInfo mealInfo = MealInfo.MealInfo(mealTime,imageUrl,expectedBloodSugar,foodNutritionList,user.get());
+        MealInfo mealInfo = MealInfo.createMeal(mealTime,imageUrl,expectedBloodSugar,foodNutritionList,user.get());
 
         mealDao.save(mealInfo);
 
