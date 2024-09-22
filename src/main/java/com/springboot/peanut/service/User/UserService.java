@@ -6,7 +6,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.Map;
 
 public interface UserService {
     ResultDto updateAdditionalUserInfo(UserUpdateRequestDto userUpdateRequestDto, MultipartFile image, HttpServletRequest request) throws IOException;
+    Map<String, String> sendInviteCode(String email, HttpServletRequest request) throws Exception;
+    ResultDto confirmGuardianRelation(String confirmationCode, HttpServletRequest request);
+
+
 }

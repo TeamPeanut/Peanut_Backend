@@ -24,6 +24,7 @@ import org.springframework.web.client.RestTemplate;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -127,8 +128,8 @@ public class AuthServiceImpl implements AuthService {
             return handleSignInFailure(signInResultDto, "Failed to get Kakao user info");
         }
 
-        User user = authDao.kakaoUserFind(kakaoUserInfoResponse.getEmail());
-
+        Optional<User> userInfo = authDao.kakaoUserFind(kakaoUserInfoResponse.getEmail());
+        User user = userInfo.get();
         if (user == null) {
             user = User.createKakaoUser(kakaoUserInfoResponse);
             authDao.KakaoUserSave(user);

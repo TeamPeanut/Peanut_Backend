@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,10 +30,10 @@ public class CommunityServiceImpl implements CommunityService {
 
     @Override
     public ResultDto createCommunity(CommunityRequestDto communityRequestDto, HttpServletRequest request) {
-        User user = jwtAuthenticationService.authenticationToken(request);
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
         ResultDto resultDto = new ResultDto();
         if(user != null){
-            Community community = Community.createCommunity(communityRequestDto, user);
+            Community community = Community.createCommunity(communityRequestDto, user.get());
             communityDao.saveCommunity(community);
             resultDto.setDetailMessage("글 작성 완료");
             resultStatusService.setSuccess(resultDto);
@@ -45,7 +46,7 @@ public class CommunityServiceImpl implements CommunityService {
 
     @Override
     public CommunityDetailResponseDto detailsCommunity(Long id, HttpServletRequest request) {
-        User user = jwtAuthenticationService.authenticationToken(request);
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
         log.info("[user] : {} " , user);
         CommunityDetailResponseDto communityDetailResponseDto = communityDao.getCommunityById(id);
         return communityDetailResponseDto;

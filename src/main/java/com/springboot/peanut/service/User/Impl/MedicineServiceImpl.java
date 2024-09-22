@@ -17,14 +17,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class MedicineServiceImpl implements MedicineService {
 
-    private final JwtProvider jwtProvider;
-    private final UserRepository userRepository;
+
     private final MedicineDao medicineDao;
     private final IntakeDao intakeDao;
     private final JwtAuthenticationService jwtAuthenticationService;
@@ -32,14 +32,14 @@ public class MedicineServiceImpl implements MedicineService {
 
     @Override
     public ResultDto saveMedicineInfo(MedicineRequestDto medicineRequestDto, HttpServletRequest request) {
-        User user = jwtAuthenticationService.authenticationToken(request);
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
 
         ResultDto resultDto = new ResultDto();
 
 
-        if (user != null) {
+        if (user.isPresent()) {
             // Medicine 객체 생성
-            Medicine medicine = Medicine.createMedicine(medicineRequestDto.getMedicineName(),user);
+            Medicine medicine = Medicine.createMedicine(medicineRequestDto.getMedicineName(),user.get());
             medicine.setAlam(medicineRequestDto.isAlam());  // 필요에 따라 알람 설정
             medicineDao.saveMedicineInfo(medicine);
             log.info("[medicineInfo] : {}", medicine);
@@ -48,7 +48,7 @@ public class MedicineServiceImpl implements MedicineService {
             Intake intake = Intake.createIntake(
                     medicineRequestDto.getIntakeDays(),
                     medicineRequestDto.getIntakeTime(),
-                    user,
+                    user.get(),
                     medicine
             );
             medicine.addIntake(intake);

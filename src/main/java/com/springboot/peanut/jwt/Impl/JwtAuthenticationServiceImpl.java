@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -16,7 +17,7 @@ public class JwtAuthenticationServiceImpl implements JwtAuthenticationService {
     private final JwtProvider jwtProvider;
     private final UserRepository userRepository;
 
-    public User authenticationToken(HttpServletRequest request) {
+    public  Optional<User> authenticationToken(HttpServletRequest request) {
         try {
             // 토큰 추출
             String token = jwtProvider.resolveToken(request);
@@ -31,7 +32,7 @@ public class JwtAuthenticationServiceImpl implements JwtAuthenticationService {
             }
 
             // 이메일을 이용해 유저 찾기
-            User user = userRepository.findByEmail(email);
+            Optional<User> user = userRepository.findByEmail(email);
             if (user == null) {
                 throw new IllegalArgumentException("해당 이메일로 등록된 유저를 찾을 수 없습니다: " + email);
             }

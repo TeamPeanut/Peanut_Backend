@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,12 +26,12 @@ public class BloodSugarServiceImpl implements BloodSugarService {
     private final ResultStatusService resultStatusService;
     @Override
     public ResultDto saveBloodSugar(BloodSugarRequestDto bloodSugarRequestDto, HttpServletRequest request) {
-        User user = jwtAuthenticationService.authenticationToken(request);
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
         ResultDto resultDto = new ResultDto();
 
         LocalDateTime measurementTime = StringToDateTime(bloodSugarRequestDto.getMeasurementTime());
 
-        BloodSugar bloodSugar = BloodSugar.createBloodSugar(bloodSugarRequestDto, user);
+        BloodSugar bloodSugar = BloodSugar.createBloodSugar(bloodSugarRequestDto, user.get());
         bloodSugar.setMeasurementTime(measurementTime);
 
         bloodSugarDao.saveBloodSugar(bloodSugar);

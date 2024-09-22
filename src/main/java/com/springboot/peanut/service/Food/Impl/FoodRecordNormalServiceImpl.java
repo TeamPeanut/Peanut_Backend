@@ -38,8 +38,8 @@ public class FoodRecordNormalServiceImpl implements FoodRecordNormalService {
 
     @Override
     public List<FoodNutritionDto> getFoodNutritionByName(String name, HttpServletRequest request) {
-        User user = jwtAuthenticationService.authenticationToken(request);
-        log.info("[user] : {} " , user.getEmail());
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
+        log.info("[user] : {} " , user.get().getEmail());
         List<FoodNutrition> foodNutritionList = foodNutritionRepository.findFoodNutritionByFoodNameKor(name);
         log.info("[foodNutritionList] : {} ", foodNutritionList );
         List<FoodNutritionDto> foodDetailInfoDtoList = foodNutritionList.stream().map(foodNutrition ->
@@ -61,7 +61,7 @@ public class FoodRecordNormalServiceImpl implements FoodRecordNormalService {
 
     @Override
     public ResultDto saveNormalMealInfoImage(MultipartFile foodImage, HttpServletRequest request) throws IOException {
-        User user = jwtAuthenticationService.authenticationToken(request);
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
         String imageUrl = s3Uploader.uploadImage(foodImage,"peanut/before");
         ResultDto resultDto = new ResultDto();
 
@@ -80,7 +80,7 @@ public class FoodRecordNormalServiceImpl implements FoodRecordNormalService {
 
     @Override
     public ResultDto saveNormalMealInfo(String mealTime, int servingCount, HttpServletRequest request) {
-      User user = jwtAuthenticationService.authenticationToken(request);
+      Optional<User> user = jwtAuthenticationService.authenticationToken(request);
       List<FoodNutritionDto> foodNutritionDtoList = (List<FoodNutritionDto>)request.getSession().getAttribute("foodDetailInfoDtoList");
         String imageUrl = (String)request.getSession().getAttribute("imageUrl");
 
@@ -98,8 +98,8 @@ public class FoodRecordNormalServiceImpl implements FoodRecordNormalService {
 
       List<FoodNutrition> foodNutritionList = foodNutritionRepository.findAllById(foodNutritionIds);
 
-      double expectedBloodsugar = calculateExpectedBloodSugar(user.getId(), servingCount,foodNutritionList);
-      MealInfo mealInfo = MealInfo.MealInfo(mealTime,imageUrl,expectedBloodsugar,foodNutritionList,user);
+      double expectedBloodsugar = calculateExpectedBloodSugar(user.get().getId(), servingCount,foodNutritionList);
+      MealInfo mealInfo = MealInfo.MealInfo(mealTime,imageUrl,expectedBloodsugar,foodNutritionList,user.get());
 
 
       mealDao.save(mealInfo);

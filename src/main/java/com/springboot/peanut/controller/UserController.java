@@ -12,6 +12,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/user")
@@ -26,4 +28,19 @@ public class UserController {
         ResultDto resultDto = userService.updateAdditionalUserInfo(requestDto,image,request);
         return ResponseEntity.status(HttpStatus.OK).body(resultDto);
     }
+
+    @PostMapping("/connect/send-code")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    ResponseEntity<Map<String, String>> sendInviteCode(String email, HttpServletRequest request) throws Exception{
+        Map<String, String> map = userService.sendInviteCode(email,request);
+        return ResponseEntity.status(HttpStatus.OK).body(map);
+    }
+    @PostMapping("/connect/patient-guardian")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    ResponseEntity<ResultDto> confirmGuardianRelation(String confirmationCode, HttpServletRequest request){
+        ResultDto resultDto = userService.confirmGuardianRelation(confirmationCode,request);
+        return ResponseEntity.status(HttpStatus.OK).body(resultDto);
+    }
+
+
 }
