@@ -1,14 +1,14 @@
 package com.springboot.peanut.service.MainPage.Impl;
 
-import com.springboot.peanut.dto.food.FoodAllDetailDto;
-import com.springboot.peanut.dto.mainPage.GuardianMainPageGetAdditionalInfoDto;
-import com.springboot.peanut.dto.mainPage.MainPageGetUserDto;
-import com.springboot.peanut.entity.*;
-import com.springboot.peanut.repository.BloodSugar.BloodSugarRepository;
-import com.springboot.peanut.repository.Insulin.InsulinRepository;
-import com.springboot.peanut.repository.MealInfo.MealInfoRepository;
-import com.springboot.peanut.repository.Medicine.MedicineRepository;
-import com.springboot.peanut.service.Jwt.JwtAuthenticationService;
+import com.springboot.peanut.data.dto.food.FoodAllDetailDto;
+import com.springboot.peanut.data.dto.mainPage.GuardianMainPageGetAdditionalInfoDto;
+import com.springboot.peanut.data.dto.mainPage.MainPageGetUserDto;
+import com.springboot.peanut.data.entity.*;
+import com.springboot.peanut.data.repository.BloodSugar.BloodSugarRepository;
+import com.springboot.peanut.data.repository.Insulin.InsulinRepository;
+import com.springboot.peanut.data.repository.MealInfo.MealInfoRepository;
+import com.springboot.peanut.data.repository.Medicine.MedicineRepository;
+import com.springboot.peanut.jwt.JwtAuthenticationService;
 import com.springboot.peanut.service.MainPage.GuardianMainPageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,24 +36,24 @@ public class GuardianGuardianMainPageServiceImpl implements GuardianMainPageServ
 
     @Override
     public MainPageGetUserDto getUserInfoMainPage(HttpServletRequest request) {
-        User user = jwtAuthenticationService.authenticationToken(request);
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
         // 사용자 공복 혈당
-        Optional<BloodSugar> fastingBloodSugar = bloodSugarRepository.findFastingBloodSugar(user.getId());
+        Optional<BloodSugar> fastingBloodSugar = bloodSugarRepository.findFastingBloodSugar(user.get().getId());
         String fastingBloodSugarLevel = fastingBloodSugar
                 .map(BloodSugar::getBloodSugarLevel)
                 .orElse("공복 혈당을 찾을 수 없습니다.");
 
         // 현재 시간과 가장 가까운 혈당
-        Optional<BloodSugar> currentBloodSugarLevel = bloodSugarRepository.findClosestBloodSugar(user.getId());
+        Optional<BloodSugar> currentBloodSugarLevel = bloodSugarRepository.findClosestBloodSugar(user.get().getId());
         String currentBloodSugar = currentBloodSugarLevel
                 .map(BloodSugar::getBloodSugarLevel)
                 .orElse("최근에 등록된 혈당을 찾을 수 없습니다.");
 
         // 생성자로 객체 생성
         return new MainPageGetUserDto(
-                user.getId(),
-                user.getUserName(),
-                user.getProfileUrl(),
+                user.get().getId(),
+                user.get().getUserName(),
+                user.get().getProfileUrl(),
                 fastingBloodSugarLevel,
                 currentBloodSugar
         );
@@ -61,11 +61,11 @@ public class GuardianGuardianMainPageServiceImpl implements GuardianMainPageServ
 
     @Override
     public GuardianMainPageGetAdditionalInfoDto getAdditionalInfoMainPage(HttpServletRequest request, LocalDate date) {
-        User user = jwtAuthenticationService.authenticationToken(request);
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
 
-        Optional<Medicine> medicine = medicineRepository.findByTodayMedicineInfo(user.getId(), date);
-        Optional<Insulin> insulin = insulinRepository.findByTodayInsulinName(user.getId(),date);
-        List<BloodSugar> bloodSugarList = bloodSugarRepository.findTodayBloodSugar(user.getId(),date);
+        Optional<Medicine> medicine = medicineRepository.findByTodayMedicineInfo(user.get().getId(), date);
+        Optional<Insulin> insulin = insulinRepository.findByTodayInsulinName(user.get().getId(),date);
+        List<BloodSugar> bloodSugarList = bloodSugarRepository.findTodayBloodSugar(user.get().getId(),date);
 
 
        String medicineName = medicine.map(Medicine::getMedicineName).orElse("복용 기록 없음");
@@ -94,9 +94,9 @@ public class GuardianGuardianMainPageServiceImpl implements GuardianMainPageServ
     //식사 기록 조회 (전체)
     @Override
     public FoodAllDetailDto getFoodAllDetail(LocalDate date,HttpServletRequest request) {
-        User user = jwtAuthenticationService.authenticationToken(request);
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
 
-        Optional<List<MealInfo>> mealInfoList = mealInfoRepository.getByUserAllMealInfo(date,user.getId());
+        Optional<List<MealInfo>> mealInfoList = mealInfoRepository.getByUserAllMealInfo(date,user.get().getId());
 
         double totalProtein = 0.0;
         double totalCarbohydrate = 0.0;
@@ -125,8 +125,8 @@ public class GuardianGuardianMainPageServiceImpl implements GuardianMainPageServ
     // 식사 시간에 따른 식사 기록 조회
     @Override
     public FoodAllDetailDto getFoodDetailByEatTime(LocalDate date,String eatTime, HttpServletRequest request) {
-        User user = jwtAuthenticationService.authenticationToken(request);
-        Optional<MealInfo> mealInfoOptional = mealInfoRepository.getMealInfoByEatTime(date,user.getId(),eatTime);
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
+        Optional<MealInfo> mealInfoOptional = mealInfoRepository.getMealInfoByEatTime(date,user.get().getId(),eatTime);
         log.info("[mealInfoOptional] {} : " + mealInfoOptional);
 
         if(mealInfoOptional.isPresent()){

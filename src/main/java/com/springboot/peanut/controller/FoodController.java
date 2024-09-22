@@ -1,7 +1,10 @@
 package com.springboot.peanut.controller;
 
-import com.springboot.peanut.dto.food.*;
-import com.springboot.peanut.dto.signDto.ResultDto;
+import com.springboot.peanut.data.dto.food.FoodCheckListDto;
+import com.springboot.peanut.data.dto.food.FoodDetailInfoDto;
+import com.springboot.peanut.data.dto.food.FoodNutritionDto;
+import com.springboot.peanut.data.dto.food.FoodPredictResponseDto;
+import com.springboot.peanut.data.dto.signDto.ResultDto;
 import com.springboot.peanut.service.Food.FoodAIService;
 import com.springboot.peanut.service.Food.FoodCheckService;
 import com.springboot.peanut.service.Food.FoodRecordNormalService;
@@ -10,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.method.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -61,14 +63,14 @@ public class FoodController {
 
     @GetMapping("/normal/details")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-    public ResponseEntity<List<FoodNutritionDto>>getFoodNutritionByName(@RequestParam String name, HttpServletRequest request){
+    public ResponseEntity<List<FoodNutritionDto>>getFoodNutritionByName(@RequestParam List<String> name, HttpServletRequest request){
         List<FoodNutritionDto> foodNutritionByName = foodRecordNormalService.getFoodNutritionByName(name,request);
         return ResponseEntity.status(HttpStatus.OK).body(foodNutritionByName);
     }
 
     @PostMapping("/normal/save-meal")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-    ResponseEntity<ResultDto> saveNormalMealInfo(String mealTime, int servingCount, HttpServletRequest request) {
+    ResponseEntity<ResultDto> saveNormalMealInfo(String mealTime, @RequestParam List<Integer> servingCount, HttpServletRequest request) {
         ResultDto resultDto = foodRecordNormalService.saveNormalMealInfo(mealTime,servingCount,request);
         return ResponseEntity.status(HttpStatus.OK).body(resultDto);
     }

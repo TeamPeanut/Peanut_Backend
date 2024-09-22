@@ -1,16 +1,13 @@
 package com.springboot.peanut.service.Food.Impl;
 
-import com.springboot.peanut.dto.food.FoodCheckDto;
-import com.springboot.peanut.dto.food.FoodCheckListDto;
-import com.springboot.peanut.dto.signDto.ResultDto;
-import com.springboot.peanut.entity.FoodNutrition;
-import com.springboot.peanut.entity.MealInfo;
-import com.springboot.peanut.entity.User;
-import com.springboot.peanut.jwt.JwtProvider;
-import com.springboot.peanut.repository.MealInfo.MealInfoRepository;
+import com.springboot.peanut.data.dto.food.FoodCheckDto;
+import com.springboot.peanut.data.dto.food.FoodCheckListDto;
+import com.springboot.peanut.data.entity.FoodNutrition;
+import com.springboot.peanut.data.entity.MealInfo;
+import com.springboot.peanut.data.entity.User;
+import com.springboot.peanut.data.repository.MealInfo.MealInfoRepository;
 import com.springboot.peanut.service.Food.FoodCheckService;
-import com.springboot.peanut.service.Jwt.JwtAuthenticationService;
-import com.springboot.peanut.service.Result.ResultStatusService;
+import com.springboot.peanut.jwt.JwtAuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -29,13 +26,13 @@ public class FoodCheckServiceImpl implements FoodCheckService {
 
     @Override
     public FoodCheckListDto getFoodCheckByDate(LocalDate date, HttpServletRequest request) {
-        User user = jwtAuthenticationService.authenticationToken(request);
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
 
         // 전체 FoodCheckDto 리스트를 담을 리스트
         List<FoodCheckDto> foodCheckDtoList = new ArrayList<>();
 
         // 유저의 해당 날짜의 모든 식사 정보를 가져오기
-        Optional<List<MealInfo>> mealInfoList = mealInfoRepository.getByUserAllMealInfo(date, user.getId());
+        Optional<List<MealInfo>> mealInfoList = mealInfoRepository.getByUserAllMealInfo(date, user.get().getId());
 
         // 각 MealInfo에 대한 FoodCheckDto 생성
         for (MealInfo mealInfo : mealInfoList.orElse(new ArrayList<>())) {
