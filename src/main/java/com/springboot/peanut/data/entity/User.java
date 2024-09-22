@@ -54,8 +54,6 @@ public class User implements UserDetails {
 
     private LocalDateTime update_At;
 
-    private String pcRole;
-
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
     private List<String> roles = new ArrayList<>(List.of("MEMBER"));
@@ -79,6 +77,13 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
+    // 환자의 보호자 관계들
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PatientGuardian> patientGuardians = new ArrayList<>();
+
+    // 보호자의 환자 관계들
+    @OneToMany(mappedBy = "guardian", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PatientGuardian> guardianPatients = new ArrayList<>();
 
 
     @Override

@@ -97,11 +97,11 @@ public class FoodAIServiceImpl implements FoodAIService {
 
     @Override
     public List<FoodDetailInfoDto> getFoodDetailInfo(List<String> name, HttpServletRequest request) {
-        User user = jwtAuthenticationService.authenticationToken(request);
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
 
         List<FoodNutrition> foodNutritionList = foodNutritionRepository.findFoodNutritionByFoodName(name);
         log.info("[foodNutritionList] : {} ", foodNutritionList );
-        double expectedBloodSugar = calculateExpectedBloodSugar(user.getId(),foodNutritionList);
+        double expectedBloodSugar = calculateExpectedBloodSugar(user.get().getId(),foodNutritionList);
         List<FoodDetailInfoDto> foodDetailInfoDtoList = foodNutritionList.stream().map(foodNutrition ->
                 new FoodDetailInfoDto(
                         foodNutrition.getId(),
@@ -122,9 +122,10 @@ public class FoodAIServiceImpl implements FoodAIService {
 
     @Override
     public ResultDto createAIMealInfo(String mealTime, HttpServletRequest request) {
-        User user = jwtAuthenticationService.authenticationToken(request);
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
         List<FoodDetailInfoDto> foodDetailInfoDtoList = (List<FoodDetailInfoDto>)request.getSession().getAttribute("foodDetailInfoDtoList");
         double expectedBloodSugar = (double)request.getSession().getAttribute("expectedBloodSugar");
+
         String imageUrl = (String)request.getSession().getAttribute("imageUrl");
         if (user == null) {
             ResultDto resultDto = new ResultDto();
@@ -141,7 +142,7 @@ public class FoodAIServiceImpl implements FoodAIService {
         // id로 영양성분 데이터 가져오기
         List<FoodNutrition> foodNutritionList = foodNutritionRepository.findAllById(foodNutritionIds);
 
-        MealInfo mealInfo = MealInfo.MealInfo(mealTime,imageUrl,expectedBloodSugar,foodNutritionList,user);
+        MealInfo mealInfo = MealInfo.MealInfo(mealTime,imageUrl,expectedBloodSugar,foodNutritionList,user.get());
 
         mealDao.save(mealInfo);
 

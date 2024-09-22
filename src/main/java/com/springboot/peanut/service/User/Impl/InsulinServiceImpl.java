@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,13 +26,13 @@ public class InsulinServiceImpl implements InsulinService {
 
     @Override
     public ResultDto saveInsulinInfo(InsulinRequestDto insulinRequestDto, HttpServletRequest request) {
-        User user = jwtAuthenticationService.authenticationToken(request);
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
 
         ResultDto resultDto = new ResultDto();
 
 
         if (user != null){
-            Insulin insulin = Insulin.createInsulin(insulinRequestDto,user);
+            Insulin insulin = Insulin.createInsulin(insulinRequestDto,user.get());
 
             insulinDao.saveInsulin(insulin);
             resultDto.setDetailMessage("회원님의 인슐린 정보가 저장되었습니다.");

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,13 +28,13 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public ResultDto createComment(String comment, Long id,HttpServletRequest request) {
         ResultDto resultDto = new ResultDto();
-        User user = jwtAuthenticationService.authenticationToken(request);
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
 
         Comment commentInfo = new Comment();
         Community community = communityRepository.findById(id).get();
 
         commentInfo.setContent(comment);
-        commentInfo.setUser(user);
+        commentInfo.setUser(user.get());
         commentInfo.setCommunity(community);
         commentInfo.setCreate_At(LocalDateTime.now());
         commentDao.saveComment(commentInfo);

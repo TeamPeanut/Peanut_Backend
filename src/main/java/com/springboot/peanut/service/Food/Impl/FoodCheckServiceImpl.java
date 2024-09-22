@@ -26,13 +26,13 @@ public class FoodCheckServiceImpl implements FoodCheckService {
 
     @Override
     public FoodCheckListDto getFoodCheckByDate(LocalDate date, HttpServletRequest request) {
-        User user = jwtAuthenticationService.authenticationToken(request);
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
 
         // 전체 FoodCheckDto 리스트를 담을 리스트
         List<FoodCheckDto> foodCheckDtoList = new ArrayList<>();
 
         // 유저의 해당 날짜의 모든 식사 정보를 가져오기
-        Optional<List<MealInfo>> mealInfoList = mealInfoRepository.getByUserAllMealInfo(date, user.getId());
+        Optional<List<MealInfo>> mealInfoList = mealInfoRepository.getByUserAllMealInfo(date, user.get().getId());
 
         // 각 MealInfo에 대한 FoodCheckDto 생성
         for (MealInfo mealInfo : mealInfoList.orElse(new ArrayList<>())) {
