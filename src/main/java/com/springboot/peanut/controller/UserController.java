@@ -1,6 +1,7 @@
 package com.springboot.peanut.controller;
 
 import com.springboot.peanut.data.dto.signDto.ResultDto;
+import com.springboot.peanut.data.dto.user.PatientConnectingResponse;
 import com.springboot.peanut.data.dto.user.UserUpdateRequestDto;
 import com.springboot.peanut.service.User.UserService;
 import io.swagger.annotations.ApiImplicitParam;
@@ -29,12 +30,22 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(resultDto);
     }
 
+    @GetMapping("/connect/get-patient")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    ResponseEntity<PatientConnectingResponse> getPatient(String email,HttpServletRequest request){
+        PatientConnectingResponse response = userService.getPatientConnectingInfo(email,request);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
     @PostMapping("/connect/send-code")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-    ResponseEntity<Map<String, String>> sendInviteCode(String email, HttpServletRequest request) throws Exception{
-        Map<String, String> map = userService.sendInviteCode(email,request);
+    ResponseEntity<Map<String, String>> sendInviteCode(HttpServletRequest request) throws Exception{
+        Map<String, String> map = userService.sendInviteCode(request);
         return ResponseEntity.status(HttpStatus.OK).body(map);
     }
+
+
+
     @PostMapping("/connect/patient-guardian")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
     ResponseEntity<ResultDto> confirmGuardianRelation(String confirmationCode, HttpServletRequest request){

@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface ConnectionWaitingRepository extends JpaRepository<ConnectionWaiting, Long> {
-Optional<ConnectionWaiting> findByPatientEmailAndInviteCode (String patientEmail, String inviteCode);
+Optional<ConnectionWaiting> findByInviteCode (String inviteCode);
 }
