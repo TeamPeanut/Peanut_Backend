@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface CommunityDao {
     void saveCommunity(Community community);
-    CommunityDetailResponseDto getCommunityById(Long id);
+    CommunityDetailResponseDto findCommunityById(Long id);
+    Community getCommunityById(Long id);
     List<CommunityResponseDto> getAllCommunity();
 }
