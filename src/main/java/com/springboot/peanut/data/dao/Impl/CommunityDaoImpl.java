@@ -25,7 +25,7 @@ public class CommunityDaoImpl implements CommunityDao {
     }
 
     @Override
-    public CommunityDetailResponseDto getCommunityById(Long id) {
+    public CommunityDetailResponseDto findCommunityById(Long id) {
         Community community = communityRepository.findById(id).get();
 
         List<CommentResponseDto> commentDtos = community.getComments().stream()
@@ -70,5 +70,10 @@ public class CommunityDaoImpl implements CommunityDao {
              communityResponseDtoList.add(communityResponseDto);
         }
         return communityResponseDtoList;
+    }
+
+    @Override
+    public Community getCommunityById(Long id) {
+        return communityRepository.getById(id);
     }
 }
