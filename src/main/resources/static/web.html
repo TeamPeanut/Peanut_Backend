@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Notification Test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+<h2>WebSocket Notification Test</h2>
+<button id="connect">Connect WebSocket</button>
+<button id="disconnect">Disconnect WebSocket</button>
+<div id="messages"></div>
+
+<script>
+    let stompClient = null;
+
+    document.getElementById('connect').addEventListener('click', () => {
+        const token = localStorage.getItem('jwt-token');
+        if (!token) {
+            alert('JWT 토큰이 없습니다! 로그인해주세요.');
+            return;
+        }
+
+        const socket = new SockJS(`http://localhost:8080/ws?token=${token}`);
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, (frame) => {
+            console.log('Connected: ' + frame);
+
+            // 보호자 알림을 받는 채널 구독
+            stompClient.subscribe('/topic/caregiver/medication', (message) => {
+                const msg = message.body;
+                document.getElementById('messages').innerHTML += `<p>${msg}</p>`;
+            });
+
+            // 환자 알림을 받는 채널 구독
+            stompClient.subscribe('/queue/patient/remind', (message) => {
+                const msg = message.body;
+                document.getElementById('messages').innerHTML += `<p>${msg}</p>`;
+            });
+        });
+    });
+
+    document.getElementById('disconnect').addEventListener('click', () => {
+        if (stompClient !== null) {
+            stompClient.disconnect();
+        }
+        console.log('Disconnected');
+    });
+</script>
+</body>
+</html>
