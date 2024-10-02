@@ -32,10 +32,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
 
         // 특정 경로에 대해서는 JWT 검증을 건너뛴다.
-        if (path.equals("/auth/kakao/callback")) {
+        if (path.equals("/api/auth/kakao/callback")||path.equals("/api/sign")) {
             filterChain.doFilter(request, response);
             return;
-        }
+        }else{
 
         String token = jwtProvider.resolveToken(request);
         System.out.println(token);
@@ -52,7 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         filterChain.doFilter(request,response);
 
-
+        }
     }
 
 

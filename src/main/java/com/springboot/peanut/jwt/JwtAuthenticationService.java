@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface JwtAuthenticationService {
 
     Optional<User> authenticationToken(HttpServletRequest request);
+    boolean vaildToken(String token);
 }

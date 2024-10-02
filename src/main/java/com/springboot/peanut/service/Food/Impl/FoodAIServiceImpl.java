@@ -58,7 +58,7 @@ public class FoodAIServiceImpl implements FoodAIService {
     public FoodPredictResponseDto FoodNamePredict(MultipartFile foodImage, HttpServletRequest request) {
         FoodPredictResponseDto foodPredictResponseDto = null;
         try {
-            String imageUrl = s3Uploader.uploadImage(foodImage, "peanut/before");
+            String imageUrl = s3Uploader.uploadImage(foodImage, "peanut");
             Map<String, String> requestBody = new HashMap<>();
             requestBody.put("image_url", imageUrl);
 

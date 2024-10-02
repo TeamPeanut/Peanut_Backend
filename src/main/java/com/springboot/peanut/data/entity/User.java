@@ -88,6 +88,11 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "guardian", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PatientGuardian> guardianPatients = new ArrayList<>();
 
+    @OneToMany(mappedBy = "patient",cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notification> patientNotifications = new ArrayList<>();
+
+    @OneToMany(mappedBy = "guardian",cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notification> guardianNotifications = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
