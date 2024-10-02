@@ -62,7 +62,7 @@ public class FoodRecordNormalServiceImpl implements FoodRecordNormalService {
     @Override
     public ResultDto saveNormalMealInfoImage(MultipartFile foodImage, HttpServletRequest request) throws IOException {
         Optional<User> user = jwtAuthenticationService.authenticationToken(request);
-        String imageUrl = s3Uploader.uploadImage(foodImage,"peanut/before");
+        String imageUrl = s3Uploader.uploadImage(foodImage,"peanut");
         ResultDto resultDto = new ResultDto();
 
         if(user == null){
