@@ -5,7 +5,7 @@ import com.springboot.peanut.data.dto.signDto.ResultDto;
 import com.springboot.peanut.data.entity.Comment;
 import com.springboot.peanut.data.entity.Community;
 import com.springboot.peanut.data.entity.User;
-import com.springboot.peanut.data.repository.CommunityRepository;
+import com.springboot.peanut.data.repository.community.CommunityRepository;
 import com.springboot.peanut.jwt.JwtAuthenticationService;
 import com.springboot.peanut.service.Community.CommentService;
 import com.springboot.peanut.service.Result.ResultStatusService;

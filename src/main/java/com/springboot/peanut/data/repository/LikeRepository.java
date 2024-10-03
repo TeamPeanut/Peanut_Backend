@@ -5,5 +5,5 @@ import com.springboot.peanut.data.entity.CommunityLike;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface LikeRepository extends JpaRepository<CommunityLike,Long> {
-CommunityLike save(CommunityLikeRequestDto communityLikeRequestDto);
+    CommunityLike save(CommunityLikeRequestDto communityLikeRequestDto);
 }

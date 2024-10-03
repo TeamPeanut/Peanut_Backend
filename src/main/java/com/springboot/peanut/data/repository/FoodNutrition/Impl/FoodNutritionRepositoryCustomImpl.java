@@ -2,7 +2,7 @@ package com.springboot.peanut.data.repository.FoodNutrition.Impl;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.springboot.peanut.data.entity.FoodNutrition;
-import com.springboot.peanut.entity.QFoodNutrition;
+import com.springboot.peanut.data.entity.QFoodNutrition;
 import com.springboot.peanut.data.repository.FoodNutrition.FoodNutritionRepositoryCustom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

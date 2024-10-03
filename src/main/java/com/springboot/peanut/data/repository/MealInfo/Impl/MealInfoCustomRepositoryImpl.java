@@ -2,7 +2,7 @@ package com.springboot.peanut.data.repository.MealInfo.Impl;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.springboot.peanut.data.entity.MealInfo;
-import com.springboot.peanut.entity.QMealInfo;
+import com.springboot.peanut.data.entity.QMealInfo;
 import com.springboot.peanut.data.repository.MealInfo.MealInfoCustomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

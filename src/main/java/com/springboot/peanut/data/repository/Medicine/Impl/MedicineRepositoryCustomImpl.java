@@ -2,7 +2,7 @@ package com.springboot.peanut.data.repository.Medicine.Impl;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.springboot.peanut.data.entity.Medicine;
-import com.springboot.peanut.entity.QMedicine;
+import com.springboot.peanut.data.entity.QMedicine;
 import com.springboot.peanut.data.repository.Medicine.MedicineRepositoryCustom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
