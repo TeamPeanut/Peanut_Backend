@@ -61,7 +61,12 @@ public class UserController {
         List<GetCommunityByUserDto>  communityList = userService.getCreateCommunityByUser(request);
         return ResponseEntity.status(HttpStatus.OK).body(communityList);
     }
-
+    @GetMapping("/comment/community")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    ResponseEntity<List<GetCommunityByUserDto> > getCommentAllCommunityByUser(HttpServletRequest request){
+        List<GetCommunityByUserDto>  communityList = userService.getCommentCommunityByUser(request);
+        return ResponseEntity.status(HttpStatus.OK).body(communityList);
+    }
 
     @GetMapping("/like/community")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
@@ -70,12 +75,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(communityList);
     }
 
-    @GetMapping("/comment/community")
-    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-    ResponseEntity<List<GetCommunityByUserDto> > getCommentAllCommunityByUser(HttpServletRequest request){
-        List<GetCommunityByUserDto>  communityList = userService.getCommentCommunityByUser(request);
-        return ResponseEntity.status(HttpStatus.OK).body(communityList);
-    }
 
 
 }
