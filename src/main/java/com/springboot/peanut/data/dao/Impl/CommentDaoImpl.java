@@ -2,7 +2,7 @@ package com.springboot.peanut.data.dao.Impl;
 
 import com.springboot.peanut.data.dao.CommentDao;
 import com.springboot.peanut.data.entity.Comment;
-import com.springboot.peanut.data.repository.CommentRepository;
+import com.springboot.peanut.data.repository.community.comment.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

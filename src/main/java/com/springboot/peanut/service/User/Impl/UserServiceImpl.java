@@ -1,10 +1,13 @@
 package com.springboot.peanut.service.User.Impl;
 
 import com.springboot.peanut.S3.S3Uploader;
+import com.springboot.peanut.data.dao.CommunityDao;
 import com.springboot.peanut.data.dao.ConnectionWaitngDao;
 import com.springboot.peanut.data.dao.PatientGuardianDao;
 import com.springboot.peanut.data.dao.UserDao;
 import com.springboot.peanut.data.dto.signDto.ResultDto;
+import com.springboot.peanut.data.dto.user.GetCommunityByUserDto;
+import com.springboot.peanut.data.dto.user.PatientConnectingResponse;
 import com.springboot.peanut.data.dto.user.UserUpdateRequestDto;
 import com.springboot.peanut.data.dto.user.UserUpdateResponseDto;
 import com.springboot.peanut.data.entity.ConnectionWaiting;
@@ -19,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,10 +31,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +47,7 @@ public class UserServiceImpl implements UserService {
     private final ConnectionWaitngDao connectionWaitngDao;
     private final ConnectionWaitingRepository connectionWaitingRepository;
     private final PatientGuardianDao patientGuardianDao;
+    private final CommunityDao communityDao;
 
     @Override
     public ResultDto updateAdditionalUserInfo(UserUpdateRequestDto userUpdateRequestDto, MultipartFile image, HttpServletRequest request) throws IOException {
@@ -72,11 +74,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<String, String> sendInviteCode(String email, HttpServletRequest request) throws Exception {
-        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
-        Optional<User> patient = userRepository.findByEmail(email);
-        String ePw = make_InviteCode();
+    public PatientConnectingResponse getPatientConnectingInfo(String email , HttpServletRequest request) {
+        User user = jwtAuthenticationService.authenticationToken(request).get();
+        log.info("[userEmail] : {}",user.getEmail());
+
+        //환자 이메일
+        Optional<User> patient = userDao.findUserByEmail(email);
+        String patientEmail = patient.get().getEmail();
+        PatientConnectingResponse response = userDao.findPatientConnecting(patientEmail);
         request.getSession().setAttribute("email", email);
+        return response;
+    }
+
+    @Override
+    public Map<String, String> sendInviteCode(HttpServletRequest request) throws Exception {
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
+        String email = (String)request.getSession().getAttribute("email");
+        Optional<User> patient = userDao.findUserByEmail(email);
+        String ePw = make_InviteCode();
 
         MimeMessage message = createMessage(user.get().getUserName(),email,ePw);
         try{
@@ -85,7 +100,7 @@ public class UserServiceImpl implements UserService {
                     patient.get().getUserName(),
                     patient.get().getEmail(),
                     ePw,
-                    "승인",
+                    "대기중",
                     user.get().getEmail()
             );
             connectionWaitngDao.save(saveConnectionWaiting);
@@ -101,47 +116,81 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
+
+
     @Override
     public ResultDto confirmGuardianRelation(String inviteCode, HttpServletRequest request) {
         ResultDto resultDto = new ResultDto();
-        String patientEmail = (String) request.getSession().getAttribute("email");
 
         // ConnectionWaiting 엔티티에서 환자의 이메일과 초대 코드를 사용하여 정보 조회
-        Optional<ConnectionWaiting> connectionWaitingOpt = connectionWaitingRepository.findByPatientEmailAndInviteCode(patientEmail, inviteCode);
+        Optional<ConnectionWaiting> connectionWaitingOpt = connectionWaitingRepository.findByInviteCode(inviteCode);
+        ConnectionWaiting connectionWaiting = connectionWaitingOpt.get();
+
+        String patientEmail = connectionWaitingOpt.get().getPatientEmail();
+        // 환자 정보 조회
+        Optional<User> patientOpt = userRepository.findByEmail(patientEmail);
+        User patient = patientOpt.get();
+
+        // 보호자 이메일을 통해 보호자 정보 조회
+        Optional<User> guardianOpt = userRepository.findByEmail(connectionWaiting.getGuardianEmail());
+        User guardian = guardianOpt.get();
+
 
         if (!connectionWaitingOpt.isPresent()) {
             return createFailureResult(resultDto, "인증 코드가 올바르지 않습니다.");
         }
 
-        ConnectionWaiting connectionWaiting = connectionWaitingOpt.get();
-
-        // 환자 정보 조회
-        Optional<User> patientOpt = userRepository.findByEmail(patientEmail);
-
         if (!patientOpt.isPresent()) {
             return createFailureResult(resultDto, "환자를 찾을 수 없습니다.");
         }
-
-        User patient = patientOpt.get();
-
-        // 보호자 이메일을 통해 보호자 정보 조회
-        Optional<User> guardianOpt = userRepository.findByEmail(connectionWaiting.getGuardianEmail());
-
         if (!guardianOpt.isPresent()) {
             return createFailureResult(resultDto, "보호자를 찾을 수 없습니다.");
         }
 
-        User guardian = guardianOpt.get();
 
         // PatientGuardian 엔티티에 보호자-환자 관계 저장
         PatientGuardian patientGuardian = new PatientGuardian(
                 patient, guardian, true);
+
         patientGuardianDao.save(patientGuardian);
+        connectionWaiting.setStatus("승인");
+        connectionWaitngDao.save(connectionWaiting);
 
         resultDto.setDetailMessage("보호자와 환자의 관계가 성공적으로 연결되었습니다.");
         resultDto.setSuccess(true);
 
         return resultDto;
+    }
+
+    @Override
+    public List<GetCommunityByUserDto> getCreateCommunityByUser(HttpServletRequest request) {
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
+
+        if(user.isPresent()) {
+            return communityDao.getCreateAllCommunityByUser(user.get().getId());
+        }else {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    @Override
+    public List<GetCommunityByUserDto> getCommentCommunityByUser(HttpServletRequest request) {
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
+        if(user.isPresent()) {
+            return communityDao.getCommentAllCommunityByUser(user.get().getId());
+        }else {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    @Override
+    public List<GetCommunityByUserDto> getLikeCommunityByUser(HttpServletRequest request) {
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
+        if(user.isPresent()) {
+            return communityDao.getLikeAllCommunityByUser(user.get().getId());
+        }else {
+            throw new IllegalArgumentException();
+        }
     }
 
     private ResultDto createFailureResult(ResultDto resultDto, String message) {
@@ -175,6 +224,9 @@ public class UserServiceImpl implements UserService {
 
         return message;
     }
+
+
+
     private String make_InviteCode(){
         int leftLimit = 48; // numeral '0'
         int rightLimit = 122; // letter 'z'

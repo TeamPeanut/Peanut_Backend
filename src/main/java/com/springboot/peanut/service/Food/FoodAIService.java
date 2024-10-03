@@ -15,5 +15,6 @@ public interface FoodAIService {
 
      ResultDto createAIMealInfo(String mealTime, HttpServletRequest request);
      ResultDto addCustomFood(String foodName, int servingCount, HttpServletRequest request);
+     ResultDto removeFoodFromSession(String foodName, HttpServletRequest request);
 
     }

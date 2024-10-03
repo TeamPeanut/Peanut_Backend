@@ -48,7 +48,7 @@ public class CommunityServiceImpl implements CommunityService {
     public CommunityDetailResponseDto detailsCommunity(Long id, HttpServletRequest request) {
         Optional<User> user = jwtAuthenticationService.authenticationToken(request);
         log.info("[user] : {} " , user);
-        CommunityDetailResponseDto communityDetailResponseDto = communityDao.getCommunityById(id);
+        CommunityDetailResponseDto communityDetailResponseDto = communityDao.findCommunityById(id);
         return communityDetailResponseDto;
     }
 

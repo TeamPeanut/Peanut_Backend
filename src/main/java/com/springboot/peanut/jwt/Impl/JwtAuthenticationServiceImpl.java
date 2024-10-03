@@ -47,4 +47,9 @@ public class JwtAuthenticationServiceImpl implements JwtAuthenticationService {
         }
     }
 
+    @Override
+    public boolean vaildToken(String token){
+        return jwtProvider.validToken(token);
+
+    }
 }

@@ -10,6 +10,7 @@ import com.springboot.peanut.data.repository.MealInfo.MealInfoRepository;
 import com.springboot.peanut.data.repository.Medicine.MedicineRepository;
 import com.springboot.peanut.jwt.JwtAuthenticationService;
 import com.springboot.peanut.service.MainPage.GuardianMainPageService;
+import com.springboot.peanut.service.notification.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,7 @@ public class GuardianGuardianMainPageServiceImpl implements GuardianMainPageServ
     private final InsulinRepository insulinRepository;
     private final JwtAuthenticationService jwtAuthenticationService;
     private final MealInfoRepository mealInfoRepository;
+    private final NotificationService notificationService;
 
     @Override
     public MainPageGetUserDto getUserInfoMainPage(HttpServletRequest request) {

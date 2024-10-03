@@ -74,16 +74,25 @@ public class FoodController {
         ResultDto resultDto = foodRecordNormalService.saveNormalMealInfo(mealTime,servingCount,request);
         return ResponseEntity.status(HttpStatus.OK).body(resultDto);
     }
+    
     @GetMapping("/food-record-check")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
     public ResponseEntity<FoodCheckListDto> getFoodCheckByDate(@RequestParam("date")@DateTimeFormat(iso= DateTimeFormat.ISO.DATE) LocalDate date, HttpServletRequest request) {
         FoodCheckListDto foodCheckDto = foodCheckService.getFoodCheckByDate(date,request);
         return ResponseEntity.status(HttpStatus.OK).body(foodCheckDto);
     }
-    @GetMapping("/add-food")
+
+    @PostMapping("/add-food")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
     public ResponseEntity<ResultDto> addCustomFood(String foodName, int servingCount, HttpServletRequest request) {
         ResultDto resultDto = foodAIService.addCustomFood(foodName,servingCount,request);
         return ResponseEntity.status(HttpStatus.OK).body(resultDto);
         }
+
+    @PostMapping("/delete-food")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    ResponseEntity<ResultDto> removeFoodFromSession(String foodName, HttpServletRequest request){
+        ResultDto resultDto = foodAIService.removeFoodFromSession(foodName,request);
+        return ResponseEntity.status(HttpStatus.OK).body(resultDto);
     }
+}

@@ -4,13 +4,17 @@ import com.springboot.peanut.data.dao.CommunityDao;
 import com.springboot.peanut.data.dto.community.CommentResponseDto;
 import com.springboot.peanut.data.dto.community.CommunityDetailResponseDto;
 import com.springboot.peanut.data.dto.community.CommunityResponseDto;
+import com.springboot.peanut.data.dto.user.GetCommunityByUserDto;
 import com.springboot.peanut.data.entity.Community;
-import com.springboot.peanut.data.repository.CommunityRepository;
+import com.springboot.peanut.data.repository.community.comment.CommentRepository;
+import com.springboot.peanut.data.repository.community.community.CommunityRepository;
+import com.springboot.peanut.data.repository.community.like.LikeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,6 +22,8 @@ import java.util.stream.Collectors;
 public class CommunityDaoImpl implements CommunityDao {
 
     private final CommunityRepository communityRepository;
+    private final CommentRepository commentRepository;
+    private final LikeRepository likeRepository;
 
     @Override
     public void saveCommunity(Community community) {
@@ -25,7 +31,7 @@ public class CommunityDaoImpl implements CommunityDao {
     }
 
     @Override
-    public CommunityDetailResponseDto getCommunityById(Long id) {
+    public CommunityDetailResponseDto findCommunityById(Long id) {
         Community community = communityRepository.findById(id).get();
 
         List<CommentResponseDto> commentDtos = community.getComments().stream()
@@ -70,5 +76,67 @@ public class CommunityDaoImpl implements CommunityDao {
              communityResponseDtoList.add(communityResponseDto);
         }
         return communityResponseDtoList;
+    }
+
+    @Override
+    public List<GetCommunityByUserDto> getCreateAllCommunityByUser(Long userId) {
+        List<GetCommunityByUserDto> getCommunityByUserList = new ArrayList<>();
+        Optional<List<Community>> communityList = communityRepository.findCreateCommunityById(userId);
+        for(Community community : communityList.get()){
+            GetCommunityByUserDto getCommunityByUserDto = new GetCommunityByUserDto(
+                    community.getTitle(),
+                    community.getContent(),
+                    community.getComments().size(),
+                    community.getCommunityLike(),
+                    community.getCreate_At(),
+                    community.getUser().getUserName()
+            );
+
+            getCommunityByUserList.add(getCommunityByUserDto);
+        }
+        return getCommunityByUserList;
+    }
+
+    @Override
+    public List<GetCommunityByUserDto> getCommentAllCommunityByUser(Long userId) {
+        List<GetCommunityByUserDto> getCommunityByUserList = new ArrayList<>();
+        Optional<List<Community>> communityList = commentRepository.findCommentCommunityById(userId);
+        for(Community community : communityList.get()){
+            GetCommunityByUserDto getCommunityByUserDto = new GetCommunityByUserDto(
+                    community.getTitle(),
+                    community.getContent(),
+                    community.getComments().size(),
+                    community.getCommunityLike(),
+                    community.getCreate_At(),
+                    community.getUser().getUserName()
+            );
+
+            getCommunityByUserList.add(getCommunityByUserDto);
+        }
+        return getCommunityByUserList;
+    }
+
+    @Override
+    public List<GetCommunityByUserDto> getLikeAllCommunityByUser(Long userId) {
+        List<GetCommunityByUserDto> getCommunityByUserList = new ArrayList<>();
+        Optional<List<Community>> communityList = likeRepository.findLikeCommunityById(userId);
+        for(Community community : communityList.get()){
+            GetCommunityByUserDto getCommunityByUserDto = new GetCommunityByUserDto(
+                    community.getTitle(),
+                    community.getContent(),
+                    community.getComments().size(),
+                    community.getCommunityLike(),
+                    community.getCreate_At(),
+                    community.getUser().getUserName()
+            );
+
+            getCommunityByUserList.add(getCommunityByUserDto);
+        }
+        return getCommunityByUserList;
+    }
+
+    @Override
+    public Community getCommunityById(Long id) {
+        return communityRepository.getById(id);
     }
 }

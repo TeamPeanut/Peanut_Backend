@@ -77,6 +77,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<CommunityLike> communityLikes = new ArrayList<>();
+
     // 환자의 보호자 관계들
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PatientGuardian> patientGuardians = new ArrayList<>();
@@ -85,6 +88,11 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "guardian", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PatientGuardian> guardianPatients = new ArrayList<>();
 
+    @OneToMany(mappedBy = "patient",cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notification> patientNotifications = new ArrayList<>();
+
+    @OneToMany(mappedBy = "guardian",cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notification> guardianNotifications = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -35,6 +35,9 @@ public class Community {
     @OneToMany(mappedBy = "community",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "community",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<CommunityLike> communityLikes = new ArrayList<>();
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="user_id")
     private User user;

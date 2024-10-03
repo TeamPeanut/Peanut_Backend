@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Notification Test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+<h2>WebSocket Notification Test</h2>
+<button id="connect">Connect WebSocket</button>
+<button id="disconnect">Disconnect WebSocket</button>
+<div id="message"></div>
+<script>
+    let stompClient = null;
+
+    document.getElementById('connect').addEventListener('click', () => {
+        const token = localStorage.getItem('jwt-token');
+        if (!token) {
+            alert('JWT 토큰이 없습니다! 로그인해주세요.');
+            return;
+        }
+
+        const socket = new SockJS(`http://localhost:8080/ws?token=${token}`);
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, (frame) => {
+            console.log('Connected: ' + frame);
+
+            // 보호자 알림을 받는 채널 구독
+            stompClient.subscribe('/queue/caregiver/medication', (message) => {
+                const msg = message.body;
+                console.log(`Received medication message: ${msg}`); // 디버깅용 콘솔 로그
+                if (msg) {
+                    document.getElementById('message').innerHTML += `<p>${msg}</p>`;
+                } else {
+                    console.log("No message received.");
+                }
+            });
+
+// 환자 알림을 받는 채널 구독
+            stompClient.subscribe('/queue/patient/remind', (message) => {
+                const msg = message.body;
+                console.log(`Received patient remind message: ${msg}`); // 디버깅용 콘솔 로그
+                if (msg) {
+                    document.getElementById('message').innerHTML += `<p>${msg}</p>`;
+                } else {
+                    console.log("No message received.");
+                }
+            });
+        });
+    });
+
+    document.getElementById('disconnect').addEventListener('click', () => {
+        if (stompClient !== null) {
+            stompClient.disconnect();
+            console.log('Disconnected');
+        }
+    });
+
+</script>
+</body>
+</html>

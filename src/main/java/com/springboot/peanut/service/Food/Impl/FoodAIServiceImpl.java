@@ -53,11 +53,12 @@ public class FoodAIServiceImpl implements FoodAIService {
         this.resultStatusService = resultStatusService;
     }
 
+    //음식 객체 인식
     @Override
     public FoodPredictResponseDto FoodNamePredict(MultipartFile foodImage, HttpServletRequest request) {
         FoodPredictResponseDto foodPredictResponseDto = null;
         try {
-            String imageUrl = s3Uploader.uploadImage(foodImage, "peanut/before");
+            String imageUrl = s3Uploader.uploadImage(foodImage, "peanut");
             Map<String, String> requestBody = new HashMap<>();
             requestBody.put("image_url", imageUrl);
 
@@ -92,6 +93,7 @@ public class FoodAIServiceImpl implements FoodAIService {
         return foodPredictResponseDto;
     }
 
+    // AI 음식 조회 (인식한거 + 직접추가한거 둘다)
     @Override
     public List<FoodDetailInfoDto> getFoodDetailInfo(HttpServletRequest request) {
         List<FoodDetailInfoDto> foodDetailInfoDtoList = (List<FoodDetailInfoDto>) request.getSession().getAttribute("foodDetailInfoDtoList");
@@ -133,6 +135,7 @@ public class FoodAIServiceImpl implements FoodAIService {
         return resultDto;
     }
 
+    // 음식 조회된 것들 저장
     @Override
     public ResultDto createAIMealInfo(String mealTime, HttpServletRequest request) {
         Optional<User> user = jwtAuthenticationService.authenticationToken(request);
@@ -166,6 +169,32 @@ public class FoodAIServiceImpl implements FoodAIService {
 
         return resultDto;
     }
+
+    // 세션에서 특정 음식을 삭제하는 메서드
+    @Override
+    public ResultDto removeFoodFromSession(String foodName, HttpServletRequest request) {
+        // 세션에서 현재 저장된 음식 목록 가져오기
+        List<FoodDetailInfoDto> foodDetailInfoDtoList = (List<FoodDetailInfoDto>) request.getSession().getAttribute("foodDetailInfoDtoList");
+        ResultDto resultDto = new ResultDto();
+        // 음식 목록이 null이거나 비어있으면 더 이상 처리할 것이 없음
+        if (foodDetailInfoDtoList == null || foodDetailInfoDtoList.isEmpty()) {
+            resultDto.setDetailMessage("음식 리스트가 없습니다.");
+            resultStatusService.setFail(resultDto);
+            return resultDto;
+        }
+
+        // 음식 이름이 일치하는 항목 제거
+        foodDetailInfoDtoList = foodDetailInfoDtoList.stream()
+                .filter(food -> !food.getName().equals(foodName))
+                .collect(Collectors.toList());
+
+        // 변경된 음식 목록을 세션에 다시 저장
+        request.getSession().setAttribute("foodDetailInfoDtoList", foodDetailInfoDtoList);
+        resultDto.setDetailMessage("음식 삭제 완료");
+        resultStatusService.setSuccess(resultDto);
+        return resultDto;
+    }
+
     // 인식된 음식을 세션에 저장하는 메서드
     private void addFoodsToSession(List<String> foodNames, HttpServletRequest request) {
         List<FoodDetailInfoDto> foodDetailInfoDtoList = (List<FoodDetailInfoDto>) request.getSession().getAttribute("foodDetailInfoDtoList");
