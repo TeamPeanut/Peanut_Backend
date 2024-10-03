@@ -2,7 +2,7 @@ package com.springboot.peanut.data.dao.Impl;
 
 import com.springboot.peanut.data.dao.CommunityLikeDao;
 import com.springboot.peanut.data.entity.CommunityLike;
-import com.springboot.peanut.data.repository.LikeRepository;
+import com.springboot.peanut.data.repository.community.like.LikeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

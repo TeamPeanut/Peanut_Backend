@@ -40,16 +40,17 @@ public class NotificationServiceImpl implements NotificationService {
 
             if (guardian.isPresent()) {
                 String message = status.equals("TAKEN")
-                        ? String.format("%s님이 약을 섭취했습니다.", patient.get().getUsername())
-                        : String.format("%s님이 약을 섭취하지 않았습니다.", patient.get().getUsername());
+                        ? String.format("%s님이 약을 섭취했습니다.", patient.get().getUserName())
+                        : String.format("%s님이 약을 섭취하지 않았습니다.", patient.get().getUserName());
 
-                log.info("환자: {}, 보호자에게 전송할 메시지: {}", patient.get().getUsername(), message);
+                log.info("환자: {}, 보호자에게 전송할 메시지: {}", patient.get().getUserName(), message);
 
                 Notification notification = Notification.createNotification(patient.get(), guardian.get(), message, status);
                 notificationDao.save(notification);
 
                 // 보호자에게 메시지를 전송
-                simpMessagingTemplate.convertAndSendToUser(guardian.get().getUsername(), "/queue/caregiver/medication", message);
+                simpMessagingTemplate.convertAndSendToUser(guardian.get().getUserName(), "/queue/caregiver/medication", message);
+                log.info("전송된 메시지: {}", message); // 추가 로그
             }
         }
     }
@@ -72,19 +73,20 @@ public class NotificationServiceImpl implements NotificationService {
                     .collect(Collectors.toList());
 
             log.info("[patient] : {}", patients);
-            log.info("보호자: {}, 연결된 환자 수: {}", guardian.get().getUsername(), guardiansPatient.size());
+            log.info("보호자: {}, 연결된 환자 수: {}", guardian.get().getUserName(), guardiansPatient.size());
 
             // 각 환자에게 알림 전송
             patients.forEach(patient -> {
-                String message = String.format("%s님이 메시지를 보냈습니다. 약 섭취 하세요.", guardian.get().getUsername());
-                log.info("보호자: {}, 환자에게 전송할 메시지: {}", patient.getUsername(), message);
+                String message = String.format("%s님이 메시지를 보냈습니다. 약 섭취 하세요.", guardian.get().getUserName());
+                log.info("보호자: {}, 환자에게 전송할 메시지: {}", patient.getUserName(), message);
 
                 // 알림 생성 및 저장
                 Notification notification = Notification.createNotification(patient, guardian.get(), message, "SENT");
                 notificationDao.save(notification);
 
                 // WebSocket을 통해 환자에게 알림 전송
-                simpMessagingTemplate.convertAndSendToUser(patient.getUsername(), "/queue/patient/remind", message);
+                simpMessagingTemplate.convertAndSendToUser(patient.getUserName(), "/queue/patient/remind", message);
+                log.info("전송된 메시지: {}", message); // 추가 로그
             });
         }
     }

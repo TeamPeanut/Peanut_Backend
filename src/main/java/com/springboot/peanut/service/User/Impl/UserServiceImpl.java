@@ -1,10 +1,12 @@
 package com.springboot.peanut.service.User.Impl;
 
 import com.springboot.peanut.S3.S3Uploader;
+import com.springboot.peanut.data.dao.CommunityDao;
 import com.springboot.peanut.data.dao.ConnectionWaitngDao;
 import com.springboot.peanut.data.dao.PatientGuardianDao;
 import com.springboot.peanut.data.dao.UserDao;
 import com.springboot.peanut.data.dto.signDto.ResultDto;
+import com.springboot.peanut.data.dto.user.GetCommunityByUserDto;
 import com.springboot.peanut.data.dto.user.PatientConnectingResponse;
 import com.springboot.peanut.data.dto.user.UserUpdateRequestDto;
 import com.springboot.peanut.data.dto.user.UserUpdateResponseDto;
@@ -29,10 +31,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -48,6 +47,7 @@ public class UserServiceImpl implements UserService {
     private final ConnectionWaitngDao connectionWaitngDao;
     private final ConnectionWaitingRepository connectionWaitingRepository;
     private final PatientGuardianDao patientGuardianDao;
+    private final CommunityDao communityDao;
 
     @Override
     public ResultDto updateAdditionalUserInfo(UserUpdateRequestDto userUpdateRequestDto, MultipartFile image, HttpServletRequest request) throws IOException {
@@ -160,6 +160,37 @@ public class UserServiceImpl implements UserService {
         resultDto.setSuccess(true);
 
         return resultDto;
+    }
+
+    @Override
+    public List<GetCommunityByUserDto> getCreateCommunityByUser(HttpServletRequest request) {
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
+
+        if(user.isPresent()) {
+            return communityDao.getCreateAllCommunityByUser(user.get().getId());
+        }else {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    @Override
+    public List<GetCommunityByUserDto> getCommentCommunityByUser(HttpServletRequest request) {
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
+        if(user.isPresent()) {
+            return communityDao.getCommentAllCommunityByUser(user.get().getId());
+        }else {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    @Override
+    public List<GetCommunityByUserDto> getLikeCommunityByUser(HttpServletRequest request) {
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
+        if(user.isPresent()) {
+            return communityDao.getLikeAllCommunityByUser(user.get().getId());
+        }else {
+            throw new IllegalArgumentException();
+        }
     }
 
     private ResultDto createFailureResult(ResultDto resultDto, String message) {

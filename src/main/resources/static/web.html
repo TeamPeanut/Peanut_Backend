@@ -11,8 +11,7 @@
 <h2>WebSocket Notification Test</h2>
 <button id="connect">Connect WebSocket</button>
 <button id="disconnect">Disconnect WebSocket</button>
-<div id="messages"></div>
-
+<div id="message"></div>
 <script>
     let stompClient = null;
 
@@ -29,15 +28,25 @@
             console.log('Connected: ' + frame);
 
             // 보호자 알림을 받는 채널 구독
-            stompClient.subscribe('/topic/caregiver/medication', (message) => {
+            stompClient.subscribe('/queue/caregiver/medication', (message) => {
                 const msg = message.body;
-                document.getElementById('messages').innerHTML += `<p>${msg}</p>`;
+                console.log(`Received medication message: ${msg}`); // 디버깅용 콘솔 로그
+                if (msg) {
+                    document.getElementById('message').innerHTML += `<p>${msg}</p>`;
+                } else {
+                    console.log("No message received.");
+                }
             });
 
-            // 환자 알림을 받는 채널 구독
+// 환자 알림을 받는 채널 구독
             stompClient.subscribe('/queue/patient/remind', (message) => {
                 const msg = message.body;
-                document.getElementById('messages').innerHTML += `<p>${msg}</p>`;
+                console.log(`Received patient remind message: ${msg}`); // 디버깅용 콘솔 로그
+                if (msg) {
+                    document.getElementById('message').innerHTML += `<p>${msg}</p>`;
+                } else {
+                    console.log("No message received.");
+                }
             });
         });
     });
@@ -45,9 +54,10 @@
     document.getElementById('disconnect').addEventListener('click', () => {
         if (stompClient !== null) {
             stompClient.disconnect();
+            console.log('Disconnected');
         }
-        console.log('Disconnected');
     });
+
 </script>
 </body>
 </html>

@@ -1,6 +1,7 @@
 package com.springboot.peanut.controller;
 
 import com.springboot.peanut.data.dto.signDto.ResultDto;
+import com.springboot.peanut.data.dto.user.GetCommunityByUserDto;
 import com.springboot.peanut.data.dto.user.PatientConnectingResponse;
 import com.springboot.peanut.data.dto.user.UserUpdateRequestDto;
 import com.springboot.peanut.service.User.UserService;
@@ -14,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -53,5 +55,28 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(resultDto);
     }
 
-
+    @GetMapping("/create/community")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    ResponseEntity<List<GetCommunityByUserDto> > getCreateCommunityByUser(HttpServletRequest request){
+        List<GetCommunityByUserDto>  communityList = userService.getCreateCommunityByUser(request);
+        return ResponseEntity.status(HttpStatus.OK).body(communityList);
     }
+
+
+    @GetMapping("/like/community")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    ResponseEntity<List<GetCommunityByUserDto> > getLikeCommunityByUser(HttpServletRequest request){
+        List<GetCommunityByUserDto>  communityList = userService.getLikeCommunityByUser(request);
+        return ResponseEntity.status(HttpStatus.OK).body(communityList);
+    }
+
+    @GetMapping("/comment/community")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    ResponseEntity<List<GetCommunityByUserDto> > getCommentAllCommunityByUser(HttpServletRequest request){
+        List<GetCommunityByUserDto>  communityList = userService.getCommentCommunityByUser(request);
+        return ResponseEntity.status(HttpStatus.OK).body(communityList);
+    }
+
+
+}
+
