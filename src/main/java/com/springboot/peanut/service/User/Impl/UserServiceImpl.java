@@ -6,10 +6,7 @@ import com.springboot.peanut.data.dao.ConnectionWaitngDao;
 import com.springboot.peanut.data.dao.PatientGuardianDao;
 import com.springboot.peanut.data.dao.UserDao;
 import com.springboot.peanut.data.dto.signDto.ResultDto;
-import com.springboot.peanut.data.dto.user.GetCommunityByUserDto;
-import com.springboot.peanut.data.dto.user.PatientConnectingResponse;
-import com.springboot.peanut.data.dto.user.UserUpdateRequestDto;
-import com.springboot.peanut.data.dto.user.UserUpdateResponseDto;
+import com.springboot.peanut.data.dto.user.*;
 import com.springboot.peanut.data.entity.ConnectionWaiting;
 import com.springboot.peanut.data.entity.PatientGuardian;
 import com.springboot.peanut.data.entity.User;
@@ -193,12 +190,36 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public UserAlamInfoDto UserAlamInfo(UserAlamInfoDto alamInfoDto, HttpServletRequest request) {
+        User user = jwtAuthenticationService.authenticationToken(request).get();
+
+        if(user != null) {
+            // 알람 정보를 기존 사용자 객체에 업데이트
+            user.setGuardianAlam(alamInfoDto.isGuardianAlam());
+            user.setMedicationAlam(alamInfoDto.isMedicationAlam());
+            user.setInsulinAlam(alamInfoDto.isInsulinAlam());
+            log.info("[user] : {} ",user);
+            userDao.save(user);
+            UserAlamInfoDto userAlamInfoDto = new UserAlamInfoDto(
+                    user.isGuardianAlam(),
+                    user.isMedicationAlam(),
+                    user.isInsulinAlam()
+            );
+
+            return userAlamInfoDto;
+        }else{
+            throw new IllegalArgumentException();
+        }
+    }
+
     private ResultDto createFailureResult(ResultDto resultDto, String message) {
         resultDto.setDetailMessage(message);
         resultDto.setSuccess(false);
         return resultDto;
     }
 
+    
 
 
     private MimeMessage createMessage(String name, String email, String ePw) throws Exception {

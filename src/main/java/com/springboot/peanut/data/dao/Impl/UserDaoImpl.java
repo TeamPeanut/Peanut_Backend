@@ -22,6 +22,11 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public User save(User user) {
+        return userRepository.save(user);
+    }
+
+    @Override
     public void updateUser(UserUpdateResponseDto userUpdateResponseDto) {
         // 기존 사용자 정보 불러오기
         User existingUser = userRepository.findById(userUpdateResponseDto.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));

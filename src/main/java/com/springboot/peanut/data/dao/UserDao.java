@@ -9,6 +9,7 @@ import java.util.Optional;
 
 public interface UserDao {
     void updateUser(UserUpdateResponseDto userUpdateResponseDto);
+    User save(User user);
     PatientConnectingResponse findPatientConnecting(String email);
     Optional<User> findUserByEmail(String email);
 

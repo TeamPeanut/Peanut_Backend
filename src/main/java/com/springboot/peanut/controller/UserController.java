@@ -3,6 +3,7 @@ package com.springboot.peanut.controller;
 import com.springboot.peanut.data.dto.signDto.ResultDto;
 import com.springboot.peanut.data.dto.user.GetCommunityByUserDto;
 import com.springboot.peanut.data.dto.user.PatientConnectingResponse;
+import com.springboot.peanut.data.dto.user.UserAlamInfoDto;
 import com.springboot.peanut.data.dto.user.UserUpdateRequestDto;
 import com.springboot.peanut.service.User.UserService;
 import io.swagger.annotations.ApiImplicitParam;
@@ -75,7 +76,13 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(communityList);
     }
 
+    @PutMapping("/alam-info")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    public ResponseEntity<UserAlamInfoDto> UserAlamInfo(UserAlamInfoDto alamInfoDto, HttpServletRequest request) {
+        UserAlamInfoDto userAlamInfoDto = userService.UserAlamInfo(alamInfoDto,request);
+        return ResponseEntity.status(HttpStatus.OK).body(userAlamInfoDto);
+    }
 
 
-}
+    }
 
