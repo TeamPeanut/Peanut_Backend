@@ -6,6 +6,7 @@ import com.springboot.peanut.data.dto.community.CommunityDetailResponseDto;
 import com.springboot.peanut.data.dto.community.CommunityResponseDto;
 import com.springboot.peanut.data.dto.user.GetCommunityByUserDto;
 import com.springboot.peanut.data.entity.Community;
+import com.springboot.peanut.data.entity.CommunityLike;
 import com.springboot.peanut.data.repository.CommentRepository;
 import com.springboot.peanut.data.repository.community.CommunityRepository;
 import com.springboot.peanut.data.repository.LikeRepository;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 public class CommunityDaoImpl implements CommunityDao {
 
     private final CommunityRepository communityRepository;
+    private final LikeRepository likeRepository;
 
     @Override
     public void saveCommunity(Community community) {
@@ -33,6 +35,9 @@ public class CommunityDaoImpl implements CommunityDao {
     @Override
     public CommunityDetailResponseDto findCommunityById(Long id) {
         Community community = communityRepository.findById(id).get();
+        boolean liked = likeRepository.existsByUserIdAndLikedTrue(community.getId());
+
+
 
         List<CommentResponseDto> commentDtos = community.getComments().stream()
                 .map(comment -> new CommentResponseDto(
@@ -44,15 +49,18 @@ public class CommunityDaoImpl implements CommunityDao {
                         comment.getCreate_At()
                         )).collect(Collectors.toList());
 
+
         CommunityDetailResponseDto communityDetailResponseDto = new CommunityDetailResponseDto(
                 community.getId(),
                 community.getUser().getId(),
                 community.getTitle(),
                 community.getContent(),
                 community.getUser().getProfileUrl(),
-                community.getUser().getUserName(),
+                community.getUser().getNickName(),
                 community.getUser().getGender(),
                 community.getCommunityLike(),
+                liked,
+                community.getCreate_At(),
                 commentDtos
         );
 
