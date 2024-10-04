@@ -50,6 +50,13 @@ public class User implements UserDetails {
 
     private String loginMethod;
 
+    private boolean guardianAlam;
+
+    private boolean medicationAlam;
+
+    private boolean InsulinAlam;
+
+
     private LocalDateTime create_At;
 
     private LocalDateTime update_At;
