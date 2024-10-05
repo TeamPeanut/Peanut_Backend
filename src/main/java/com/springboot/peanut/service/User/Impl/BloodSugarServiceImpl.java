@@ -41,8 +41,8 @@ public class BloodSugarServiceImpl implements BloodSugarService {
     }
 
     public LocalDateTime StringToDateTime(String measuredTime) {
-        // "오전 07시" 같은 문자열을 파싱할 포맷터 생성 (a: 오전/오후, h: 시)
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("a h시", Locale.KOREAN);
+        // "오전 07시" 같은 문자열을 파싱할 포맷터 생성 (a: 오전/오후, h: 시, m 분)
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("a h시 m분", Locale.KOREAN);
 
         // 시간만 파싱
         LocalTime time = LocalTime.parse(measuredTime, formatter);
