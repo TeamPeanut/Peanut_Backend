@@ -1,10 +1,7 @@
 package com.springboot.peanut.service.User;
 
 import com.springboot.peanut.data.dto.signDto.ResultDto;
-import com.springboot.peanut.data.dto.user.GetCommunityByUserDto;
-import com.springboot.peanut.data.dto.user.PatientConnectingResponse;
-import com.springboot.peanut.data.dto.user.UserAlamInfoDto;
-import com.springboot.peanut.data.dto.user.UserUpdateRequestDto;
+import com.springboot.peanut.data.dto.user.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,5 +19,6 @@ public interface UserService {
     List<GetCommunityByUserDto>getCommentCommunityByUser(HttpServletRequest request);
     List<GetCommunityByUserDto>getLikeCommunityByUser(HttpServletRequest request);
     UserAlamInfoDto UserAlamInfo(UserAlamInfoDto alamInfoDto,HttpServletRequest request);
+    List<GetPatientResponseDto> getPatientInfo(HttpServletRequest request);
 
 }
