@@ -2,6 +2,7 @@ package com.springboot.peanut.data.entity;
 
 import com.springboot.peanut.data.dto.signDto.AdditionalInfoDto;
 import com.springboot.peanut.data.dto.signDto.KakaoResponseDto;
+import com.springboot.peanut.data.dto.user.UserAlamInfoDto;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -49,6 +50,12 @@ public class User implements UserDetails {
     private boolean verified = false;
 
     private String loginMethod;
+
+    private boolean guardianAlam = false;
+
+    private boolean medicationAlam = false;
+
+    private boolean insulinAlam = false;
 
     private LocalDateTime create_At;
 
@@ -158,6 +165,7 @@ public class User implements UserDetails {
                 .update_At(LocalDateTime.now())
                 .build();
     }
+
 
 
     public void addKakaoAdditionalInfo(AdditionalInfoDto additionalInfoDto) {

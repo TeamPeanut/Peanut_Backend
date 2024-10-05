@@ -6,10 +6,12 @@ import com.springboot.peanut.data.dto.community.CommunityDetailResponseDto;
 import com.springboot.peanut.data.dto.community.CommunityResponseDto;
 import com.springboot.peanut.data.dto.user.GetCommunityByUserDto;
 import com.springboot.peanut.data.entity.Community;
-import com.springboot.peanut.data.repository.community.comment.CommentRepository;
-import com.springboot.peanut.data.repository.community.community.CommunityRepository;
-import com.springboot.peanut.data.repository.community.like.LikeRepository;
+import com.springboot.peanut.data.entity.CommunityLike;
+import com.springboot.peanut.data.repository.CommentRepository;
+import com.springboot.peanut.data.repository.community.CommunityRepository;
+import com.springboot.peanut.data.repository.LikeRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,12 +19,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CommunityDaoImpl implements CommunityDao {
 
     private final CommunityRepository communityRepository;
-    private final CommentRepository commentRepository;
     private final LikeRepository likeRepository;
 
     @Override
@@ -33,6 +35,9 @@ public class CommunityDaoImpl implements CommunityDao {
     @Override
     public CommunityDetailResponseDto findCommunityById(Long id) {
         Community community = communityRepository.findById(id).get();
+        boolean liked = likeRepository.existsByUserIdAndLikedTrue(community.getId());
+
+
 
         List<CommentResponseDto> commentDtos = community.getComments().stream()
                 .map(comment -> new CommentResponseDto(
@@ -44,15 +49,18 @@ public class CommunityDaoImpl implements CommunityDao {
                         comment.getCreate_At()
                         )).collect(Collectors.toList());
 
+
         CommunityDetailResponseDto communityDetailResponseDto = new CommunityDetailResponseDto(
                 community.getId(),
                 community.getUser().getId(),
                 community.getTitle(),
                 community.getContent(),
                 community.getUser().getProfileUrl(),
-                community.getUser().getUserName(),
+                community.getUser().getNickName(),
                 community.getUser().getGender(),
                 community.getCommunityLike(),
+                liked,
+                community.getCreate_At(),
                 commentDtos
         );
 
@@ -100,8 +108,8 @@ public class CommunityDaoImpl implements CommunityDao {
     @Override
     public List<GetCommunityByUserDto> getCommentAllCommunityByUser(Long userId) {
         List<GetCommunityByUserDto> getCommunityByUserList = new ArrayList<>();
-        Optional<List<Community>> communityList = commentRepository.findCommentCommunityById(userId);
-        for(Community community : communityList.get()){
+        List<Community> communityList = communityRepository.findCommentCommunityByUserId(userId) ;
+        for (Community community : communityList) {
             GetCommunityByUserDto getCommunityByUserDto = new GetCommunityByUserDto(
                     community.getTitle(),
                     community.getContent(),
@@ -110,7 +118,6 @@ public class CommunityDaoImpl implements CommunityDao {
                     community.getCreate_At(),
                     community.getUser().getUserName()
             );
-
             getCommunityByUserList.add(getCommunityByUserDto);
         }
         return getCommunityByUserList;
@@ -119,8 +126,8 @@ public class CommunityDaoImpl implements CommunityDao {
     @Override
     public List<GetCommunityByUserDto> getLikeAllCommunityByUser(Long userId) {
         List<GetCommunityByUserDto> getCommunityByUserList = new ArrayList<>();
-        Optional<List<Community>> communityList = likeRepository.findLikeCommunityById(userId);
-        for(Community community : communityList.get()){
+        List<Community> communityList = communityRepository.findLikeCommunityByUserId(userId);
+        for(Community community : communityList){
             GetCommunityByUserDto getCommunityByUserDto = new GetCommunityByUserDto(
                     community.getTitle(),
                     community.getContent(),

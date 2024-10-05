@@ -1,4 +1,4 @@
-package com.springboot.peanut.data.repository.community.community;
+package com.springboot.peanut.data.repository.community;
 
 import com.springboot.peanut.data.entity.Community;
 import org.springframework.data.jpa.repository.JpaRepository;
