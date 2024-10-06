@@ -23,6 +23,14 @@ public class UserController {
 
     private final UserService userService;
 
+    @GetMapping("/get-info")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    public ResponseEntity<GetUserInfoMyPage> getUserInfoMyPage(HttpServletRequest request){
+        GetUserInfoMyPage getUserInfoMyPage = userService.getUserInfoMyPage(request);
+        return ResponseEntity.status(HttpStatus.OK).body(getUserInfoMyPage);
+    }
+
+
     @PutMapping("/update")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
     ResponseEntity<ResultDto> updateUserInfo(UserUpdateRequestDto requestDto, @RequestPart("image") MultipartFile image, HttpServletRequest request) throws IOException {

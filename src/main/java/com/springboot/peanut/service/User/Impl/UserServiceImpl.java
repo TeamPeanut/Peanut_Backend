@@ -47,6 +47,21 @@ public class UserServiceImpl implements UserService {
     private final CommunityDao communityDao;
 
     @Override
+    public GetUserInfoMyPage getUserInfoMyPage(HttpServletRequest request) {
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
+        User userInfo = user.get();
+
+        return new GetUserInfoMyPage(
+                userInfo.getId(),
+                userInfo.getUserName(),
+                userInfo.getHeight(),
+                userInfo.getWeight(),
+                userInfo.getProfileUrl()
+        );
+
+    }
+
+    @Override
     public ResultDto updateAdditionalUserInfo(UserUpdateRequestDto userUpdateRequestDto, MultipartFile image, HttpServletRequest request) throws IOException {
         Optional<User> user = jwtAuthenticationService.authenticationToken(request);
         log.info("[userEmail] : {}",user.get().getEmail());
