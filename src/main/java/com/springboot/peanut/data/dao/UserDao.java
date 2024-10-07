@@ -1,5 +1,6 @@
 package com.springboot.peanut.data.dao;
 
+import com.springboot.peanut.data.dto.user.GetConnectingInfoDto;
 import com.springboot.peanut.data.dto.user.GetPatientResponseDto;
 import com.springboot.peanut.data.dto.user.PatientConnectingResponse;
 import com.springboot.peanut.data.dto.user.UserUpdateResponseDto;
@@ -17,6 +18,7 @@ public interface UserDao {
     PatientConnectingResponse findPatientConnecting(String email);
     Optional<User> findUserByEmail(String email);
     List<GetPatientResponseDto> findPatientByGuardian(Long id);
+    List<GetConnectingInfoDto> findConnectingInfo(String email);
 
 
 }

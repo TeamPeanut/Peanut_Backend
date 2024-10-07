@@ -1,11 +1,14 @@
 package com.springboot.peanut.data.dao.Impl;
 
 import com.springboot.peanut.data.dao.UserDao;
+import com.springboot.peanut.data.dto.user.GetConnectingInfoDto;
 import com.springboot.peanut.data.dto.user.GetPatientResponseDto;
 import com.springboot.peanut.data.dto.user.PatientConnectingResponse;
 import com.springboot.peanut.data.dto.user.UserUpdateResponseDto;
+import com.springboot.peanut.data.entity.ConnectionWaiting;
 import com.springboot.peanut.data.entity.PatientGuardian;
 import com.springboot.peanut.data.entity.User;
+import com.springboot.peanut.data.repository.ConnectionWaitingRepository;
 import com.springboot.peanut.data.repository.PatientGuardianRepository;
 import com.springboot.peanut.data.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +27,7 @@ public class UserDaoImpl implements UserDao {
 
     private final UserRepository userRepository;
     private final PatientGuardianRepository patientGuardianRepository;
+    private final ConnectionWaitingRepository connectionWaitingRepository;
 
     @Override
     public Optional<User> findUserByEmail(String email) {
@@ -96,5 +100,24 @@ public class UserDaoImpl implements UserDao {
         }
 
         return getPatientResponseDtoList;
+    }
+
+    @Override
+    public List<GetConnectingInfoDto> findConnectingInfo(String email) {
+        List<GetConnectingInfoDto> getConnectingInfoDtos = new ArrayList<>();
+        List<ConnectionWaiting> connectionWaitingList = connectionWaitingRepository.findByGuardianEmail(email);
+
+        for(ConnectionWaiting connectionWaiting: connectionWaitingList) {
+            Long id = connectionWaiting.getId();
+            String userName = connectionWaiting.getPatientName();
+            String status = connectionWaiting.getStatus();
+
+            GetConnectingInfoDto getConnectingInfoDto = new GetConnectingInfoDto(
+                    id,userName,status
+            );
+            getConnectingInfoDtos.add(getConnectingInfoDto);
+        }
+
+        return getConnectingInfoDtos;
     }
 }
