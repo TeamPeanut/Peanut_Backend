@@ -8,9 +8,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 
 public interface PatientMainService {
-    MainPageGetUserDto getUserInfoMainPage(HttpServletRequest request);
-    GuardianMainPageGetAdditionalInfoDto getAdditionalInfoMainPage(HttpServletRequest request, LocalDate date);
-    FoodAllDetailDto getFoodAllDetail(LocalDate date , HttpServletRequest request);
-    FoodAllDetailDto getFoodDetailByEatTime(LocalDate date,String eatTime,HttpServletRequest request);
+    MainPageGetUserDto getPatientUserInfoMainPage(HttpServletRequest request);
+    GuardianMainPageGetAdditionalInfoDto getPatientAdditionalInfoMainPage(HttpServletRequest request, LocalDate date);
+    FoodAllDetailDto getPatientFoodAllDetail(LocalDate date , HttpServletRequest request);
+    FoodAllDetailDto getPatientFoodDetailByEatTime(LocalDate date,String eatTime,HttpServletRequest request);
 
 }

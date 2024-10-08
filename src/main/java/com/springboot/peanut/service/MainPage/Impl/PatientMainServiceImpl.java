@@ -8,11 +8,13 @@ import com.springboot.peanut.data.repository.BloodSugar.BloodSugarRepository;
 import com.springboot.peanut.data.repository.Insulin.InsulinRepository;
 import com.springboot.peanut.data.repository.MealInfo.MealInfoRepository;
 import com.springboot.peanut.data.repository.Medicine.MedicineRepository;
+import com.springboot.peanut.data.repository.PatientGuardianRepository;
 import com.springboot.peanut.jwt.JwtAuthenticationService;
 import com.springboot.peanut.service.MainPage.PatientMainService;
 import com.springboot.peanut.service.notification.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,42 +36,48 @@ public class PatientMainServiceImpl implements PatientMainService {
     private final JwtAuthenticationService jwtAuthenticationService;
     private final MealInfoRepository mealInfoRepository;
     private final NotificationService notificationService;
+    private final PatientGuardianRepository patientGuardianRepository;
 
     @Override
-    public MainPageGetUserDto getUserInfoMainPage(HttpServletRequest request) {
-        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
+    public MainPageGetUserDto getPatientUserInfoMainPage(HttpServletRequest request) {
+        Optional<User> guardian = jwtAuthenticationService.authenticationToken(request);
+        PatientGuardian patientGuardian = patientGuardianRepository.findByGuardianId(guardian.get().getId());
+        User user = patientGuardian.getPatient();
 
 
 
         // 사용자 공복 혈당
-        Optional<BloodSugar> fastingBloodSugar = bloodSugarRepository.findFastingBloodSugar(user.get().getId());
+        Optional<BloodSugar> fastingBloodSugar = bloodSugarRepository.findFastingBloodSugar(user.getId());
         String fastingBloodSugarLevel = fastingBloodSugar
                 .map(BloodSugar::getBloodSugarLevel)
                 .orElse("공복 혈당을 찾을 수 없습니다.");
 
         // 현재 시간과 가장 가까운 혈당
-        Optional<BloodSugar> currentBloodSugarLevel = bloodSugarRepository.findClosestBloodSugar(user.get().getId());
+        Optional<BloodSugar> currentBloodSugarLevel = bloodSugarRepository.findClosestBloodSugar(user.getId());
         String currentBloodSugar = currentBloodSugarLevel
                 .map(BloodSugar::getBloodSugarLevel)
                 .orElse("최근에 등록된 혈당을 찾을 수 없습니다.");
 
         // 생성자로 객체 생성
         return new MainPageGetUserDto(
-                user.get().getId(),
-                user.get().getUserName(),
-                user.get().getProfileUrl(),
+                user.getId(),
+                user.getUserName(),
+                user.getProfileUrl(),
                 fastingBloodSugarLevel,
                 currentBloodSugar
         );
     }
 
     @Override
-    public GuardianMainPageGetAdditionalInfoDto getAdditionalInfoMainPage(HttpServletRequest request, LocalDate date) {
-        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
+    public GuardianMainPageGetAdditionalInfoDto getPatientAdditionalInfoMainPage(HttpServletRequest request, LocalDate date) {
+        Optional<User> guardian = jwtAuthenticationService.authenticationToken(request);
+        PatientGuardian patientGuardian = patientGuardianRepository.findByGuardianId(guardian.get().getId());
+        User user = patientGuardian.getPatient();
 
-        Optional<Medicine> medicine = medicineRepository.findByTodayMedicineInfo(user.get().getId(), date);
-        Optional<Insulin> insulin = insulinRepository.findByTodayInsulinName(user.get().getId(),date);
-        List<BloodSugar> bloodSugarList = bloodSugarRepository.findTodayBloodSugar(user.get().getId(),date);
+
+        Optional<Medicine> medicine = medicineRepository.findByTodayMedicineInfo(user.getId(), date);
+        Optional<Insulin> insulin = insulinRepository.findByTodayInsulinName(user.getId(),date);
+        List<BloodSugar> bloodSugarList = bloodSugarRepository.findTodayBloodSugar(user.getId(),date);
 
 
         String medicineName = medicine.map(Medicine::getMedicineName).orElse("복용 기록 없음");
@@ -97,10 +105,13 @@ public class PatientMainServiceImpl implements PatientMainService {
 
     //식사 기록 조회 (전체)
     @Override
-    public FoodAllDetailDto getFoodAllDetail(LocalDate date, HttpServletRequest request) {
-        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
+    public FoodAllDetailDto getPatientFoodAllDetail(LocalDate date, HttpServletRequest request) {
+        Optional<User> guardian = jwtAuthenticationService.authenticationToken(request);
+        PatientGuardian patientGuardian = patientGuardianRepository.findByGuardianId(guardian.get().getId());
+        User user = patientGuardian.getPatient();
 
-        Optional<List<MealInfo>> mealInfoList = mealInfoRepository.getByUserAllMealInfo(date,user.get().getId());
+
+        Optional<List<MealInfo>> mealInfoList = mealInfoRepository.getByUserAllMealInfo(date,user.getId());
 
         double totalProtein = 0.0;
         double totalCarbohydrate = 0.0;
@@ -127,9 +138,13 @@ public class PatientMainServiceImpl implements PatientMainService {
 
     // 식사 시간에 따른 식사 기록 조회
     @Override
-    public FoodAllDetailDto getFoodDetailByEatTime(LocalDate date,String eatTime, HttpServletRequest request) {
-        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
-        Optional<MealInfo> mealInfoOptional = mealInfoRepository.getMealInfoByEatTime(date,user.get().getId(),eatTime);
+    public FoodAllDetailDto getPatientFoodDetailByEatTime(LocalDate date,String eatTime, HttpServletRequest request) {
+        Optional<User> guardian = jwtAuthenticationService.authenticationToken(request);
+        PatientGuardian patientGuardian = patientGuardianRepository.findByGuardianId(guardian.get().getId());
+        User user = patientGuardian.getPatient();
+
+
+        Optional<MealInfo> mealInfoOptional = mealInfoRepository.getMealInfoByEatTime(date,user.getId(),eatTime);
         log.info("[mealInfoOptional] {} : " + mealInfoOptional);
 
         if(mealInfoOptional.isPresent()){

@@ -64,30 +64,26 @@ public class NotificationServiceImpl implements NotificationService {
 
         if (guardian.isPresent()) {
             // 보호자에 연결된 환자 목록 조회
-            List<PatientGuardian> guardiansPatient = patientGuardianRepository.findByGuardianIdAndVerified(guardian.get().getId(), true);
+            PatientGuardian guardiansPatient = patientGuardianRepository.findByGuardianIdAndVerified(guardian.get().getId(), true);
             log.info("[guardiansPatient] : {}", guardiansPatient);
             log.info("Guardian ID: {}", guardian.get().getId());
 
-            List<User> patients = guardiansPatient.stream()
-                    .map(PatientGuardian::getPatient)
-                    .collect(Collectors.toList());
+            User patients = guardiansPatient.getPatient();
 
-            log.info("[patient] : {}", patients);
-            log.info("보호자: {}, 연결된 환자 수: {}", guardian.get().getUserName(), guardiansPatient.size());
 
             // 각 환자에게 알림 전송
-            patients.forEach(patient -> {
+
                 String message = String.format("%s님이 메시지를 보냈습니다. 약 섭취 하세요.", guardian.get().getUserName());
-                log.info("보호자: {}, 환자에게 전송할 메시지: {}", patient.getUserName(), message);
+                log.info("보호자: {}, 환자에게 전송할 메시지: {}", patients.getUserName(), message);
 
                 // 알림 생성 및 저장
-                Notification notification = Notification.createNotification(patient, guardian.get(), message, "SENT");
+                Notification notification = Notification.createNotification(patients, guardian.get(), message, "SENT");
                 notificationDao.save(notification);
 
                 // WebSocket을 통해 환자에게 알림 전송
-                simpMessagingTemplate.convertAndSendToUser(patient.getUserName(), "/queue/patient/remind", message);
+                simpMessagingTemplate.convertAndSendToUser(patients.getUserName(), "/queue/patient/remind", message);
                 log.info("전송된 메시지: {}", message); // 추가 로그
-            });
+
         }
     }
 }

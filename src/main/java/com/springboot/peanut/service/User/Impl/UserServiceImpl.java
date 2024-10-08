@@ -176,9 +176,9 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public List<GetPatientResponseDto> getPatientInfo(HttpServletRequest request) {
+    public GetPatientResponseDto getPatientInfo(HttpServletRequest request) {
         User user = jwtAuthenticationService.authenticationToken(request).get();
-        List<GetPatientResponseDto> patientResponseDtos = userDao.findPatientByGuardian(user.getId());
+        GetPatientResponseDto patientResponseDtos = userDao.findPatientByGuardian(user.getId());
 
         return patientResponseDtos;
     }

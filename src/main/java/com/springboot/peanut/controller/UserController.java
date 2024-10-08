@@ -62,8 +62,8 @@ public class UserController {
 
     @GetMapping("/get-patient")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-    public ResponseEntity<List<GetPatientResponseDto>> getPatientInfo(HttpServletRequest request) {
-        List<GetPatientResponseDto> responseDto = userService.getPatientInfo(request);
+    public ResponseEntity<GetPatientResponseDto> getPatientInfo(HttpServletRequest request) {
+        GetPatientResponseDto responseDto = userService.getPatientInfo(request);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 

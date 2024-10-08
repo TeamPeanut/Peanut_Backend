@@ -19,7 +19,7 @@ public interface UserDao {
     User save(User user);
     PatientConnectingResponse findPatientConnecting(String email);
     Optional<User> findUserByEmail(String email);
-    List<GetPatientResponseDto> findPatientByGuardian(Long id);
+    GetPatientResponseDto findPatientByGuardian(Long id);
     List<GetConnectingInfoDto> findConnectingInfo(String email);
 
 }

@@ -77,29 +77,23 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public List<GetPatientResponseDto> findPatientByGuardian(Long id) {
-        List<GetPatientResponseDto> getPatientResponseDtoList = new ArrayList<>();
-        List<PatientGuardian> guardiansPatient = patientGuardianRepository.findByGuardianId(id);
+    public GetPatientResponseDto findPatientByGuardian(Long id) {
+        PatientGuardian guardiansPatient = patientGuardianRepository.findByGuardianId(id);
         log.info("[guardiansPatient] : {}", guardiansPatient);
 
-        List<User> patients = guardiansPatient.stream()
-                .map(PatientGuardian::getPatient)
-                .collect(Collectors.toList());
+        User patients = guardiansPatient.getPatient();
 
-        for(User user: patients) {
             GetPatientResponseDto getPatientResponseDto = new GetPatientResponseDto(
-                    user.getId(),
-                    user.getUserName(),
-                    user.getGender(),
-                    user.getBirth(),
-                    user.getHeight(),
-                    user.getWeight(),
-                    user.getProfileUrl()
+                    patients.getId(),
+                    patients.getUserName(),
+                    patients.getGender(),
+                    patients.getBirth(),
+                    patients.getHeight(),
+                    patients.getWeight(),
+                    patients.getProfileUrl()
             );
-        getPatientResponseDtoList.add(getPatientResponseDto);
-        }
 
-        return getPatientResponseDtoList;
+        return getPatientResponseDto;
     }
 
     @Override

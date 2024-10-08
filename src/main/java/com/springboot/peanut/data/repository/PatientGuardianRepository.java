@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface PatientGuardianRepository extends JpaRepository<PatientGuardian, Long> {
 
-    List<PatientGuardian> findByGuardianIdAndVerified(Long guardianId, boolean verified);
-    List<PatientGuardian> findByGuardianId(Long guardianId);
+    PatientGuardian findByGuardianIdAndVerified(Long guardianId, boolean verified);
+    PatientGuardian findByGuardianId(Long guardianId);
 
 }
