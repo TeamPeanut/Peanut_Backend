@@ -7,7 +7,7 @@ import com.springboot.peanut.data.dto.mainPage.MainPageGetUserDto;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 
-public interface PatientMainService {
+public interface GuardianMainService {
     MainPageGetUserDto getPatientUserInfoMainPage(HttpServletRequest request);
     GuardianMainPageGetAdditionalInfoDto getPatientAdditionalInfoMainPage(HttpServletRequest request, LocalDate date);
     FoodAllDetailDto getPatientFoodAllDetail(LocalDate date , HttpServletRequest request);

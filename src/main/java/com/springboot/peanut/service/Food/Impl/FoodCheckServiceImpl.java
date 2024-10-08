@@ -9,14 +9,12 @@ import com.springboot.peanut.data.repository.BloodSugar.BloodSugarRepository;
 import com.springboot.peanut.data.repository.MealInfo.MealInfoRepository;
 import com.springboot.peanut.service.Food.FoodCheckService;
 import com.springboot.peanut.jwt.JwtAuthenticationService;
-import com.springboot.peanut.service.MainPage.GuardianMainPageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 

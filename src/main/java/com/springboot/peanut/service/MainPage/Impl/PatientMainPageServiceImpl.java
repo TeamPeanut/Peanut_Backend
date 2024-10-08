@@ -1,7 +1,7 @@
 package com.springboot.peanut.service.MainPage.Impl;
 
 import com.springboot.peanut.data.dto.food.FoodAllDetailDto;
-import com.springboot.peanut.data.dto.mainPage.GuardianMainPageGetAdditionalInfoDto;
+import com.springboot.peanut.data.dto.mainPage.PatientMainPageGetAdditionalInfoDto;
 import com.springboot.peanut.data.dto.mainPage.MainPageGetUserDto;
 import com.springboot.peanut.data.entity.*;
 import com.springboot.peanut.data.repository.BloodSugar.BloodSugarRepository;
@@ -9,7 +9,7 @@ import com.springboot.peanut.data.repository.Insulin.InsulinRepository;
 import com.springboot.peanut.data.repository.MealInfo.MealInfoRepository;
 import com.springboot.peanut.data.repository.Medicine.MedicineRepository;
 import com.springboot.peanut.jwt.JwtAuthenticationService;
-import com.springboot.peanut.service.MainPage.GuardianMainPageService;
+import com.springboot.peanut.service.MainPage.PatientMainPageService;
 import com.springboot.peanut.service.notification.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class GuardianGuardianMainPageServiceImpl implements GuardianMainPageService {
+public class PatientMainPageServiceImpl implements PatientMainPageService {
 
     private final BloodSugarRepository bloodSugarRepository;
     private final MedicineRepository medicineRepository;
@@ -62,7 +62,7 @@ public class GuardianGuardianMainPageServiceImpl implements GuardianMainPageServ
     }
 
     @Override
-    public GuardianMainPageGetAdditionalInfoDto getAdditionalInfoMainPage(HttpServletRequest request, LocalDate date) {
+    public PatientMainPageGetAdditionalInfoDto getAdditionalInfoMainPage(HttpServletRequest request, LocalDate date) {
         Optional<User> user = jwtAuthenticationService.authenticationToken(request);
 
         Optional<Medicine> medicine = medicineRepository.findByTodayMedicineInfo(user.get().getId(), date);
@@ -84,7 +84,7 @@ public class GuardianGuardianMainPageServiceImpl implements GuardianMainPageServ
                 })
                 .collect(Collectors.toList());
 
-        return new GuardianMainPageGetAdditionalInfoDto(
+        return new PatientMainPageGetAdditionalInfoDto(
                 bloodSugarLevels,
                 medicineName,
                 medicineAlam,
