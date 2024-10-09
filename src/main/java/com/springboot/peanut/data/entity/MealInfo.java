@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +43,7 @@ public class MealInfo {
 
 
     private LocalDate create_At;
+    private LocalTime create_Time;
 
 
     // 생성자 추가
@@ -52,6 +55,7 @@ public class MealInfo {
         mealInfo.imageUrl = imageUrl;
         mealInfo.user = user;
         mealInfo.create_At = LocalDate.now();
+        mealInfo.create_Time = LocalTime.now();
         return mealInfo;
     }
 }

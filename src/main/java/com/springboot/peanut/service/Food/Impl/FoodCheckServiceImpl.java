@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -107,38 +109,36 @@ public class FoodCheckServiceImpl implements FoodCheckService {
 
         Optional<List<MealInfo>> mealInfoListOpt = mealInfoRepository.getMealInfoListByEatTime(date, user.get().getId(), eatTime);
         Optional<BloodSugar> closetBloodSugarOpt = bloodSugarRepository.findClosestBloodSugar(user.get().getId());
-        log.info("[closetBloodSugar] : {}", closetBloodSugarOpt);
 
         if (!mealInfoListOpt.isPresent() || mealInfoListOpt.get().isEmpty()) {
             throw new IllegalArgumentException("해당 식사 시간에 대한 기록이 없습니다.");
         }
-
         List<MealInfo> mealInfoList = mealInfoListOpt.get();
 
         // 예상 혈당 수치의 총합과 평균을 계산하기 위한 변수들
         double totalExpectedBloodSugar = 0.0;
-        int mealCount = mealInfoList.size();
 
+
+        //최근 혈당
+        Map<String,LocalDateTime> closetBloodSugarMap = new HashMap<>();
+        closetBloodSugarMap.put(closetBloodSugarOpt.get().getBloodSugarLevel(),closetBloodSugarOpt.get().getCreate_At());
+
+        Map<Double, LocalTime> expectedBloodSugarMap = new HashMap<>();
         // 각 식사 기록에서 예상 혈당 수치를 추출
         for (MealInfo mealInfo : mealInfoList) {
             totalExpectedBloodSugar += mealInfo.getExpectedBloodSugar();
+            expectedBloodSugarMap.put(totalExpectedBloodSugar,mealInfo.getCreate_Time());
             log.info("[mealInfo expectedBloodSugar] : {}", mealInfo.getExpectedBloodSugar());
         }
 
-        // 평균 예상 혈당 수치 계산
         double averageExpectedBloodSugar = totalExpectedBloodSugar;
-        log.info("[averageExpectedBloodSugar] : {}", averageExpectedBloodSugar);
+        double currentBloodSugar = Double.parseDouble(closetBloodSugarOpt.get().getBloodSugarLevel());
 
-        // BloodSugar 정보도 반환할 경우, 최근 혈당 정보도 함께 반환
-        double currentBloodSugarLevel = 0.0;
-        if (closetBloodSugarOpt.isPresent()) {
-            currentBloodSugarLevel = Double.parseDouble(closetBloodSugarOpt.get().getBloodSugarLevel());
-        }
-        String msg = getFeedbackByBloodSugar(averageExpectedBloodSugar, currentBloodSugarLevel);
+        String msg = getFeedbackByBloodSugar(averageExpectedBloodSugar, currentBloodSugar);
         // FoodBloodSugarDto로 예상 혈당 수치와 최근 혈당 정보 반환
         FoodBloodSugarDto foodBloodSugarDto = new FoodBloodSugarDto(
-                averageExpectedBloodSugar, // 평균 예상 혈당 수치
-                currentBloodSugarLevel,
+                closetBloodSugarMap,
+                expectedBloodSugarMap,
                 msg
         );
 
