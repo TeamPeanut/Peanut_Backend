@@ -23,7 +23,7 @@ public class Medicine {
 
     private String medicineName;
 
-    private boolean alam = false;
+    private boolean medicationStatus = false;
 
     private LocalDate create_At;
 
@@ -39,15 +39,12 @@ public class Medicine {
     public static Medicine createMedicine(String medicineName , User user){
         Medicine medicine = new Medicine();
         medicine.medicineName=medicineName;
-        medicine.alam = false;
+        medicine.medicationStatus = false;
         medicine.create_At = LocalDate.now();
         medicine.user = user;
         return medicine;
     }
 
-    public void setAlam(boolean alam){
-        this.alam=alam;
-    }
 
     public void addIntake(Intake intake){
         intakes.add(intake);

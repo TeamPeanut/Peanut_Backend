@@ -40,7 +40,6 @@ public class MedicineServiceImpl implements MedicineService {
         if (user.isPresent()) {
             // Medicine 객체 생성
             Medicine medicine = Medicine.createMedicine(medicineRequestDto.getMedicineName(),user.get());
-            medicine.setAlam(medicineRequestDto.isAlam());  // 필요에 따라 알람 설정
             medicineDao.saveMedicineInfo(medicine);
             log.info("[medicineInfo] : {}", medicine);
 

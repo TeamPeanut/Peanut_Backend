@@ -25,7 +25,7 @@ public class Insulin {
     @ElementCollection
     private List<String> administrationTime;
 
-    private boolean alam = false;
+    private boolean insulinStatus = false;
 
     private LocalDate create_At;
 
@@ -38,7 +38,6 @@ public class Insulin {
         insulin.productName = insulinRequestDto.getProductName();
         insulin.dosage = insulinRequestDto.getDosage();
         insulin.administrationTime = insulinRequestDto.getAdministrationTime();
-        insulin.alam = insulinRequestDto.isAlam();
         insulin.create_At = LocalDate.now();
         insulin.user = user;
         return insulin;

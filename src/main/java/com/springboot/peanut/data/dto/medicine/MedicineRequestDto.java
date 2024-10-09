@@ -13,8 +13,6 @@ public class MedicineRequestDto {
 
     private String medicineName;
 
-    private boolean alam = false;
-
     private List<String> intakeDays;
 
     private List<String> intakeTime;

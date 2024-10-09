@@ -2,7 +2,7 @@ package com.springboot.peanut.data.dao.Impl;
 
 import com.springboot.peanut.data.dao.IntakeDao;
 import com.springboot.peanut.data.entity.Intake;
-import com.springboot.peanut.data.repository.IntakeRepository;
+import com.springboot.peanut.data.repository.Intake.IntakeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

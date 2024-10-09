@@ -81,10 +81,10 @@ public class GuardianMainServiceImpl implements GuardianMainService {
 
 
         String medicineName = medicine.map(Medicine::getMedicineName).orElse("복용 기록 없음");
-        Boolean medicineAlam = medicine.map(Medicine::isAlam).orElse(false);
+        Boolean medicineAlam = medicine.map(Medicine::isMedicationStatus).orElse(false);
 
         String insulinName = insulin.map(Insulin::getProductName).orElse("투여 기록 없음");
-        Boolean insulinAlam = insulin.map(Insulin::isAlam).orElse(false);
+        Boolean insulinAlam = insulin.map(Insulin::isInsulinStatus).orElse(false);
 
         List<Map<Integer, LocalDateTime>> bloodSugarLevels = bloodSugarList.stream()
                 .map(bloodSugar -> {
