@@ -189,45 +189,51 @@ public class UserServiceImpl implements UserService {
         GetPatientResponseDto patientResponseDtos = userDao.findGuardianByPatient(user.getId());
         return patientResponseDtos;
     }
-
-    @Override
-    public List<GetConnectingInfoDto> getConnectingInfo(HttpServletRequest request) {
-        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
-        if(user.isPresent()) {
-            return    userDao.findConnectingInfo(user.get().getEmail());
-        }else {
-            throw new IllegalArgumentException();
-        }
-    }
-
     @Override
     public List<GetCommunityByUserDto> getCreateCommunityByUser(HttpServletRequest request) {
         Optional<User> user = jwtAuthenticationService.authenticationToken(request);
 
         if(user.isPresent()) {
-            return communityDao.getCreateAllCommunityByUser(user.get().getId());
-        }else {
-            throw new IllegalArgumentException();
+            List<GetCommunityByUserDto> communityList = communityDao.getCreateAllCommunityByUser(user.get().getId());
+            return communityList != null ? communityList : Collections.emptyList(); // 빈 리스트 반환
+        } else {
+            return Collections.emptyList(); // 빈 리스트 반환
         }
     }
 
     @Override
     public List<GetCommunityByUserDto> getCommentCommunityByUser(HttpServletRequest request) {
         Optional<User> user = jwtAuthenticationService.authenticationToken(request);
+
         if(user.isPresent()) {
-            return communityDao.getCommentAllCommunityByUser(user.get().getId());
-        }else {
-            throw new IllegalArgumentException();
+            List<GetCommunityByUserDto> commentCommunityList = communityDao.getCommentAllCommunityByUser(user.get().getId());
+            return commentCommunityList != null ? commentCommunityList : Collections.emptyList(); // 빈 리스트 반환
+        } else {
+            return Collections.emptyList(); // 빈 리스트 반환
         }
     }
 
     @Override
     public List<GetCommunityByUserDto> getLikeCommunityByUser(HttpServletRequest request) {
         Optional<User> user = jwtAuthenticationService.authenticationToken(request);
+
         if(user.isPresent()) {
-            return communityDao.getLikeAllCommunityByUser(user.get().getId());
-        }else {
-            throw new IllegalArgumentException();
+            List<GetCommunityByUserDto> likeCommunityList = communityDao.getLikeAllCommunityByUser(user.get().getId());
+            return likeCommunityList != null ? likeCommunityList : Collections.emptyList(); // 빈 리스트 반환
+        } else {
+            return Collections.emptyList(); // 빈 리스트 반환
+        }
+    }
+
+    @Override
+    public List<GetConnectingInfoDto> getConnectingInfo(HttpServletRequest request) {
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
+
+        if(user.isPresent()) {
+            List<GetConnectingInfoDto> connectingInfoList = userDao.findConnectingInfo(user.get().getEmail());
+            return connectingInfoList != null ? connectingInfoList : Collections.emptyList(); // 빈 리스트 반환
+        } else {
+            return Collections.emptyList(); // 빈 리스트 반환
         }
     }
 
