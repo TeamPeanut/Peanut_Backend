@@ -4,13 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 
 @Getter
 @AllArgsConstructor
 public class FoodBloodSugarDto {
-    private double beforeBloodSugar;
-    private double afterBloodSugar;
+    private Map<String,LocalDateTime> beforeBloodSugar;
+    private Map<Double, LocalTime>  afterBloodSugar;
     private String msg;
 }
