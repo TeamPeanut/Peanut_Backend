@@ -78,9 +78,11 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public GetPatientResponseDto findPatientByGuardian(Long id) {
-        PatientGuardian guardiansPatient = patientGuardianRepository.findByPatientId(id);
+        PatientGuardian guardiansPatient = patientGuardianRepository.findByGuardianId(id);
         log.info("[guardiansPatient] : {}", guardiansPatient);
-
+        if (guardiansPatient == null) {
+            return null;
+        }
         User patients = guardiansPatient.getPatient();
 
             GetPatientResponseDto getPatientResponseDto = new GetPatientResponseDto(
@@ -101,6 +103,9 @@ public class UserDaoImpl implements UserDao {
         PatientGuardian guardiansPatient = patientGuardianRepository.findByPatientId(id);
         log.info("[guardiansPatient] : {}", guardiansPatient);
 
+        if (guardiansPatient == null) {
+            return null;
+        }
         User guardian = guardiansPatient.getGuardian();
 
         GetPatientResponseDto getPatientResponseDto = new GetPatientResponseDto(
