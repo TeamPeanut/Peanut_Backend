@@ -16,4 +16,10 @@ public class InsulinDaoImpl implements InsulinDao {
     public void saveInsulin(Insulin insulin) {
         insulinRepository.save(insulin);
     }
+
+    @Override
+    public Insulin getInsulinByUserId(Long userId) {
+        Insulin insulin = insulinRepository.findByUserId(userId).get();
+        return insulin;
+    }
 }

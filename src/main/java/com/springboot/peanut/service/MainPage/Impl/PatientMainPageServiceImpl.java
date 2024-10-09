@@ -89,13 +89,11 @@ public class PatientMainPageServiceImpl implements PatientMainPageService {
         boolean insulinStatus = insulin.map(Insulin::isInsulinStatus).orElse(false);
         // 상태를 필요에 따라 초기화
         if (medicineStatus) {
-            medicineStatus = getMedicineStatus(medicineStatus);
+            medicineStatus = getStatus();
         }
         if (insulinStatus) {
-            insulinStatus = getInsulinStatus(insulinStatus);
+            insulinStatus = getStatus();
         }
-        getMedicineStatus(medicineStatus);
-        getInsulinStatus(insulinStatus);
 
          List<Map<String,Map<Integer, LocalDateTime>>> bloodSugarLevels = bloodSugarList.stream()
                 .map(bloodSugar -> {
@@ -225,48 +223,25 @@ public class PatientMainPageServiceImpl implements PatientMainPageService {
         }
     }
 
-    public boolean getMedicineStatus(boolean medicineStatus) {
+    public boolean getStatus() {
         // 현재 시간 확인
         LocalTime currentTime = LocalTime.now();
 
         // 아침, 점심, 저녁 시간대에 따라 상태 초기화
         if (currentTime.isAfter(LocalTime.of(6, 0)) && currentTime.isBefore(LocalTime.of(11, 0))) {
             // 아침 시간대
-            medicineStatus = false;
+            return false;
         } else if (currentTime.isAfter(LocalTime.of(11, 0)) && currentTime.isBefore(LocalTime.of(17, 0))) {
             // 점심 시간대
-            medicineStatus = false; // 점심 시간에는 초기화
+            return false; // 점심 시간에는 초기화
         } else if (currentTime.isAfter(LocalTime.of(17, 0)) && currentTime.isBefore(LocalTime.of(22, 0))) {
             // 저녁 시간대
-            medicineStatus = false; // 저녁 시간에는 초기화
+            return false; // 저녁 시간에는 초기화
         } else {
             // 자기 전 시간대
-            medicineStatus = false; // 자기 전 시간에는 초기화
+            return false; // 자기 전 시간에는 초기화
         }
-
-        return medicineStatus;
     }
 
-    private boolean getInsulinStatus(boolean insulinStatus) {
-        // 현재 시간 확인
-        LocalTime currentTime = LocalTime.now();
-
-        // 아침, 점심, 저녁 시간대에 따라 상태 초기화
-        if (currentTime.isAfter(LocalTime.of(6, 0)) && currentTime.isBefore(LocalTime.of(11, 0))) {
-            // 아침 시간대
-            insulinStatus =false;
-        } else if (currentTime.isAfter(LocalTime.of(11, 0)) && currentTime.isBefore(LocalTime.of(17, 0))) {
-            // 점심 시간대
-            insulinStatus = false; // 점심 시간에는 초기화
-        } else if (currentTime.isAfter(LocalTime.of(17, 0)) && currentTime.isBefore(LocalTime.of(22, 0))) {
-            // 저녁 시간대
-            insulinStatus = false; // 저녁 시간에는 초기화
-        } else {
-            // 자기 전 시간대
-            insulinStatus = false; // 자기 전 시간에는 초기화
-        }
-
-        return insulinStatus;
-    }
 
 }
