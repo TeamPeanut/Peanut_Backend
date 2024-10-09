@@ -67,6 +67,13 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
+    @GetMapping("/get-guardian")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    public ResponseEntity<GetPatientResponseDto> getGuardianInfo(HttpServletRequest request) {
+        GetPatientResponseDto responseDto = userService.getGuardianInfo(request);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    }
+
     @GetMapping("/get-connecting-info")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
     public ResponseEntity<List<GetConnectingInfoDto>> getConnectingInfo(HttpServletRequest request) {
