@@ -86,10 +86,13 @@ public class GuardianMainServiceImpl implements GuardianMainService {
         String insulinName = insulin.map(Insulin::getProductName).orElse("투여 기록 없음");
         Boolean insulinAlam = insulin.map(Insulin::isInsulinStatus).orElse(false);
 
-        List<Map<Integer, LocalDateTime>> bloodSugarLevels = bloodSugarList.stream()
+        List<Map<String,Map<Integer, LocalDateTime>>> bloodSugarLevels = bloodSugarList.stream()
                 .map(bloodSugar -> {
-                    Map<Integer, LocalDateTime> map = new HashMap<>();
-                    map.put(Integer.parseInt(bloodSugar.getBloodSugarLevel()), bloodSugar.getMeasurementTime());
+                    Map<Integer, LocalDateTime> innerMap = new HashMap<>();
+                    innerMap.put(Integer.parseInt(bloodSugar.getBloodSugarLevel()), bloodSugar.getMeasurementTime());
+
+                    Map<String,Map<Integer,LocalDateTime>> map = new HashMap<>();
+                    map.put(bloodSugar.getMeasurementCondition(), innerMap);
                     return map;
                 })
                 .collect(Collectors.toList());

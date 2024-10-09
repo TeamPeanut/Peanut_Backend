@@ -10,7 +10,7 @@ import java.util.Map;
 @Getter
 @AllArgsConstructor
 public class GuardianMainPageGetAdditionalInfoDto {
-    private List<Map<Integer, LocalDateTime>> bloodSugarList;
+    private List<Map<String,Map<Integer, LocalDateTime>>> bloodSugarList;
     private String medicineName;
     private Boolean medicationAlam;
     private String insulinName;

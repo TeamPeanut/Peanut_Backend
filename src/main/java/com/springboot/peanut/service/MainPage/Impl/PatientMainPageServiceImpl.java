@@ -87,7 +87,13 @@ public class PatientMainPageServiceImpl implements PatientMainPageService {
 
         String insulinName = insulin.map(Insulin::getProductName).orElse("투여 기록 없음");
         boolean insulinStatus = insulin.map(Insulin::isInsulinStatus).orElse(false);
-
+        // 상태를 필요에 따라 초기화
+        if (medicineStatus) {
+            medicineStatus = getMedicineStatus(medicineStatus);
+        }
+        if (insulinStatus) {
+            insulinStatus = getInsulinStatus(insulinStatus);
+        }
         getMedicineStatus(medicineStatus);
         getInsulinStatus(insulinStatus);
 
