@@ -20,6 +20,7 @@ public interface UserService {
     List<GetCommunityByUserDto>getLikeCommunityByUser(HttpServletRequest request);
     UserAlamInfoDto UserAlamInfo(UserAlamInfoDto alamInfoDto,HttpServletRequest request);
     GetPatientResponseDto getPatientInfo(HttpServletRequest request);
+    GetPatientResponseDto getGuardianInfo(HttpServletRequest request);
     List<GetConnectingInfoDto> getConnectingInfo(HttpServletRequest request);
     GetUserInfoMyPage getUserInfoMyPage(HttpServletRequest request);
 }

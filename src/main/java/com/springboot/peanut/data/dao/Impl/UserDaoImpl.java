@@ -78,7 +78,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public GetPatientResponseDto findPatientByGuardian(Long id) {
-        PatientGuardian guardiansPatient = patientGuardianRepository.findByGuardianId(id);
+        PatientGuardian guardiansPatient = patientGuardianRepository.findByPatientId(id);
         log.info("[guardiansPatient] : {}", guardiansPatient);
 
         User patients = guardiansPatient.getPatient();
@@ -92,6 +92,26 @@ public class UserDaoImpl implements UserDao {
                     patients.getWeight(),
                     patients.getProfileUrl()
             );
+
+        return getPatientResponseDto;
+    }
+
+    @Override
+    public GetPatientResponseDto findGuardianByPatient(Long id) {
+        PatientGuardian guardiansPatient = patientGuardianRepository.findByPatientId(id);
+        log.info("[guardiansPatient] : {}", guardiansPatient);
+
+        User guardian = guardiansPatient.getGuardian();
+
+        GetPatientResponseDto getPatientResponseDto = new GetPatientResponseDto(
+                guardian.getId(),
+                guardian.getUserName(),
+                guardian.getGender(),
+                guardian.getBirth(),
+                guardian.getHeight(),
+                guardian.getWeight(),
+                guardian.getProfileUrl()
+        );
 
         return getPatientResponseDto;
     }

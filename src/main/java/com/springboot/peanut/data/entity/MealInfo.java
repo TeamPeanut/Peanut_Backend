@@ -43,7 +43,7 @@ public class MealInfo {
 
 
     private LocalDate create_At;
-    private LocalTime create_Time;
+    private LocalDateTime create_Time;
 
 
     // 생성자 추가
@@ -55,7 +55,7 @@ public class MealInfo {
         mealInfo.imageUrl = imageUrl;
         mealInfo.user = user;
         mealInfo.create_At = LocalDate.now();
-        mealInfo.create_Time = LocalTime.now();
+        mealInfo.create_Time = LocalDateTime.now();
         return mealInfo;
     }
 }

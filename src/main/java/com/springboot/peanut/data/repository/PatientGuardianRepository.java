@@ -10,5 +10,7 @@ public interface PatientGuardianRepository extends JpaRepository<PatientGuardian
 
     PatientGuardian findByGuardianIdAndVerified(Long guardianId, boolean verified);
     PatientGuardian findByGuardianId(Long guardianId);
+    PatientGuardian findByPatientId(Long patientId);
+
 
 }

@@ -123,7 +123,7 @@ public class FoodCheckServiceImpl implements FoodCheckService {
         Map<String,LocalDateTime> closetBloodSugarMap = new HashMap<>();
         closetBloodSugarMap.put(closetBloodSugarOpt.get().getBloodSugarLevel(),closetBloodSugarOpt.get().getCreate_At());
 
-        Map<Double, LocalTime> expectedBloodSugarMap = new HashMap<>();
+        Map<Double, LocalDateTime> expectedBloodSugarMap = new HashMap<>();
         // 각 식사 기록에서 예상 혈당 수치를 추출
         for (MealInfo mealInfo : mealInfoList) {
             totalExpectedBloodSugar += mealInfo.getExpectedBloodSugar();

@@ -12,6 +12,6 @@ import java.util.Map;
 @AllArgsConstructor
 public class FoodBloodSugarDto {
     private Map<String,LocalDateTime> beforeBloodSugar;
-    private Map<Double, LocalTime>  afterBloodSugar;
+    private Map<Double, LocalDateTime>  afterBloodSugar;
     private String msg;
 }
