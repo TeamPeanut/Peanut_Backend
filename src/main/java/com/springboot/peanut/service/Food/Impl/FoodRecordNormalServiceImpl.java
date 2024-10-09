@@ -135,6 +135,8 @@ public class FoodRecordNormalServiceImpl implements FoodRecordNormalService {
 
         return resultDto;
     }
+
+
     private double calculateExpectedBloodSugar(Long userId, List<Integer> servingCounts, List<FoodNutrition> foodNutritionList) {
         // 사용자 아이디로 최근 혈당 기록 가져오기
         Optional<BloodSugar> currentBloodSugarOpt = bloodSugarRepository.findClosestBloodSugar(userId);

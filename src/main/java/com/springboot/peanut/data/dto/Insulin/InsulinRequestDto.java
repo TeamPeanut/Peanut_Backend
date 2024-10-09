@@ -13,5 +13,4 @@ public class InsulinRequestDto {
 
     private List<String> administrationTime;
 
-    private boolean alam;
 }

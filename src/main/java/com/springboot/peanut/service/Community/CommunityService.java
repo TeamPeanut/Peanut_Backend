@@ -10,6 +10,9 @@ import java.util.List;
 
 public interface CommunityService {
     ResultDto createCommunity(CommunityRequestDto communityRequestDto, HttpServletRequest request);
+    ResultDto updateCommunity(Long id,CommunityRequestDto communityRequestDto, HttpServletRequest request);
+    ResultDto deleteCommunity(Long id, HttpServletRequest request);
     CommunityDetailResponseDto detailsCommunity(Long id, HttpServletRequest request);
     List<CommunityResponseDto>getAllCommunity(HttpServletRequest request);
+
 }

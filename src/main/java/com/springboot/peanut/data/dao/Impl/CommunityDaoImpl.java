@@ -33,6 +33,11 @@ public class CommunityDaoImpl implements CommunityDao {
     }
 
     @Override
+    public void deleteCommunityById(Long id) {
+        communityRepository.deleteById(id);
+    }
+
+    @Override
     public CommunityDetailResponseDto findCommunityById(Long id) {
         Community community = communityRepository.findById(id).get();
         boolean liked = likeRepository.existsByUserIdAndLikedTrue(community.getId());

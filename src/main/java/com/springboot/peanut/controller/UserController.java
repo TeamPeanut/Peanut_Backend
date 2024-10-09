@@ -33,21 +33,21 @@ public class UserController {
 
     @PutMapping("/update")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-    ResponseEntity<ResultDto> updateUserInfo(UserUpdateRequestDto requestDto, @RequestPart("image") MultipartFile image, HttpServletRequest request) throws IOException {
+    public ResponseEntity<ResultDto> updateUserInfo(UserUpdateRequestDto requestDto, @RequestPart("image") MultipartFile image, HttpServletRequest request) throws IOException {
         ResultDto resultDto = userService.updateAdditionalUserInfo(requestDto, image, request);
         return ResponseEntity.status(HttpStatus.OK).body(resultDto);
     }
 
     @GetMapping("/connect/get-patient")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-    ResponseEntity<PatientConnectingResponse> getPatient(String email, HttpServletRequest request) {
+    public ResponseEntity<PatientConnectingResponse> getPatient(String email, HttpServletRequest request) {
         PatientConnectingResponse response = userService.getPatientConnectingInfo(email, request);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PostMapping("/connect/send-code")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-    ResponseEntity<Map<String, String>> sendInviteCode(HttpServletRequest request) throws Exception {
+    public ResponseEntity<Map<String, String>> sendInviteCode(HttpServletRequest request) throws Exception {
         Map<String, String> map = userService.sendInviteCode(request);
         return ResponseEntity.status(HttpStatus.OK).body(map);
     }
@@ -62,28 +62,35 @@ public class UserController {
 
     @GetMapping("/get-patient")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-    public ResponseEntity<List<GetPatientResponseDto>> getPatientInfo(HttpServletRequest request) {
-        List<GetPatientResponseDto> responseDto = userService.getPatientInfo(request);
+    public ResponseEntity<GetPatientResponseDto> getPatientInfo(HttpServletRequest request) {
+        GetPatientResponseDto responseDto = userService.getPatientInfo(request);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    }
+
+    @GetMapping("/get-connecting-info")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    public ResponseEntity<List<GetConnectingInfoDto>> getConnectingInfo(HttpServletRequest request) {
+        List<GetConnectingInfoDto> responseDto = userService.getConnectingInfo(request);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
     @GetMapping("/create/community")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-    ResponseEntity<List<GetCommunityByUserDto>> getCreateCommunityByUser(HttpServletRequest request) {
+    public ResponseEntity<List<GetCommunityByUserDto>> getCreateCommunityByUser(HttpServletRequest request) {
         List<GetCommunityByUserDto> communityList = userService.getCreateCommunityByUser(request);
         return ResponseEntity.status(HttpStatus.OK).body(communityList);
     }
 
     @GetMapping("/comment/community")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-    ResponseEntity<List<GetCommunityByUserDto>> getCommentAllCommunityByUser(HttpServletRequest request) {
+    public ResponseEntity<List<GetCommunityByUserDto>> getCommentAllCommunityByUser(HttpServletRequest request) {
         List<GetCommunityByUserDto> communityList = userService.getCommentCommunityByUser(request);
         return ResponseEntity.status(HttpStatus.OK).body(communityList);
     }
 
     @GetMapping("/like/community")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-    ResponseEntity<List<GetCommunityByUserDto>> getLikeCommunityByUser(HttpServletRequest request) {
+    public ResponseEntity<List<GetCommunityByUserDto>> getLikeCommunityByUser(HttpServletRequest request) {
         List<GetCommunityByUserDto> communityList = userService.getLikeCommunityByUser(request);
         return ResponseEntity.status(HttpStatus.OK).body(communityList);
     }

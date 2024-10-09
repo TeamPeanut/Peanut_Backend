@@ -11,6 +11,7 @@ public interface CommunityDao {
     void saveCommunity(Community community);
     CommunityDetailResponseDto findCommunityById(Long id);
     Community getCommunityById(Long id);
+    void deleteCommunityById(Long id);
     List<CommunityResponseDto> getAllCommunity();
     List<GetCommunityByUserDto> getCreateAllCommunityByUser(Long userId);
     List<GetCommunityByUserDto> getCommentAllCommunityByUser(Long userId);
