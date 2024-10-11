@@ -27,15 +27,25 @@ public class MealDaoImpl implements MealDao {
         mealInfoRepository.save(mealInfo);
     }
 
-    @Override
-    public List<FoodNameNutrionDto> getMealInfoByEatTime(LocalDate date, Long userId , String eatTime) {
-        Optional<List<MealInfo>> mealInfoList = mealInfoRepository.getMealInfoListByEatTime(date,userId,eatTime);
-        for(MealInfo mealInfo : mealInfoList.get()){
-            List<String> foodNames = mealInfo.getFoodNutritionList().stream()
-                    .map(FoodNutrition::getName)
-                    .collect(Collectors.toList());
-        }
+//    @Override
+//    public List<FoodNameNutrionDto> getMealInfoByEatTime(LocalDate date, Long userId , String eatTime) {
+//        Optional<List<MealInfo>> mealInfoList = mealInfoRepository.getMealInfoListByEatTime(date,userId,eatTime);
+//        for(MealInfo mealInfo : mealInfoList.get()){
+//            List<String> foodNames = mealInfo.getFoodNutritionList().stream()
+//                    .map(FoodNutrition::getName)
+//                    .collect(Collectors.toList());
+//        }
+//
+//        return List.of();
+//    }
 
-        return List.of();
+    @Override
+    public Optional<List<MealInfo>> getByUserAllMealInfo(LocalDate date, Long userId) {
+        return mealInfoRepository.getByUserAllMealInfo(date,userId);
+    }
+
+    @Override
+    public Optional<MealInfo> getMealInfoByEatTime(LocalDate date, Long userId, String eatTime) {
+        return mealInfoRepository.getMealInfoByEatTime(date,userId,eatTime);
     }
 }
