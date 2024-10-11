@@ -1,9 +1,6 @@
 package com.springboot.peanut.service.MainPage.Impl;
 
-import com.springboot.peanut.data.dao.BloodSugarDao;
-import com.springboot.peanut.data.dao.InsulinDao;
-import com.springboot.peanut.data.dao.MealDao;
-import com.springboot.peanut.data.dao.MedicineDao;
+import com.springboot.peanut.data.dao.*;
 import com.springboot.peanut.data.dto.food.FoodAllDetailDto;
 import com.springboot.peanut.data.dto.mainPage.MedicineInsulinStatusRequestDto;
 import com.springboot.peanut.data.dto.mainPage.PatientMainPageGetAdditionalInfoDto;
@@ -12,6 +9,7 @@ import com.springboot.peanut.data.dto.signDto.ResultDto;
 import com.springboot.peanut.data.entity.*;
 import com.springboot.peanut.data.repository.BloodSugar.BloodSugarRepository;
 import com.springboot.peanut.data.repository.Insulin.InsulinRepository;
+import com.springboot.peanut.data.repository.InsulinRecord.InsulinRecordRepository;
 import com.springboot.peanut.data.repository.Intake.IntakeRepository;
 import com.springboot.peanut.data.repository.MealInfo.MealInfoRepository;
 import com.springboot.peanut.data.repository.Medicine.MedicineRepository;
@@ -40,12 +38,12 @@ public class PatientMainPageServiceImpl implements PatientMainPageService {
 
     private final BloodSugarDao bloodSugarDao;
     private final IntakeRepository intakeRepository;
-    private final InsulinRepository insulinRepository;
+    private final InsulinRecordDao insulinRecordDao;
     private final JwtAuthenticationService jwtAuthenticationService;
     private final MealDao mealDao;
     private final NotificationService notificationService;
     private final ResultStatusService resultStatusService;
-    private final MedicineDao medicineDao;
+    private final MedicineRecordDao medicineRecordDao;
     private final InsulinDao insulinDao;
     private  final MainPageTimeService mainPageTimeService;
 
@@ -77,21 +75,35 @@ public class PatientMainPageServiceImpl implements PatientMainPageService {
     @Override
     public PatientMainPageGetAdditionalInfoDto getAdditionalInfoMainPage(HttpServletRequest request,LocalDate date) {
         Optional<User> user = jwtAuthenticationService.authenticationToken(request);
-        Optional<Intake> intake = intakeRepository.findByTodayIntakeStatus(user.get().getId(), date);
+        Optional<Intake> intakeInfo = intakeRepository.findByTodayIntakeStatus(user.get().getId(), date);
         List<BloodSugar> bloodSugarList = bloodSugarDao.findTodayBloodSugar(user.get().getId(),date);
         List<Medicine> medicineList = mainPageTimeService.getMedicineListByTime(user.get().getId());
-        Insulin insulin = mainPageTimeService.getInsulinyTime(user.get().getId());
+        Optional<MedicineRecord> medicineRecordInfo = mainPageTimeService.getMedicineRecordByTime(user.get().getId(),date);
+        Insulin insulin = insulinDao.getInsulinByUserId(user.get().getId());
+        InsulinRecord insulinRecord = mainPageTimeService.getInsulinRecordTime(user.get().getId(),date);
 
-        String medicineName = medicineList.get(0).getMedicineName();
-        String medicineTime = intake.map(i ->
-                i.getIntakeTime().isEmpty() ? "오늘 복용 없음" : i.getIntakeTime().get(0)
-        ).orElse("투여 기록 없음");
-        boolean medicineStatus = medicineList.get(0).isMedicationStatus();
 
+        // 약 목록에서 첫 번째 약만 가져오는 로직
+        Medicine medicine = medicineList.isEmpty() ? null : medicineList.get(0);  // 첫 번째 약만 선택
+        String medicineName = (medicine != null) ? medicine.getMedicineName() : "약 정보 없음";
+
+        // 복약 시간 추출
+        List<String> intakeTimes = medicine != null ? medicine.getIntakes().stream()
+                .flatMap(intake -> intake.getIntakeTime().stream())
+                .collect(Collectors.toList()) : new ArrayList<>();
+
+        String medicineTime = mainPageTimeService.getIntakeTimeByCurrentTime(intakeTimes);  // 시간대별로 처리
+
+
+        boolean medicineStatus = medicineRecordInfo.get().isMedicineStatus();
+
+        //인슐린 관련 로직
         String insulinName = insulin.getProductName();
-        boolean insulinStatus = insulin.isInsulinStatus();
+        boolean insulinStatus = insulinRecord.isInsulinStatus();
         List<String> insulinTimeList = insulin.getAdministrationTime();
         String insulinTime = mainPageTimeService.getInsulinTimeByCurrentTime(insulinTimeList);
+        String insulinDosage = insulin.getDosage();
+
         // 상태를 필요에 따라 초기화
         if (medicineStatus) {
             medicineStatus = mainPageTimeService.getStatus(medicineStatus);
@@ -121,7 +133,8 @@ public class PatientMainPageServiceImpl implements PatientMainPageService {
                 medicineTime,
                 insulinName,
                 insulinStatus,
-                insulinTime
+                insulinTime,
+                insulinDosage
         );
     }
 
@@ -134,41 +147,71 @@ public class PatientMainPageServiceImpl implements PatientMainPageService {
         Long userId = user.get().getId();
 
         // Medicine과 Insulin 정보를 가져온다
-        List<Medicine> medicineList = mainPageTimeService.getMedicineListByTime(user.get().getId());
-        Insulin insulin = mainPageTimeService.getInsulinyTime(userId);
+        List<Medicine> medicineList = mainPageTimeService.getMedicineListByTime(userId);
+        Insulin insulin = insulinDao.getInsulinByUserId(userId);
 
         boolean newMedicineStatus = medicineInsulinStatusRequestDto.isMedicineStatus();
         boolean newInsulinStatus = medicineInsulinStatusRequestDto.isInsulinStatus();
 
         try {
             // Medicine 상태 업데이트
-            if(medicineList != null && !medicineList.isEmpty()) {
-                for(Medicine medicine : medicineList) {
-                    medicine.updateMedicationStatus(newMedicineStatus);
-                    medicineDao.saveMedicineInfo(medicine);
-                    log.info("[medicine] : {}" ,medicine);
+            if (medicineList != null && !medicineList.isEmpty()) {
+                for (Medicine medicine : medicineList) {
+                    // 기존에 같은 날짜에 기록된 MedicineRecord가 있는지 확인
+                    Optional<List<MedicineRecord>>  existingRecord = medicineRecordDao.findMedicineRecordByUserId(userId, date);
+
+                    if (existingRecord.isPresent()) {
+                        // 기존 레코드가 있으면 상태만 업데이트
+                        MedicineRecord medicineRecord = existingRecord.get().get(0);
+                        medicineRecord.setMedicineStatus(newMedicineStatus);  // 상태만 업데이트
+                        log.info("[medicine] : {} 기존 레코드 상태 업데이트 완료", medicine.getMedicineName());
+                    } else {
+                        // 기존 레코드가 없으면 새 레코드 생성
+                        MedicineRecord newMedicineRecord = MedicineRecord.createInsulinRecord(
+                                date,
+                                newMedicineStatus,
+                                user.get(),
+                                medicine
+                        );
+                        medicineRecordDao.saveMedicineRecord(newMedicineRecord);
+                        log.info("[medicine] : {} 새로운 상태 저장 완료", medicine.getMedicineName());
+                    }
                     resultDto.setDetailMessage("약 상태 저장 완료");
                     resultStatusService.setSuccess(resultDto);
                 }
-            }else {
+            } else {
                 resultDto.setDetailMessage("저장된 복용 정보가 없습니다.");
                 resultStatusService.setSuccess(resultDto);
             }
 
-            if(insulin != null) {
-                    insulin.updateInsulinStatus(newInsulinStatus);
-                    insulinDao.saveInsulin(insulin);
-                    log.info("[medicine] : {}" ,insulin);
-                    resultDto.setDetailMessage("약 상태 저장 완료");
-                    resultStatusService.setSuccess(resultDto);
+            // Insulin 상태 업데이트
+            if (insulin != null) {
+                // 기존에 같은 날짜에 기록된 InsulinRecord가 있는지 확인
+                Optional<InsulinRecord> existingInsulinRecord = insulinRecordDao.findInsulinRecordByUserId(userId, date);
 
-            }else {
-                resultDto.setDetailMessage("저장된 복용 정보가 없습니다.");
+                if (existingInsulinRecord.isPresent()) {
+                    // 기존 레코드가 있으면 상태만 업데이트
+                    InsulinRecord insulinRecord = existingInsulinRecord.get();
+                    insulinRecord.setInsulinStatus(newInsulinStatus);  // 상태만 업데이트
+                    log.info("[insulin] : {} 기존 레코드 상태 업데이트 완료", insulin.getProductName());
+                } else {
+                    // 기존 레코드가 없으면 새 레코드 생성
+                    InsulinRecord newInsulinRecord = InsulinRecord.createInsulinRecord(
+                            date,
+                            newInsulinStatus,
+                            user.get(),
+                            insulin
+                    );
+                    insulinRecordDao.saveInsulinRecord(newInsulinRecord);
+                    log.info("[insulin] : {} 새로운 상태 저장 완료", insulin.getProductName());
+                }
+                resultDto.setDetailMessage("인슐린 상태 저장 완료");
+                resultStatusService.setSuccess(resultDto);
+            } else {
+                resultDto.setDetailMessage("저장된 인슐린 정보가 없습니다.");
                 resultStatusService.setSuccess(resultDto);
             }
 
-            resultDto.setDetailMessage("저장 완료");
-            resultStatusService.setSuccess(resultDto);
         } catch (Exception e) {
             log.error("Error while saving medication/insulin status", e);
             resultDto.setDetailMessage("저장 실패");
