@@ -6,6 +6,8 @@ import com.springboot.peanut.data.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class AuthDaoImpl implements AuthDao {
@@ -17,7 +19,7 @@ public class AuthDaoImpl implements AuthDao {
     }
 
     @Override
-    public User kakaoUserFind(String email) {
+    public Optional<User> kakaoUserFind(String email) {
         return userRepository.findByEmail(email);
     }
 

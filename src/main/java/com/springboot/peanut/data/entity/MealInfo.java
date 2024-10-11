@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,10 +43,11 @@ public class MealInfo {
 
 
     private LocalDate create_At;
+    private LocalDateTime create_Time;
 
 
     // 생성자 추가
-    public static MealInfo MealInfo(String eatTime, String imageUrl,double expectedBloodSugar, List<FoodNutrition> foodNutritionList, User user) {
+    public static MealInfo createMeal(String eatTime, String imageUrl,double expectedBloodSugar, List<FoodNutrition> foodNutritionList, User user) {
         MealInfo mealInfo = new MealInfo();
         mealInfo.eatTime = eatTime;
         mealInfo.expectedBloodSugar = expectedBloodSugar;
@@ -52,6 +55,7 @@ public class MealInfo {
         mealInfo.imageUrl = imageUrl;
         mealInfo.user = user;
         mealInfo.create_At = LocalDate.now();
+        mealInfo.create_Time = LocalDateTime.now();
         return mealInfo;
     }
 }

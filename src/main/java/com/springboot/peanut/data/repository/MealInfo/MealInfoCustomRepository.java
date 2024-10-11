@@ -9,5 +9,6 @@ import java.util.Optional;
 public interface MealInfoCustomRepository {
     Optional<List<MealInfo>> getByUserAllMealInfo(LocalDate date,Long userId);
     Optional<MealInfo> getMealInfoByEatTime(LocalDate date,Long id,String eatTime);
+    Optional<List<MealInfo>> getMealInfoListByEatTime(LocalDate date, Long userId, String eatTime);
 
-}
+    }

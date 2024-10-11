@@ -2,7 +2,7 @@ package com.springboot.peanut.data.repository.FoodNutrition.Impl;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.springboot.peanut.data.entity.FoodNutrition;
-import com.springboot.peanut.entity.QFoodNutrition;
+import com.springboot.peanut.data.entity.QFoodNutrition;
 import com.springboot.peanut.data.repository.FoodNutrition.FoodNutritionRepositoryCustom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,12 +21,13 @@ public class FoodNutritionRepositoryCustomImpl implements FoodNutritionRepositor
 
         return jpaQueryFactory
                 .selectFrom(qFoodNutrition)
-                .where(qFoodNutrition.englishName.in(foodName))
+                .where(qFoodNutrition.englishName.in(foodName)
+                        .or(qFoodNutrition.name.in(foodName)))
                 .fetch();
     }
 
     @Override
-    public List<FoodNutrition> findFoodNutritionByFoodNameKor(String foodName) {
+    public List<FoodNutrition> findFoodNutritionByFoodNameKor(List<String> foodName) {
         QFoodNutrition qFoodNutrition = QFoodNutrition.foodNutrition;
 
         return  jpaQueryFactory

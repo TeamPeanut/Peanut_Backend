@@ -2,7 +2,7 @@ package com.springboot.peanut.data.repository.BloodSugar.Impl;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.springboot.peanut.data.entity.BloodSugar;
-import com.springboot.peanut.entity.QBloodSugar;
+import com.springboot.peanut.data.entity.QBloodSugar;
 import com.springboot.peanut.data.repository.BloodSugar.BloodSugarRepositoryCustom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -66,4 +66,16 @@ public class BloodSugarRepositoryCustomImpl implements BloodSugarRepositoryCusto
                 .fetch();
     }
 
+    @Override
+    public List<BloodSugar> findByUserAndMonth(Long userId, int year, int month) {
+        QBloodSugar bloodSugar = QBloodSugar.bloodSugar; // Q-타입 인스턴스 생성
+
+        return jpaQueryFactory
+                .selectFrom(bloodSugar)
+                .where(bloodSugar.user.id.eq(userId)
+                        .and(bloodSugar.measurementTime.month().eq(month))
+                        .and(bloodSugar.measurementTime.year().eq(year)))
+                .fetch();
+
+    }
 }

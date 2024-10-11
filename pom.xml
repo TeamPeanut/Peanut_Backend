@@ -122,6 +122,10 @@
             <artifactId>netty-all</artifactId>
             <version>4.1.69.Final</version> <!-- 최신 버전으로 변경 -->
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

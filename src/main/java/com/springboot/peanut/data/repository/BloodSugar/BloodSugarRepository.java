@@ -4,8 +4,10 @@ import com.springboot.peanut.data.entity.BloodSugar;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BloodSugarRepository extends JpaRepository<BloodSugar,Long>,BloodSugarRepositoryCustom {
     BloodSugar findBloodSugarByUserId(Long userId);
     List<BloodSugar> findAllByUserId(Long userId);
+
 }

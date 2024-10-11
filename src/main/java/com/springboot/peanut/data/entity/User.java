@@ -2,6 +2,7 @@ package com.springboot.peanut.data.entity;
 
 import com.springboot.peanut.data.dto.signDto.AdditionalInfoDto;
 import com.springboot.peanut.data.dto.signDto.KakaoResponseDto;
+import com.springboot.peanut.data.dto.user.UserAlamInfoDto;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -50,11 +51,15 @@ public class User implements UserDetails {
 
     private String loginMethod;
 
+    private boolean guardianAlam = false;
+
+    private boolean medicationAlam = false;
+
+    private boolean insulinAlam = false;
+
     private LocalDateTime create_At;
 
     private LocalDateTime update_At;
-
-    private String pcRole;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
@@ -79,6 +84,31 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<CommunityLike> communityLikes = new ArrayList<>();
+
+    // 환자의 보호자 관계들
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PatientGuardian> patientGuardians = new ArrayList<>();
+
+    // 보호자의 환자 관계들
+    @OneToMany(mappedBy = "guardian", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PatientGuardian> guardianPatients = new ArrayList<>();
+
+    @OneToMany(mappedBy = "patient",cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notification> patientNotifications = new ArrayList<>();
+
+    @OneToMany(mappedBy = "guardian",cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notification> guardianNotifications = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<MedicalNote> medicalNotes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<InsulinRecord> insulinRecords = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<DailyStatus> dailyStatuses = new ArrayList<>();
 
 
     @Override
@@ -145,6 +175,7 @@ public class User implements UserDetails {
                 .update_At(LocalDateTime.now())
                 .build();
     }
+
 
 
     public void addKakaoAdditionalInfo(AdditionalInfoDto additionalInfoDto) {

@@ -48,10 +48,12 @@ public class SecurityConfig extends  WebSecurityConfigurerAdapter{
                 .cors()
                 .and()
                 .authorizeRequests() // 리퀘스트에 대한 사용권한 체크
-                .antMatchers("/api/sign-api/**","/api/auth",
+                .antMatchers("/api/sign/**",
                         "/api/sign-api/exception","/api/auth/**").permitAll() // 가입 및 로그인 주소는 허용
                 .antMatchers("/api/predict-api/**").authenticated()
                 .antMatchers("/api/main-api/**").authenticated()
+                .antMatchers("/api/blood-sugar/**").authenticated()
+                .antMatchers("/api/notification/**").authenticated()
                 .antMatchers("**exception**").permitAll()
                 .and()
                 .exceptionHandling().accessDeniedHandler(new CustomAccessDeniedHandler())

@@ -8,8 +8,10 @@ import com.springboot.peanut.data.repository.BloodSugar.BloodSugarRepository;
 import com.springboot.peanut.data.repository.Insulin.InsulinRepository;
 import com.springboot.peanut.data.repository.MealInfo.MealInfoRepository;
 import com.springboot.peanut.data.repository.Medicine.MedicineRepository;
+import com.springboot.peanut.data.repository.PatientGuardianRepository;
 import com.springboot.peanut.jwt.JwtAuthenticationService;
-import com.springboot.peanut.service.MainPage.GuardianMainPageService;
+import com.springboot.peanut.service.MainPage.GuardianMainService;
+import com.springboot.peanut.service.notification.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,17 +28,23 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class GuardianGuardianMainPageServiceImpl implements GuardianMainPageService {
-
+public class GuardianMainServiceImpl implements GuardianMainService {
     private final BloodSugarRepository bloodSugarRepository;
     private final MedicineRepository medicineRepository;
     private final InsulinRepository insulinRepository;
     private final JwtAuthenticationService jwtAuthenticationService;
     private final MealInfoRepository mealInfoRepository;
+    private final NotificationService notificationService;
+    private final PatientGuardianRepository patientGuardianRepository;
 
     @Override
-    public MainPageGetUserDto getUserInfoMainPage(HttpServletRequest request) {
-        User user = jwtAuthenticationService.authenticationToken(request);
+    public MainPageGetUserDto getPatientUserInfoMainPage(HttpServletRequest request) {
+        Optional<User> guardian = jwtAuthenticationService.authenticationToken(request);
+        PatientGuardian patientGuardian = patientGuardianRepository.findByGuardianId(guardian.get().getId());
+        User user = patientGuardian.getPatient();
+
+
+
         // 사용자 공복 혈당
         Optional<BloodSugar> fastingBloodSugar = bloodSugarRepository.findFastingBloodSugar(user.getId());
         String fastingBloodSugarLevel = fastingBloodSugar
@@ -60,24 +68,30 @@ public class GuardianGuardianMainPageServiceImpl implements GuardianMainPageServ
     }
 
     @Override
-    public GuardianMainPageGetAdditionalInfoDto getAdditionalInfoMainPage(HttpServletRequest request, LocalDate date) {
-        User user = jwtAuthenticationService.authenticationToken(request);
+    public GuardianMainPageGetAdditionalInfoDto getPatientAdditionalInfoMainPage(HttpServletRequest request, LocalDate date) {
+        Optional<User> guardian = jwtAuthenticationService.authenticationToken(request);
+        PatientGuardian patientGuardian = patientGuardianRepository.findByGuardianId(guardian.get().getId());
+        User user = patientGuardian.getPatient();
+
 
         Optional<Medicine> medicine = medicineRepository.findByTodayMedicineInfo(user.getId(), date);
         Optional<Insulin> insulin = insulinRepository.findByTodayInsulinName(user.getId(),date);
         List<BloodSugar> bloodSugarList = bloodSugarRepository.findTodayBloodSugar(user.getId(),date);
 
 
-       String medicineName = medicine.map(Medicine::getMedicineName).orElse("복용 기록 없음");
-       Boolean medicineAlam = medicine.map(Medicine::isAlam).orElse(false);
+        String medicineName = medicine.map(Medicine::getMedicineName).orElse("복용 기록 없음");
+        Boolean medicineAlam = medicine.map(Medicine::isMedicationStatus).orElse(false);
 
-       String insulinName = insulin.map(Insulin::getProductName).orElse("투여 기록 없음");
-       Boolean insulinAlam = insulin.map(Insulin::isAlam).orElse(false);
+        String insulinName = insulin.map(Insulin::getProductName).orElse("투여 기록 없음");
+        Boolean insulinAlam = insulin.map(Insulin::isInsulinStatus).orElse(false);
 
-        List<Map<Integer, LocalDateTime>> bloodSugarLevels = bloodSugarList.stream()
+        List<Map<String,Map<Integer, LocalDateTime>>> bloodSugarLevels = bloodSugarList.stream()
                 .map(bloodSugar -> {
-                    Map<Integer, LocalDateTime> map = new HashMap<>();
-                    map.put(Integer.parseInt(bloodSugar.getBloodSugarLevel()), bloodSugar.getMeasurementTime());
+                    Map<Integer, LocalDateTime> innerMap = new HashMap<>();
+                    innerMap.put(Integer.parseInt(bloodSugar.getBloodSugarLevel()), bloodSugar.getMeasurementTime());
+
+                    Map<String,Map<Integer,LocalDateTime>> map = new HashMap<>();
+                    map.put(bloodSugar.getMeasurementCondition(), innerMap);
                     return map;
                 })
                 .collect(Collectors.toList());
@@ -93,15 +107,17 @@ public class GuardianGuardianMainPageServiceImpl implements GuardianMainPageServ
 
     //식사 기록 조회 (전체)
     @Override
-    public FoodAllDetailDto getFoodAllDetail(LocalDate date,HttpServletRequest request) {
-        User user = jwtAuthenticationService.authenticationToken(request);
+    public FoodAllDetailDto getPatientFoodAllDetail(LocalDate date, HttpServletRequest request) {
+        Optional<User> guardian = jwtAuthenticationService.authenticationToken(request);
+        PatientGuardian patientGuardian = patientGuardianRepository.findByGuardianId(guardian.get().getId());
+        User user = patientGuardian.getPatient();
+
 
         Optional<List<MealInfo>> mealInfoList = mealInfoRepository.getByUserAllMealInfo(date,user.getId());
 
         double totalProtein = 0.0;
         double totalCarbohydrate = 0.0;
         double totalFat = 0.0;
-
 
         for(MealInfo mealInfo : mealInfoList.get()){
             totalProtein += mealInfo.getFoodNutritionList().stream()
@@ -124,27 +140,31 @@ public class GuardianGuardianMainPageServiceImpl implements GuardianMainPageServ
 
     // 식사 시간에 따른 식사 기록 조회
     @Override
-    public FoodAllDetailDto getFoodDetailByEatTime(LocalDate date,String eatTime, HttpServletRequest request) {
-        User user = jwtAuthenticationService.authenticationToken(request);
+    public FoodAllDetailDto getPatientFoodDetailByEatTime(LocalDate date,String eatTime, HttpServletRequest request) {
+        Optional<User> guardian = jwtAuthenticationService.authenticationToken(request);
+        PatientGuardian patientGuardian = patientGuardianRepository.findByGuardianId(guardian.get().getId());
+        User user = patientGuardian.getPatient();
+
+
         Optional<MealInfo> mealInfoOptional = mealInfoRepository.getMealInfoByEatTime(date,user.getId(),eatTime);
         log.info("[mealInfoOptional] {} : " + mealInfoOptional);
 
         if(mealInfoOptional.isPresent()){
 
-        MealInfo mealInfo = mealInfoOptional.get();
-        log.info("[mealInfo] : {}" + mealInfo);
+            MealInfo mealInfo = mealInfoOptional.get();
+            log.info("[mealInfo] : {}" + mealInfo);
 
-        List<FoodNutrition> foodNutritionList = mealInfo.getFoodNutritionList();
-        log.info("[foodNutritionList] : {}" + foodNutritionList);
+            List<FoodNutrition> foodNutritionList = mealInfo.getFoodNutritionList();
+            log.info("[foodNutritionList] : {}" + foodNutritionList);
 
-        double protein = 0.0;
-        double carbohydrate = 0.0;
-        double totalFat  = 0.0;
+            double protein = 0.0;
+            double carbohydrate = 0.0;
+            double totalFat  = 0.0;
 
-        for(FoodNutrition foodNutrition : foodNutritionList){
-             protein += foodNutrition.getProtein();
-             carbohydrate+= foodNutrition.getCarbohydrate();
-             totalFat += foodNutrition.getFat();
+            for(FoodNutrition foodNutrition : foodNutritionList){
+                protein += foodNutrition.getProtein();
+                carbohydrate+= foodNutrition.getCarbohydrate();
+                totalFat += foodNutrition.getFat();
             }
 
             return new FoodAllDetailDto(

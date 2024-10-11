@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface FoodRecordNormalService {
-    List<FoodNutritionDto> getFoodNutritionByName(String name, HttpServletRequest request);
+    List<FoodNutritionDto> getFoodNutritionByName(List<String> name, HttpServletRequest request);
     ResultDto saveNormalMealInfoImage(MultipartFile foodImage, HttpServletRequest request) throws IOException;
-    ResultDto saveNormalMealInfo(String mealTime, int servingCount, HttpServletRequest request);
+    ResultDto saveNormalMealInfo(String mealTime, List<Integer> servingCount, HttpServletRequest request);
 }

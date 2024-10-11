@@ -1,12 +1,14 @@
 package com.springboot.peanut.controller;
 
 import com.springboot.peanut.data.dto.bloodSugar.BloodSugarRequestDto;
+import com.springboot.peanut.data.dto.bloodSugar.MonthlyBloodSugarStatus;
 import com.springboot.peanut.data.dto.signDto.ResultDto;
 import com.springboot.peanut.service.User.BloodSugarService;
 import io.swagger.annotations.ApiImplicitParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,5 +29,13 @@ public class BloodSugarController {
         ResultDto resultDto = bloodSugarService.saveBloodSugar(bloodSugarRequestDto,request);
         return ResponseEntity.status(HttpStatus.OK).body(resultDto);
     }
+
+    @GetMapping("/monthly-report")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    public ResponseEntity<MonthlyBloodSugarStatus> getMonthlyBloodSugarStatus(int year, int month, HttpServletRequest request){
+        MonthlyBloodSugarStatus monthlyBloodSugarStatus = bloodSugarService.getMonthlyBloodSugarStatus(year,month,request);
+        return ResponseEntity.status(HttpStatus.OK).body(monthlyBloodSugarStatus);
+    }
+
 
 }
