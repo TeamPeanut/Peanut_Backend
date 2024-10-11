@@ -16,5 +16,6 @@ public class PatientMainPageGetAdditionalInfoDto {
     private String insulinName;
     private Boolean insulinState;
     private String insulinTime;
+    private String insulinDosage;
 
 }

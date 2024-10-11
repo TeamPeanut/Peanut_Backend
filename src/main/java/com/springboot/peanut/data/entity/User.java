@@ -105,6 +105,9 @@ public class User implements UserDetails {
     private List<MedicalNote> medicalNotes = new ArrayList<>();
 
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<InsulinRecord> insulinRecords = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<DailyStatus> dailyStatuses = new ArrayList<>();
 
 
