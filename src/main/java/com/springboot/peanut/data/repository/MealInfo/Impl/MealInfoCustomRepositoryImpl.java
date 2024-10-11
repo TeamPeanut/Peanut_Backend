@@ -39,4 +39,16 @@ public class MealInfoCustomRepositoryImpl implements MealInfoCustomRepository {
                         .and(qMealInfo.eatTime.eq(eatTime)))
                 .fetchOne());
     }
+
+    @Override
+    public Optional<List<MealInfo>> getMealInfoListByEatTime(LocalDate date, Long userId, String eatTime) {
+        QMealInfo qMealInfo = QMealInfo.mealInfo;
+
+        return Optional.ofNullable(jpaQueryFactory
+                .selectFrom(qMealInfo)
+                .where(qMealInfo.user.id.eq(userId)
+                        .and(qMealInfo.create_At.eq(date))
+                        .and(qMealInfo.eatTime.eq(eatTime)))
+                .fetch());
+    }
 }

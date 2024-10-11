@@ -4,4 +4,5 @@ import com.springboot.peanut.data.entity.Insulin;
 
 public interface InsulinDao {
     void saveInsulin(Insulin insulin);
+    Insulin getInsulinByUserId(Long userId);
 }

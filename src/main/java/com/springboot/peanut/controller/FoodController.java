@@ -1,9 +1,6 @@
 package com.springboot.peanut.controller;
 
-import com.springboot.peanut.data.dto.food.FoodCheckListDto;
-import com.springboot.peanut.data.dto.food.FoodDetailInfoDto;
-import com.springboot.peanut.data.dto.food.FoodNutritionDto;
-import com.springboot.peanut.data.dto.food.FoodPredictResponseDto;
+import com.springboot.peanut.data.dto.food.*;
 import com.springboot.peanut.data.dto.signDto.ResultDto;
 import com.springboot.peanut.service.Food.FoodAIService;
 import com.springboot.peanut.service.Food.FoodCheckService;
@@ -33,66 +30,81 @@ public class FoodController {
     @PostMapping("/ai/predict")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
     public ResponseEntity<FoodPredictResponseDto> BlockPlay(
-            @RequestPart("foodImage") MultipartFile foodImage,HttpServletRequest request) throws IOException {
+            @RequestPart("foodImage") MultipartFile foodImage, HttpServletRequest request) throws IOException {
 
-        FoodPredictResponseDto results = foodAIService.FoodNamePredict(foodImage,request);
+        FoodPredictResponseDto results = foodAIService.FoodNamePredict(foodImage, request);
         return ResponseEntity.status(HttpStatus.OK).body(results);
 
     }
 
     @GetMapping("/ai/details")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-    public ResponseEntity<List<FoodDetailInfoDto>> getFoodDetailInfo(HttpServletRequest request){
+    public ResponseEntity<List<FoodDetailInfoDto>> getFoodDetailInfo(HttpServletRequest request) {
         List<FoodDetailInfoDto> foodDetailInfoDto = foodAIService.getFoodDetailInfo(request);
         return ResponseEntity.status(HttpStatus.OK).body(foodDetailInfoDto);
     }
 
     @PostMapping("/ai/save-meal")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-    public ResponseEntity<ResultDto> createAIMealInfo(String mealTime, HttpServletRequest request){
-        ResultDto resultDto = foodAIService.createAIMealInfo(mealTime,request);
+    public ResponseEntity<ResultDto> createAIMealInfo(String mealTime, HttpServletRequest request) {
+        ResultDto resultDto = foodAIService.createAIMealInfo(mealTime, request);
         return ResponseEntity.status(HttpStatus.OK).body(resultDto);
     }
 
     @PostMapping("/normal/save-image")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
     public ResponseEntity<ResultDto> saveNormalMealInfoImage(@RequestPart("foodImage") MultipartFile foodImage, HttpServletRequest request) throws IOException {
-        ResultDto resultDto = foodRecordNormalService.saveNormalMealInfoImage(foodImage,request);
+        ResultDto resultDto = foodRecordNormalService.saveNormalMealInfoImage(foodImage, request);
         return ResponseEntity.status(HttpStatus.OK).body(resultDto);
     }
 
     @GetMapping("/normal/details")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-    public ResponseEntity<List<FoodNutritionDto>>getFoodNutritionByName(@RequestParam List<String> name, HttpServletRequest request){
-        List<FoodNutritionDto> foodNutritionByName = foodRecordNormalService.getFoodNutritionByName(name,request);
+    public ResponseEntity<List<FoodNutritionDto>> getFoodNutritionByName(@RequestParam List<String> name, HttpServletRequest request) {
+        List<FoodNutritionDto> foodNutritionByName = foodRecordNormalService.getFoodNutritionByName(name, request);
         return ResponseEntity.status(HttpStatus.OK).body(foodNutritionByName);
     }
 
     @PostMapping("/normal/save-meal")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
     ResponseEntity<ResultDto> saveNormalMealInfo(String mealTime, @RequestParam List<Integer> servingCount, HttpServletRequest request) {
-        ResultDto resultDto = foodRecordNormalService.saveNormalMealInfo(mealTime,servingCount,request);
+        ResultDto resultDto = foodRecordNormalService.saveNormalMealInfo(mealTime, servingCount, request);
         return ResponseEntity.status(HttpStatus.OK).body(resultDto);
     }
-    
+
     @GetMapping("/food-record-check")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-    public ResponseEntity<FoodCheckListDto> getFoodCheckByDate(@RequestParam("date")@DateTimeFormat(iso= DateTimeFormat.ISO.DATE) LocalDate date, HttpServletRequest request) {
-        FoodCheckListDto foodCheckDto = foodCheckService.getFoodCheckByDate(date,request);
+    public ResponseEntity<FoodCheckListDto> getFoodCheckByDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date, HttpServletRequest request) {
+        FoodCheckListDto foodCheckDto = foodCheckService.getFoodCheckByDate(date, request);
         return ResponseEntity.status(HttpStatus.OK).body(foodCheckDto);
     }
 
     @PostMapping("/add-food")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
     public ResponseEntity<ResultDto> addCustomFood(String foodName, int servingCount, HttpServletRequest request) {
-        ResultDto resultDto = foodAIService.addCustomFood(foodName,servingCount,request);
+        ResultDto resultDto = foodAIService.addCustomFood(foodName, servingCount, request);
         return ResponseEntity.status(HttpStatus.OK).body(resultDto);
-        }
+    }
 
     @PostMapping("/delete-food")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-    ResponseEntity<ResultDto> removeFoodFromSession(String foodName, HttpServletRequest request){
-        ResultDto resultDto = foodAIService.removeFoodFromSession(foodName,request);
+    ResponseEntity<ResultDto> removeFoodFromSession(String foodName, HttpServletRequest request) {
+        ResultDto resultDto = foodAIService.removeFoodFromSession(foodName, request);
         return ResponseEntity.status(HttpStatus.OK).body(resultDto);
     }
+
+    @GetMapping("/feed-back/food")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    public ResponseEntity<FoodNameNutrionDto> getFoodDetailByEatTime(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date, String eatTime, HttpServletRequest request) {
+        FoodNameNutrionDto foodNameNutrionDto = foodCheckService.getFoodDetailByEatTime(date, eatTime, request);
+        return ResponseEntity.status(HttpStatus.OK).body(foodNameNutrionDto);
+    }
+
+    @GetMapping("/feed-back/blood-sugar")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    public ResponseEntity<FoodBloodSugarDto> getFoodFeedBackBloodSugarInfo(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,String eatTime, HttpServletRequest request) {
+        FoodBloodSugarDto foodBloodSugarDto = foodCheckService.getFoodFeedBackBloodSugarInfo(date, eatTime, request);
+        return ResponseEntity.status(HttpStatus.OK).body(foodBloodSugarDto);
+    }
+
 }

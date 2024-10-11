@@ -31,7 +31,18 @@ public class CommunityController {
         ResultDto resultDto = communityService.createCommunity(communityRequestDto, request);
         return ResponseEntity.status(HttpStatus.OK).body(resultDto);
     }
-
+    @PutMapping("/update/{id}")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    public ResponseEntity<ResultDto> updateCommunity(@RequestParam Long id,CommunityRequestDto communityRequestDto, HttpServletRequest request) {
+        ResultDto resultDto = communityService.updateCommunity(id, communityRequestDto, request);
+        return ResponseEntity.status(HttpStatus.OK).body(resultDto);
+    }
+    @DeleteMapping("/delete/{id}")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    public ResponseEntity<ResultDto> deleteCommunity(@RequestParam Long id, HttpServletRequest request){
+        ResultDto resultDto = communityService.deleteCommunity(id, request);
+        return ResponseEntity.status(HttpStatus.OK).body(resultDto);
+    }
     @GetMapping("/detail")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
     public ResponseEntity<CommunityDetailResponseDto> detailsCommunity(@RequestParam Long id, HttpServletRequest request) {

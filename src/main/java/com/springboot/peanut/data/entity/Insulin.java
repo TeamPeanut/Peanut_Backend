@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -25,7 +26,10 @@ public class Insulin {
     @ElementCollection
     private List<String> administrationTime;
 
-    private boolean alam = false;
+    private boolean insulinStatus = false;
+
+    @ElementCollection
+    private List<LocalDateTime> actualAdministrationDates; // 실제 투약이 이루어진 날짜 목록
 
     private LocalDate create_At;
 
@@ -38,9 +42,11 @@ public class Insulin {
         insulin.productName = insulinRequestDto.getProductName();
         insulin.dosage = insulinRequestDto.getDosage();
         insulin.administrationTime = insulinRequestDto.getAdministrationTime();
-        insulin.alam = insulinRequestDto.isAlam();
         insulin.create_At = LocalDate.now();
         insulin.user = user;
         return insulin;
+    }
+    public void updateInsulinStatus(boolean status) {
+        this.insulinStatus = status;
     }
 }

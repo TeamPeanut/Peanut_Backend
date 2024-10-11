@@ -1,9 +1,13 @@
 package com.springboot.peanut.service.User.Impl;
 
 import com.springboot.peanut.data.dao.InsulinDao;
+import com.springboot.peanut.data.dto.Insulin.InsulinRecordResponseDto;
 import com.springboot.peanut.data.dto.Insulin.InsulinRequestDto;
+import com.springboot.peanut.data.dto.medicine.MedicineRecordResponseDto;
 import com.springboot.peanut.data.dto.signDto.ResultDto;
 import com.springboot.peanut.data.entity.Insulin;
+import com.springboot.peanut.data.entity.Intake;
+import com.springboot.peanut.data.entity.Medicine;
 import com.springboot.peanut.data.entity.User;
 import com.springboot.peanut.jwt.JwtAuthenticationService;
 import com.springboot.peanut.service.Result.ResultStatusService;
@@ -13,7 +17,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -46,4 +53,27 @@ public class InsulinServiceImpl implements InsulinService {
         return resultDto;
     }
 
+    @Override
+    public List<InsulinRecordResponseDto> getInsulinInfoList(HttpServletRequest request) {
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
+        if (user.isPresent()) {
+            Insulin insulin = insulinDao.getInsulinByUserId(user.get().getId());
+            List<InsulinRecordResponseDto> insulinRecordResponseDtoList = new ArrayList<>();
+            List<String> administrationTime = insulin.getAdministrationTime();
+
+            InsulinRecordResponseDto insulinRecordResponseDto = new InsulinRecordResponseDto(
+                    insulin.getId(),
+                    insulin.getProductName(),
+                    insulin.getDosage(),
+                    administrationTime
+
+            );
+            insulinRecordResponseDtoList.add(insulinRecordResponseDto);
+            return insulinRecordResponseDtoList;
+        }else{
+            throw new IllegalArgumentException("투약 인슐린이 없습니다.");
+        }
+
+
+    }
 }

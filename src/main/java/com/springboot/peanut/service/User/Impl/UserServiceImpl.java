@@ -47,6 +47,21 @@ public class UserServiceImpl implements UserService {
     private final CommunityDao communityDao;
 
     @Override
+    public GetUserInfoMyPage getUserInfoMyPage(HttpServletRequest request) {
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
+        User userInfo = user.get();
+
+        return new GetUserInfoMyPage(
+                userInfo.getId(),
+                userInfo.getUserName(),
+                userInfo.getHeight(),
+                userInfo.getWeight(),
+                userInfo.getProfileUrl()
+        );
+
+    }
+
+    @Override
     public ResultDto updateAdditionalUserInfo(UserUpdateRequestDto userUpdateRequestDto, MultipartFile image, HttpServletRequest request) throws IOException {
         Optional<User> user = jwtAuthenticationService.authenticationToken(request);
         log.info("[userEmail] : {}",user.get().getEmail());
@@ -159,42 +174,66 @@ public class UserServiceImpl implements UserService {
         return resultDto;
     }
 
+
     @Override
-    public List<GetPatientResponseDto> getPatientInfo(HttpServletRequest request) {
+    public GetPatientResponseDto getPatientInfo(HttpServletRequest request) {
         User user = jwtAuthenticationService.authenticationToken(request).get();
-        List<GetPatientResponseDto> patientResponseDtos = userDao.findPatientByGuardian(user.getId());
+        GetPatientResponseDto patientResponseDtos = userDao.findPatientByGuardian(user.getId());
 
         return patientResponseDtos;
     }
 
     @Override
+    public GetPatientResponseDto getGuardianInfo(HttpServletRequest request) {
+        User user = jwtAuthenticationService.authenticationToken(request).get();
+        GetPatientResponseDto patientResponseDtos = userDao.findGuardianByPatient(user.getId());
+        return patientResponseDtos;
+    }
+    @Override
     public List<GetCommunityByUserDto> getCreateCommunityByUser(HttpServletRequest request) {
         Optional<User> user = jwtAuthenticationService.authenticationToken(request);
 
         if(user.isPresent()) {
-            return communityDao.getCreateAllCommunityByUser(user.get().getId());
-        }else {
-            throw new IllegalArgumentException();
+            List<GetCommunityByUserDto> communityList = communityDao.getCreateAllCommunityByUser(user.get().getId());
+            return communityList != null ? communityList : Collections.emptyList(); // 빈 리스트 반환
+        } else {
+            return Collections.emptyList(); // 빈 리스트 반환
         }
     }
 
     @Override
     public List<GetCommunityByUserDto> getCommentCommunityByUser(HttpServletRequest request) {
         Optional<User> user = jwtAuthenticationService.authenticationToken(request);
+
         if(user.isPresent()) {
-            return communityDao.getCommentAllCommunityByUser(user.get().getId());
-        }else {
-            throw new IllegalArgumentException();
+            List<GetCommunityByUserDto> commentCommunityList = communityDao.getCommentAllCommunityByUser(user.get().getId());
+            return commentCommunityList != null ? commentCommunityList : Collections.emptyList(); // 빈 리스트 반환
+        } else {
+            return Collections.emptyList(); // 빈 리스트 반환
         }
     }
 
     @Override
     public List<GetCommunityByUserDto> getLikeCommunityByUser(HttpServletRequest request) {
         Optional<User> user = jwtAuthenticationService.authenticationToken(request);
+
         if(user.isPresent()) {
-            return communityDao.getLikeAllCommunityByUser(user.get().getId());
-        }else {
-            throw new IllegalArgumentException();
+            List<GetCommunityByUserDto> likeCommunityList = communityDao.getLikeAllCommunityByUser(user.get().getId());
+            return likeCommunityList != null ? likeCommunityList : Collections.emptyList(); // 빈 리스트 반환
+        } else {
+            return Collections.emptyList(); // 빈 리스트 반환
+        }
+    }
+
+    @Override
+    public List<GetConnectingInfoDto> getConnectingInfo(HttpServletRequest request) {
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
+
+        if(user.isPresent()) {
+            List<GetConnectingInfoDto> connectingInfoList = userDao.findConnectingInfo(user.get().getEmail());
+            return connectingInfoList != null ? connectingInfoList : Collections.emptyList(); // 빈 리스트 반환
+        } else {
+            return Collections.emptyList(); // 빈 리스트 반환
         }
     }
 

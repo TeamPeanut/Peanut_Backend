@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,6 +41,41 @@ public class CommunityServiceImpl implements CommunityService {
         }else{
             resultStatusService.setFail(resultDto);
             throw new RuntimeException("글 작성 실패");
+        }
+        return resultDto;
+    }
+
+    @Override
+    public ResultDto updateCommunity(Long id,CommunityRequestDto communityRequestDto, HttpServletRequest request) {
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
+        Community community = communityDao.getCommunityById(id);
+        ResultDto resultDto = new ResultDto();
+        if(user != null){
+            community.setTitle(communityRequestDto.getTitle());
+            community.setContent(communityRequestDto.getContent());
+            community.setUpdate_At(LocalDateTime.now());
+            communityDao.saveCommunity(community);
+            resultDto.setDetailMessage("글 수정 완료");
+            resultStatusService.setSuccess(resultDto);
+        }else{
+            resultStatusService.setFail(resultDto);
+            throw new RuntimeException("글 수정 실패");
+        }
+        return resultDto;
+    }
+
+    @Override
+    public ResultDto deleteCommunity(Long id, HttpServletRequest request) {
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
+        ResultDto resultDto = new ResultDto();
+        if(user != null){
+
+            communityDao.deleteCommunityById(id);
+            resultDto.setDetailMessage("글 삭제 완료");
+            resultStatusService.setSuccess(resultDto);
+        }else{
+            resultStatusService.setFail(resultDto);
+            throw new RuntimeException("글 삭제 실패");
         }
         return resultDto;
     }

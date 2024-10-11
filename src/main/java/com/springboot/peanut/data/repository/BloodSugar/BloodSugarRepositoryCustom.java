@@ -10,5 +10,6 @@ public interface BloodSugarRepositoryCustom {
 Optional<BloodSugar> findFastingBloodSugar(Long userId);
 Optional<BloodSugar> findClosestBloodSugar(Long userId);
 List<BloodSugar>findTodayBloodSugar(Long userId, LocalDate date);
+List<BloodSugar> findByUserAndMonth(Long userId, int year, int month);
 
-}
+    }
