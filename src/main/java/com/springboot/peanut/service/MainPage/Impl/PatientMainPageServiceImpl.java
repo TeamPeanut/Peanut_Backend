@@ -73,58 +73,51 @@ public class PatientMainPageServiceImpl implements PatientMainPageService {
     }
 
     @Override
-    public PatientMainPageGetAdditionalInfoDto getAdditionalInfoMainPage(HttpServletRequest request,LocalDate date) {
+    public PatientMainPageGetAdditionalInfoDto getAdditionalInfoMainPage(HttpServletRequest request, LocalDate date) {
         Optional<User> user = jwtAuthenticationService.authenticationToken(request);
-        Optional<Intake> intakeInfo = intakeRepository.findByTodayIntakeStatus(user.get().getId(), date);
-        List<BloodSugar> bloodSugarList = bloodSugarDao.findTodayBloodSugar(user.get().getId(),date);
+
+        // 혈당 정보 가져오기
+        List<BloodSugar> bloodSugarList = bloodSugarDao.findTodayBloodSugar(user.get().getId(), date);
+
+        // 약 정보 가져오기
         List<Medicine> medicineList = mainPageTimeService.getMedicineListByTime(user.get().getId());
-        Optional<MedicineRecord> medicineRecordInfo = mainPageTimeService.getMedicineRecordByTime(user.get().getId(),date);
+
+        // 약 복용 기록 정보 가져오기 (Optional 처리)
+        Optional<MedicineRecord> medicineRecordInfo = mainPageTimeService.getMedicineRecordByTime(user.get().getId(), date);
+        boolean medicineStatus = medicineRecordInfo.map(MedicineRecord::isMedicineStatus).orElse(false);  // 값이 없을 경우 false로 처리
+
+        // 인슐린 정보 가져오기
         Insulin insulin = insulinDao.getInsulinByUserId(user.get().getId());
-        InsulinRecord insulinRecord = mainPageTimeService.getInsulinRecordTime(user.get().getId(),date);
+        InsulinRecord insulinRecord = mainPageTimeService.getInsulinRecordTime(user.get().getId(), date);
 
-
-        // 약 목록에서 첫 번째 약만 가져오는 로직
-        Medicine medicine = medicineList.isEmpty() ? null : medicineList.get(0);  // 첫 번째 약만 선택
+        // 약 목록에서 첫 번째 약 가져오기
+        Medicine medicine = medicineList.isEmpty() ? null : medicineList.get(0);  // 약이 없으면 null 처리
         String medicineName = (medicine != null) ? medicine.getMedicineName() : "약 정보 없음";
 
         // 복약 시간 추출
         List<String> intakeTimes = medicine != null ? medicine.getIntakes().stream()
                 .flatMap(intake -> intake.getIntakeTime().stream())
                 .collect(Collectors.toList()) : new ArrayList<>();
-
         String medicineTime = mainPageTimeService.getIntakeTimeByCurrentTime(intakeTimes);  // 시간대별로 처리
 
-
-        boolean medicineStatus = medicineRecordInfo.get().isMedicineStatus();
-
-        //인슐린 관련 로직
-        String insulinName = insulin.getProductName();
-        boolean insulinStatus = insulinRecord.isInsulinStatus();
-        List<String> insulinTimeList = insulin.getAdministrationTime();
+        // 인슐린 관련 처리
+        String insulinName = insulin != null ? insulin.getProductName() : "인슐린 정보 없음";
+        boolean insulinStatus = insulinRecord != null && insulinRecord.isInsulinStatus();
+        List<String> insulinTimeList = insulin != null ? insulin.getAdministrationTime() : new ArrayList<>();
         String insulinTime = mainPageTimeService.getInsulinTimeByCurrentTime(insulinTimeList);
-        String insulinDosage = insulin.getDosage();
+        String insulinDosage = insulin != null ? insulin.getDosage() : "용량 정보 없음";
 
-        // 상태를 필요에 따라 초기화
-        if (medicineStatus) {
-            medicineStatus = mainPageTimeService.getStatus(medicineStatus);
-            log.info("[medicineStatus] : {}", medicineStatus);
-        }
-        if (insulinStatus) {
-            insulinStatus = mainPageTimeService.getStatus(medicineStatus);
-            log.info("[insulinStatus] : {}", insulinStatus);
-        }
-
-         List<Map<String,Map<Integer, LocalDateTime>>> bloodSugarLevels = bloodSugarList.stream()
+        // 혈당 기록 리스트 처리
+        List<Map<String, Map<Integer, LocalDateTime>>> bloodSugarLevels = bloodSugarList.stream()
                 .map(bloodSugar -> {
                     Map<Integer, LocalDateTime> innerMap = new HashMap<>();
                     innerMap.put(Integer.parseInt(bloodSugar.getBloodSugarLevel()), bloodSugar.getMeasurementTime());
 
-                    Map<String,Map<Integer,LocalDateTime>> map = new HashMap<>();
+                    Map<String, Map<Integer, LocalDateTime>> map = new HashMap<>();
                     map.put(bloodSugar.getMeasurementCondition(), innerMap);
                     return map;
                 })
                 .collect(Collectors.toList());
-
 
         return new PatientMainPageGetAdditionalInfoDto(
                 bloodSugarLevels,
@@ -137,8 +130,6 @@ public class PatientMainPageServiceImpl implements PatientMainPageService {
                 insulinDosage
         );
     }
-
-
     @Override
     @Transactional
     public ResultDto saveMedicineInsulinStatus(HttpServletRequest request, LocalDate date, MedicineInsulinStatusRequestDto medicineInsulinStatusRequestDto) {
@@ -158,11 +149,12 @@ public class PatientMainPageServiceImpl implements PatientMainPageService {
             if (medicineList != null && !medicineList.isEmpty()) {
                 for (Medicine medicine : medicineList) {
                     // 기존에 같은 날짜에 기록된 MedicineRecord가 있는지 확인
-                    Optional<List<MedicineRecord>>  existingRecord = medicineRecordDao.findMedicineRecordByUserId(userId, date);
+                    Optional<List<MedicineRecord>> existingRecord = medicineRecordDao.findMedicineRecordByUserId(userId, date);
 
-                    if (existingRecord.isPresent()) {
+                    // 기존 기록이 존재하고 리스트가 비어있지 않은지 확인
+                    if (existingRecord.isPresent() && !existingRecord.get().isEmpty()) {
                         // 기존 레코드가 있으면 상태만 업데이트
-                        MedicineRecord medicineRecord = existingRecord.get().get(0);
+                        MedicineRecord medicineRecord = existingRecord.get().get(0);  // 첫 번째 레코드만 업데이트
                         medicineRecord.setMedicineStatus(newMedicineStatus);  // 상태만 업데이트
                         log.info("[medicine] : {} 기존 레코드 상태 업데이트 완료", medicine.getMedicineName());
                     } else {
@@ -220,7 +212,6 @@ public class PatientMainPageServiceImpl implements PatientMainPageService {
 
         return resultDto;
     }
-
 
     //식사 기록 조회 (전체)
     @Override
