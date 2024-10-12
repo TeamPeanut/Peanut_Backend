@@ -2,7 +2,6 @@ package com.springboot.peanut.service.MainPage.Impl;
 
 import com.springboot.peanut.data.dto.food.FoodAllDetailDto;
 import com.springboot.peanut.data.dto.mainPage.GuardianMainPageGetAdditionalInfoDto;
-import com.springboot.peanut.data.dto.mainPage.PatientMainPageGetAdditionalInfoDto;
 import com.springboot.peanut.data.dto.mainPage.MainPageGetUserDto;
 import com.springboot.peanut.data.entity.*;
 import com.springboot.peanut.data.repository.BloodSugar.BloodSugarRepository;

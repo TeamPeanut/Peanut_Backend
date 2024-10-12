@@ -13,4 +13,5 @@ public class InsulinRecordResponseDto {
     private String productName;
     private String dosage;
     private List<String> administrationTime;
+
 }

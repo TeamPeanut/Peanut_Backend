@@ -101,6 +101,16 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "guardian",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Notification> guardianNotifications = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<MedicalNote> medicalNotes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<InsulinRecord> insulinRecords = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<DailyStatus> dailyStatuses = new ArrayList<>();
+
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.roles.stream()

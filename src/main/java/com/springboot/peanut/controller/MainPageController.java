@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/main-api")
@@ -39,9 +40,9 @@ public class MainPageController {
         PatientMainPageGetAdditionalInfoDto patientMainPageGetAdditionalInfoDto = patientMainPageService.getAdditionalInfoMainPage(request,date);
         return ResponseEntity.status(HttpStatus.OK).body(patientMainPageGetAdditionalInfoDto);
     }
-     @PostMapping("/get-add-info/save/status")
+     @PutMapping("/get-add-info/save/status")
      @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-      public ResponseEntity<ResultDto> saveMedicineInsulinStatus(HttpServletRequest request, LocalDate date, MedicineInsulinStatusRequestDto medicineInsulinStatusRequestDto){
+      public ResponseEntity<ResultDto> saveMedicineInsulinStatus(HttpServletRequest request, @RequestParam("date")@DateTimeFormat(iso= DateTimeFormat.ISO.DATE) LocalDate date, MedicineInsulinStatusRequestDto medicineInsulinStatusRequestDto){
         ResultDto resultDto = patientMainPageService.saveMedicineInsulinStatus(request,date,medicineInsulinStatusRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(resultDto);
       }

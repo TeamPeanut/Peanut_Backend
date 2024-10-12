@@ -45,6 +45,10 @@ public class Medicine {
         return medicine;
     }
 
+    // 복약 완료 시 상태 업데이트
+    public void updateMedicationStatus(boolean status) {
+        this.medicationStatus = status;
+    }
 
     public void addIntake(Intake intake){
         intakes.add(intake);
