@@ -2,6 +2,7 @@ package com.springboot.peanut.controller;
 
 import com.springboot.peanut.data.dto.Insulin.InsulinRecordResponseDto;
 import com.springboot.peanut.data.dto.Insulin.InsulinRequestDto;
+import com.springboot.peanut.data.dto.Insulin.MonthlyInsulinStatus;
 import com.springboot.peanut.data.dto.medicine.MedicineRecordResponseDto;
 import com.springboot.peanut.data.dto.signDto.ResultDto;
 import com.springboot.peanut.service.User.InsulinService;
@@ -29,8 +30,8 @@ public class InsulinController {
     }
     @GetMapping("/get/record")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-    public ResponseEntity<List<InsulinRecordResponseDto>> getInsulinInfoList(HttpServletRequest request) {
-        List<InsulinRecordResponseDto> insulinRecordResponseDtos = insulinService.getInsulinInfoList(request);
-        return ResponseEntity.status(HttpStatus.OK).body(insulinRecordResponseDtos);
+    public ResponseEntity<MonthlyInsulinStatus> getInsulinInfoList(int year,int month,HttpServletRequest request) {
+        MonthlyInsulinStatus monthlyInsulinStatus = insulinService.getInsulinInfoList(year,month,request);
+        return ResponseEntity.status(HttpStatus.OK).body(monthlyInsulinStatus);
     }
 }
