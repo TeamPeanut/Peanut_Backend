@@ -6,6 +6,8 @@ import com.springboot.peanut.data.repository.Insulin.InsulinRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class InsulinDaoImpl implements InsulinDao {
@@ -21,5 +23,11 @@ public class InsulinDaoImpl implements InsulinDao {
     public Insulin getInsulinByUserId(Long userId) {
         Insulin insulin = insulinRepository.findByUserId(userId).get();
         return insulin;
+    }
+
+    @Override
+    public List<Insulin> findInsulinByYearAndMonth(Long userId, int year, int month) {
+
+        return insulinRepository.findInsulinByYearAndMonth(userId, year, month);
     }
 }

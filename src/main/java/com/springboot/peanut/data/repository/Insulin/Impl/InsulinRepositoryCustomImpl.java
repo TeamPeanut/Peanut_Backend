@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -50,5 +51,16 @@ public class InsulinRepositoryCustomImpl implements InsulinRepositoryCustom {
                         .and(qInsulin.administrationTime.any().contains(administrationTime))
                 )
                 .fetchOne());
+    }
+
+    @Override
+    public List<Insulin> findInsulinByYearAndMonth(Long userId, int year, int month) {
+        QInsulin qInsulin = QInsulin.insulin;
+
+        return jpaQueryFactory.selectFrom(qInsulin)
+                .where(qInsulin.user.id.eq(userId)
+                        .and(qInsulin.create_At.year().eq(year))
+                        .and(qInsulin.create_At.month().eq(month)))
+                .fetch();
     }
 }
