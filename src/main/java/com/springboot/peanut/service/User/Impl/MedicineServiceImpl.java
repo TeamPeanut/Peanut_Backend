@@ -2,15 +2,13 @@ package com.springboot.peanut.service.User.Impl;
 
 import com.springboot.peanut.data.dao.IntakeDao;
 import com.springboot.peanut.data.dao.MedicineDao;
+import com.springboot.peanut.data.dto.Insulin.InsulinRecordResponseDto;
 import com.springboot.peanut.data.dto.medicine.MedicineRecordResponseDto;
 import com.springboot.peanut.data.dto.medicine.MedicineRequestDto;
 import com.springboot.peanut.data.dto.signDto.ResultDto;
-import com.springboot.peanut.data.entity.FoodNutrition;
 import com.springboot.peanut.data.entity.Intake;
 import com.springboot.peanut.data.entity.Medicine;
 import com.springboot.peanut.data.entity.User;
-import com.springboot.peanut.jwt.JwtProvider;
-import com.springboot.peanut.data.repository.UserRepository;
 import com.springboot.peanut.jwt.JwtAuthenticationService;
 import com.springboot.peanut.service.Result.ResultStatusService;
 import com.springboot.peanut.service.User.MedicineService;

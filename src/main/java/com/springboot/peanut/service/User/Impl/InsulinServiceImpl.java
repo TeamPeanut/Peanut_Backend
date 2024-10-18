@@ -4,8 +4,7 @@ import com.springboot.peanut.data.dao.InsulinDao;
 import com.springboot.peanut.data.dao.InsulinRecordDao;
 import com.springboot.peanut.data.dto.Insulin.InsulinRecordResponseDto;
 import com.springboot.peanut.data.dto.Insulin.InsulinRequestDto;
-import com.springboot.peanut.data.dto.Insulin.MonthlyInsulinStatus;
-import com.springboot.peanut.data.dto.medicine.MedicineRecordResponseDto;
+import com.springboot.peanut.data.dto.Insulin.InsulinMedicineStatus;
 import com.springboot.peanut.data.dto.signDto.ResultDto;
 import com.springboot.peanut.data.entity.*;
 import com.springboot.peanut.jwt.JwtAuthenticationService;
@@ -20,7 +19,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -55,7 +53,7 @@ public class InsulinServiceImpl implements InsulinService {
     }
 
     @Override
-    public MonthlyInsulinStatus getInsulinInfoList(int year, int month, HttpServletRequest request) {
+    public InsulinMedicineStatus getInsulinInfoList(int year, int month, HttpServletRequest request) {
         Optional<User> user = jwtAuthenticationService.authenticationToken(request);
         if (user.isPresent()) {
             // 해당 유저의 년도와 달에 따른 인슐린 기록을 가져옵니다
@@ -77,13 +75,13 @@ public class InsulinServiceImpl implements InsulinService {
                 insulinRecordResponseDtoList.add(insulinRecordResponseDto);
             }
             String monthlyReport = monthlyReport(cnt);
-            MonthlyInsulinStatus monthlyInsulinStatus = new MonthlyInsulinStatus(
+            InsulinMedicineStatus insulinMedicineStatus = new InsulinMedicineStatus(
                     insulinRecordResponseDtoList,
                     monthlyReport
 
             );
 
-            return monthlyInsulinStatus;
+            return insulinMedicineStatus;
         } else {
             throw new IllegalArgumentException("투약 인슐린 정보가 없습니다.");
         }

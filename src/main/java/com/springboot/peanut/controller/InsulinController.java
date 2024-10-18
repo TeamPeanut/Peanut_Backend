@@ -1,9 +1,7 @@
 package com.springboot.peanut.controller;
 
-import com.springboot.peanut.data.dto.Insulin.InsulinRecordResponseDto;
 import com.springboot.peanut.data.dto.Insulin.InsulinRequestDto;
-import com.springboot.peanut.data.dto.Insulin.MonthlyInsulinStatus;
-import com.springboot.peanut.data.dto.medicine.MedicineRecordResponseDto;
+import com.springboot.peanut.data.dto.Insulin.InsulinMedicineStatus;
 import com.springboot.peanut.data.dto.signDto.ResultDto;
 import com.springboot.peanut.service.User.InsulinService;
 import io.swagger.annotations.ApiImplicitParam;
@@ -13,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/insulin")
@@ -30,8 +27,8 @@ public class InsulinController {
     }
     @GetMapping("/get/record")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-    public ResponseEntity<MonthlyInsulinStatus> getInsulinInfoList(int year,int month,HttpServletRequest request) {
-        MonthlyInsulinStatus monthlyInsulinStatus = insulinService.getInsulinInfoList(year,month,request);
-        return ResponseEntity.status(HttpStatus.OK).body(monthlyInsulinStatus);
+    public ResponseEntity<InsulinMedicineStatus> getInsulinInfoList(int year, int month, HttpServletRequest request) {
+        InsulinMedicineStatus insulinMedicineStatus = insulinService.getInsulinInfoList(year,month,request);
+        return ResponseEntity.status(HttpStatus.OK).body(insulinMedicineStatus);
     }
 }

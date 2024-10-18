@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
-public class MonthlyInsulinStatus {
+public class InsulinMedicineStatus {
     private List<InsulinRecordResponseDto> dailyStatuses; // 일별 혈당 상태 리스트
     private String monthlyStatusMessage; // 월 평균 상태 메시지
 
