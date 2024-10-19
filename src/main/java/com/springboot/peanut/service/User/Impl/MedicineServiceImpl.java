@@ -3,9 +3,9 @@ package com.springboot.peanut.service.User.Impl;
 import com.springboot.peanut.data.dao.IntakeDao;
 import com.springboot.peanut.data.dao.MedicineDao;
 import com.springboot.peanut.data.dao.MedicineRecordDao;
-import com.springboot.peanut.data.dto.Insulin.InsulinRecordResponseDto;
 import com.springboot.peanut.data.dto.medicine.MedicineRecordResponseDto;
-import com.springboot.peanut.data.dto.medicine.MedicineRecordStatus;
+import com.springboot.peanut.data.dto.medicine.MedicineReportResponseDto;
+import com.springboot.peanut.data.dto.medicine.MedicineReportStatus;
 import com.springboot.peanut.data.dto.medicine.MedicineRequestDto;
 import com.springboot.peanut.data.dto.signDto.ResultDto;
 import com.springboot.peanut.data.entity.Intake;
@@ -73,11 +73,51 @@ public class MedicineServiceImpl implements MedicineService {
     }
 
     @Override
-    public MedicineRecordStatus getMedicineInfoList(int year, int month, HttpServletRequest request) {
+    public List<MedicineRecordResponseDto> getMedicineInfoList(HttpServletRequest request) {
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
+        if (user.isPresent()) {
+            List<Medicine> medicine = medicineDao.getMedicineByUserId(user.get().getId());
+            List<MedicineRecordResponseDto> medicineRecordResponseDtoList = new ArrayList<>();
+
+            // 각 약에 대해 반복
+            for (Medicine m : medicine) {
+                List<Intake> intakeList = m.getIntakes();
+
+                // Intake 리스트에서 intakeDays를 추출하여 하나의 리스트로 병합
+                List<String> allIntakeDays = intakeList.stream()
+                        .flatMap(intake -> intake.getIntakeDays().stream())
+                        .collect(Collectors.toList());
+
+                // Intake 리스트에서 intakeTime을 추출하여 하나의 리스트로 병합
+                List<String> allIntakeTimes = intakeList.stream()
+                        .flatMap(intake -> intake.getIntakeTime().stream())
+                        .collect(Collectors.toList());
+
+                // 각 약에 대한 DTO 생성
+                MedicineRecordResponseDto medicineRecordResponseDto = new MedicineRecordResponseDto(
+                        m.getId(),
+                        m.getMedicineName(),
+                        allIntakeDays,
+                        allIntakeTimes
+                );
+
+                // DTO를 리스트에 추가
+                medicineRecordResponseDtoList.add(medicineRecordResponseDto);
+            }
+            return medicineRecordResponseDtoList;
+        }else{
+            throw new IllegalArgumentException("복용 약이 없습니다.");
+        }
+
+
+    }
+
+    @Override
+    public MedicineReportStatus getMedicineInfoList(int year, int month, HttpServletRequest request) {
         Optional<User> user = jwtAuthenticationService.authenticationToken(request);
         if (user.isPresent()) {
             List<MedicineRecord> medicineRecordList = medicineRecordDao.findMedicineByYearAndMonth(user.get().getId(), year, month);
-            List<MedicineRecordResponseDto> medicineRecordResponseDtoList = new ArrayList<>();
+            List<MedicineReportResponseDto> medicineReportResponseDtoList = new ArrayList<>();
             int cnt = 0;
             // 각 약에 대해 반복
             for (MedicineRecord m : medicineRecordList) {
@@ -86,18 +126,18 @@ public class MedicineServiceImpl implements MedicineService {
                 String recordStatus = cntStatus(cnt);
 
                 // 각 약에 대한 DTO 생성
-                MedicineRecordResponseDto medicineRecordResponseDto = new MedicineRecordResponseDto(
+                MedicineReportResponseDto medicineReportResponseDto = new MedicineReportResponseDto(
                         date,
                         recordStatus
                 );
-                medicineRecordResponseDtoList.add(medicineRecordResponseDto);
+                medicineReportResponseDtoList.add(medicineReportResponseDto);
             }
             String monthlyReport = monthlyReport(cnt);
-            MedicineRecordStatus medicineRecordStatus = new MedicineRecordStatus(
-                    medicineRecordResponseDtoList,
+            MedicineReportStatus medicineReportStatus = new MedicineReportStatus(
+                    medicineReportResponseDtoList,
                     monthlyReport
             );
-         return medicineRecordStatus;
+         return medicineReportStatus;
         }else{
             throw new IllegalArgumentException("복용 약이 없습니다.");
         }

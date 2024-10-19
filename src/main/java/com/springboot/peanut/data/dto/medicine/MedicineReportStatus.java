@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
-public class MedicineRecordStatus {
-    private List<MedicineRecordResponseDto> dailyStatuses;
+public class MedicineReportStatus {
+    private List<MedicineReportResponseDto> dailyStatuses;
     private String monthlyStatusMessage;
 }
