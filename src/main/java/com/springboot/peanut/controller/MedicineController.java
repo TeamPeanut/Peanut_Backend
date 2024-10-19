@@ -1,6 +1,7 @@
 package com.springboot.peanut.controller;
 
 import com.springboot.peanut.data.dto.medicine.MedicineRecordResponseDto;
+import com.springboot.peanut.data.dto.medicine.MedicineRecordStatus;
 import com.springboot.peanut.data.dto.medicine.MedicineRequestDto;
 import com.springboot.peanut.data.dto.signDto.ResultDto;
 import com.springboot.peanut.service.User.MedicineService;
@@ -27,9 +28,9 @@ public class MedicineController {
     }
     @GetMapping("/get/record")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-    public ResponseEntity<List<MedicineRecordResponseDto>> getMedicineInfoList(HttpServletRequest request) {
-        List<MedicineRecordResponseDto> medicineRecordResponseDtoList = medicineService.getMedicineInfoList(request);
-        return ResponseEntity.status(HttpStatus.OK).body(medicineRecordResponseDtoList);
+    public ResponseEntity<MedicineRecordStatus> getMedicineInfoList(int year, int month, HttpServletRequest request) {
+        MedicineRecordStatus medicineRecordStatuses = medicineService.getMedicineInfoList(year, month, request);
+        return ResponseEntity.status(HttpStatus.OK).body(medicineRecordStatuses);
     }
 
 

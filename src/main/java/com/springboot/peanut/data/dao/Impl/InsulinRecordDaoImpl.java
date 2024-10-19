@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,5 +24,10 @@ public class InsulinRecordDaoImpl implements InsulinRecordDao {
     @Override
     public Optional<InsulinRecord> findInsulinRecordByUserId(Long userId, LocalDate date) {
         return insulinRecordRepository.findInsulinRecordByUserIdAndDate(userId,date);
+    }
+
+    @Override
+    public List<InsulinRecord> findInsulinByYearAndMonth(Long userId, int year, int month) {
+        return insulinRecordRepository.findInsulinByYearAndMonth(userId,year,month);
     }
 }
