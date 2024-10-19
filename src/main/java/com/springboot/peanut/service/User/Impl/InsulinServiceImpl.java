@@ -3,8 +3,9 @@ package com.springboot.peanut.service.User.Impl;
 import com.springboot.peanut.data.dao.InsulinDao;
 import com.springboot.peanut.data.dao.InsulinRecordDao;
 import com.springboot.peanut.data.dto.Insulin.InsulinRecordResponseDto;
+import com.springboot.peanut.data.dto.Insulin.InsulinReportResponseDto;
 import com.springboot.peanut.data.dto.Insulin.InsulinRequestDto;
-import com.springboot.peanut.data.dto.Insulin.InsulinRecordStatus;
+import com.springboot.peanut.data.dto.Insulin.InsulinReportStatus;
 import com.springboot.peanut.data.dto.signDto.ResultDto;
 import com.springboot.peanut.data.entity.*;
 import com.springboot.peanut.jwt.JwtAuthenticationService;
@@ -51,14 +52,36 @@ public class InsulinServiceImpl implements InsulinService {
         }
         return resultDto;
     }
-
     @Override
-    public InsulinRecordStatus getInsulinInfoList(int year, int month, HttpServletRequest request) {
+    public List<InsulinRecordResponseDto> getInsulinInfoList(HttpServletRequest request) {
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
+        if (user.isPresent()) {
+            Insulin insulin = insulinDao.getInsulinByUserId(user.get().getId());
+            List<InsulinRecordResponseDto> insulinRecordResponseDtoList = new ArrayList<>();
+            List<String> administrationTime = insulin.getAdministrationTime();
+
+            InsulinRecordResponseDto insulinRecordResponseDto = new InsulinRecordResponseDto(
+                    insulin.getId(),
+                    insulin.getProductName(),
+                    insulin.getDosage(),
+                    administrationTime
+
+            );
+            insulinRecordResponseDtoList.add(insulinRecordResponseDto);
+            return insulinRecordResponseDtoList;
+        }else{
+            throw new IllegalArgumentException("투약 인슐린이 없습니다.");
+        }
+
+
+    }
+    @Override
+    public InsulinReportStatus getInsulinInfoList(int year, int month, HttpServletRequest request) {
         Optional<User> user = jwtAuthenticationService.authenticationToken(request);
         if (user.isPresent()) {
             // 해당 유저의 년도와 달에 따른 인슐린 기록을 가져옵니다
             List<InsulinRecord> insulinRecordList = insulinRecordDao.findInsulinByYearAndMonth(user.get().getId(), year, month);
-            List<InsulinRecordResponseDto> insulinRecordResponseDtoList = new ArrayList<>();
+            List<InsulinReportResponseDto> insulinReportResponseDtoList = new ArrayList<>();
             int cnt = 0;
 
             // 각 날짜에 대해 일일 측정 횟수(cnt)를 계산합니다.
@@ -68,20 +91,20 @@ public class InsulinServiceImpl implements InsulinService {
                 String recordStatus = cntStatus(cnt);
 
                 // 해당 날짜의 응답 DTO 생성
-                InsulinRecordResponseDto insulinRecordResponseDto = new InsulinRecordResponseDto(
+                InsulinReportResponseDto insulinRecordResponseDto = new InsulinReportResponseDto(
                         date,
                         recordStatus
                 );
-                insulinRecordResponseDtoList.add(insulinRecordResponseDto);
+                insulinReportResponseDtoList.add(insulinRecordResponseDto);
             }
             String monthlyReport = monthlyReport(cnt);
-            InsulinRecordStatus insulinRecordStatus = new InsulinRecordStatus(
-                    insulinRecordResponseDtoList,
+            InsulinReportStatus insulinReportStatus = new InsulinReportStatus(
+                    insulinReportResponseDtoList,
                     monthlyReport
 
             );
 
-            return insulinRecordStatus;
+            return insulinReportStatus;
         } else {
             throw new IllegalArgumentException("투약 인슐린 정보가 없습니다.");
         }
