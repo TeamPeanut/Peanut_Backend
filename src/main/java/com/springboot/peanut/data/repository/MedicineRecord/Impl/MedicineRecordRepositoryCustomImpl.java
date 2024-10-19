@@ -1,10 +1,7 @@
 package com.springboot.peanut.data.repository.MedicineRecord.Impl;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.springboot.peanut.data.entity.InsulinRecord;
-import com.springboot.peanut.data.entity.MedicineRecord;
-import com.springboot.peanut.data.entity.QInsulinRecord;
-import com.springboot.peanut.data.entity.QMedicineRecord;
+import com.springboot.peanut.data.entity.*;
 import com.springboot.peanut.data.repository.MedicineRecord.MedicineRecordRepositoryCustom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,6 +25,17 @@ public class MedicineRecordRepositoryCustomImpl implements MedicineRecordReposit
                 .where(qMedicineRecord.user.id.eq(userId)
                         .and(qMedicineRecord.recordDate.eq(date)))
                 .fetch());
+    }
+    @Override
+    public List<MedicineRecord> findMedicineByYearAndMonth(Long userId, int year, int month) {
+        QMedicineRecord qMedicineRecord = QMedicineRecord.medicineRecord;
+
+        return jpaQueryFactory
+                .selectFrom(qMedicineRecord)
+                .where(qMedicineRecord.user.id.eq(userId)
+                        .and(qMedicineRecord.recordDate.year().eq(year))
+                        .and(qMedicineRecord.recordDate.month().eq(month)))
+                .fetch();
     }
 
 

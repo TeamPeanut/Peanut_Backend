@@ -1,5 +1,6 @@
 package com.springboot.peanut.data.repository.Medicine;
 
+import com.springboot.peanut.data.entity.Insulin;
 import com.springboot.peanut.data.entity.Medicine;
 import com.springboot.peanut.data.entity.MedicineRecord;
 
@@ -14,4 +15,5 @@ public interface MedicineRepositoryCustom {
 
     Optional<List<Medicine>> findByUserIdAndDate(Long userId, LocalDate date);
     Optional<MedicineRecord> findMedicineRecordByUserIdAndDate(Long userId, LocalDate date);
+
 }

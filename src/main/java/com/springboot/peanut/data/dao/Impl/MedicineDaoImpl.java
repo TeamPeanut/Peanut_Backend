@@ -25,4 +25,6 @@ public class MedicineDaoImpl implements MedicineDao {
         List<Medicine> medicine = medicineRepository.findByUserId(userId);
         return medicine;
     }
+
+
 }
