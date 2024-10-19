@@ -4,8 +4,7 @@ import com.springboot.peanut.data.dao.InsulinDao;
 import com.springboot.peanut.data.dao.InsulinRecordDao;
 import com.springboot.peanut.data.dto.Insulin.InsulinRecordResponseDto;
 import com.springboot.peanut.data.dto.Insulin.InsulinRequestDto;
-import com.springboot.peanut.data.dto.Insulin.MonthlyInsulinStatus;
-import com.springboot.peanut.data.dto.medicine.MedicineRecordResponseDto;
+import com.springboot.peanut.data.dto.Insulin.InsulinRecordStatus;
 import com.springboot.peanut.data.dto.signDto.ResultDto;
 import com.springboot.peanut.data.entity.*;
 import com.springboot.peanut.jwt.JwtAuthenticationService;
@@ -20,7 +19,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -55,7 +53,7 @@ public class InsulinServiceImpl implements InsulinService {
     }
 
     @Override
-    public MonthlyInsulinStatus getInsulinInfoList(int year, int month, HttpServletRequest request) {
+    public InsulinRecordStatus getInsulinInfoList(int year, int month, HttpServletRequest request) {
         Optional<User> user = jwtAuthenticationService.authenticationToken(request);
         if (user.isPresent()) {
             // 해당 유저의 년도와 달에 따른 인슐린 기록을 가져옵니다
@@ -77,13 +75,13 @@ public class InsulinServiceImpl implements InsulinService {
                 insulinRecordResponseDtoList.add(insulinRecordResponseDto);
             }
             String monthlyReport = monthlyReport(cnt);
-            MonthlyInsulinStatus monthlyInsulinStatus = new MonthlyInsulinStatus(
+            InsulinRecordStatus insulinRecordStatus = new InsulinRecordStatus(
                     insulinRecordResponseDtoList,
                     monthlyReport
 
             );
 
-            return monthlyInsulinStatus;
+            return insulinRecordStatus;
         } else {
             throw new IllegalArgumentException("투약 인슐린 정보가 없습니다.");
         }
@@ -106,13 +104,13 @@ public class InsulinServiceImpl implements InsulinService {
     public String monthlyReport(int cnt){
 
         if(0<=cnt&&cnt<10){
-            return "총 복약량의" +cnt+"일을 복약했어요! 건강을 위해서라도 더 신경써서 복약하는게 어떨까요?";
+            return "총 투여일의" +cnt+"일을 투여했어요! 건강을 위해서라도 더 신경써서 투약하는게 어떨까요?";
         }else if(10<=cnt&&cnt<15){
-            return "총 복약량의" +cnt+"일을 복약했어요! 건강을 생각하며 더 복약하면 좋을 것 같아요! ";
+            return "총 투여일의" +cnt+"일을 투여했어요! 건강을 생각하며 더 복약하면 좋을 것 같아요! ";
         }else if(15<=cnt&&cnt<20){
-            return "총 복약량의" +cnt+"일을 복약했어요! 이번달 절반 이상 복약했어요! 조금만 더 노력하여 건강을 챙겨보아요!";
+            return "총 투여일의" +cnt+"일을 투여했어요! 이번달 절반 이상 투여했어요! 조금만 더 노력하여 건강을 챙겨보아요!";
         }else if(20<=cnt&&cnt<31) {
-            return "총 복약량의" + cnt + "일을 복약했어요! 매우 잘했어요! 앞으로 더욱 건강한 생활이 가능할 거예요!";
+            return "총 투여일의" + cnt + "일을 투여했어요! 매우 잘했어요! 앞으로 더욱 건강한 생활이 가능할 거예요!";
         }else {
             return null;
         }

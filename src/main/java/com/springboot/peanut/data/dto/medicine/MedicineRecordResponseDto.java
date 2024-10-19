@@ -4,15 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
-@Getter
 @AllArgsConstructor
+@Getter
 public class MedicineRecordResponseDto {
+    private LocalDate recordDate;
+    private String recordStatus;
 
-    private Long id;
-    private String medicineName;
-    private List<String> intakeTime;
-    private List<String> intakeDays;
 }

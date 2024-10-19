@@ -1,0 +1,13 @@
+package com.springboot.peanut.data.dto.medicine;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+import java.util.List;
+
+@Getter
+@AllArgsConstructor
+public class MedicineRecordStatus {
+    private List<MedicineRecordResponseDto> dailyStatuses;
+    private String monthlyStatusMessage;
+}

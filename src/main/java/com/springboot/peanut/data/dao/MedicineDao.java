@@ -8,4 +8,4 @@ public interface MedicineDao {
     void saveMedicineInfo(Medicine medicine);
     List<Medicine> getMedicineByUserId(Long userId);
 
-}
+    }
