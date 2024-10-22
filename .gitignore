@@ -34,3 +34,4 @@ build/
 application.properties
 /src/main/resources/firebase/
 /src/main/resources/firebase/*.json
+/src/main/resources/firebase/peanut-a0489-firebase-adminsdk-1u8je-4b0e5ebad7.json
