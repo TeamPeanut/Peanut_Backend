@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -18,5 +19,7 @@ public class CommunityResponseDto {
     private String imageUrl;
     private String name;
     private String gender;
+    private int commentCount;
     private int like;
+    private LocalDateTime createTime;
 }

@@ -23,5 +23,7 @@ public class CommunityDetailResponseDto {
     private boolean liked;
     private LocalDateTime create_At;
     private List<CommentResponseDto> comments;
+    private int commentCount;
+    private LocalDateTime created_At;
 
 }

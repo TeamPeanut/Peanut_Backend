@@ -66,7 +66,9 @@ public class CommunityDaoImpl implements CommunityDao {
                 community.getCommunityLike(),
                 liked,
                 community.getCreate_At(),
-                commentDtos
+                commentDtos,
+                commentDtos.size(),
+                community.getCreate_At()
         );
 
         return communityDetailResponseDto;
@@ -84,7 +86,9 @@ public class CommunityDaoImpl implements CommunityDao {
                     community.getContent(),
                     community.getUser().getProfileUrl(),
                     community.getUser().getUserName(), community.getUser().getGender(),
-                    community.getCommunityLike()
+                    community.getComments().size(),
+                    community.getCommunityLike(),
+                    community.getCreate_At()
             );
              communityResponseDtoList.add(communityResponseDto);
         }
@@ -150,5 +154,30 @@ public class CommunityDaoImpl implements CommunityDao {
     @Override
     public Community getCommunityById(Long id) {
         return communityRepository.getById(id);
+    }
+
+    @Override
+    public List<CommunityResponseDto> findCommunityBySearch(Long userId, String search) {
+        List<CommunityResponseDto> communityResponseDtoList = new ArrayList<>();
+        List<Community> communityList = communityRepository.findCommunityBySearch(userId, search);
+        if(communityList.isEmpty()){
+            return null;
+        }
+        for(Community community : communityList){
+            CommunityResponseDto communityResponseDto = new CommunityResponseDto(
+                    community.getId(),
+                    community.getUser().getId(),
+                    community.getTitle(),
+                    community.getContent(),
+                    community.getUser().getProfileUrl(),
+                    community.getUser().getUserName(), community.getUser().getGender(),
+                    community.getComments().size(),
+                    community.getCommunityLike(),
+                    community.getCreate_At()
+            );
+            communityResponseDtoList.add(communityResponseDto);
+        }
+        return communityResponseDtoList;
+
     }
 }
