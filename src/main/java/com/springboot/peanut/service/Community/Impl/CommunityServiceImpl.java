@@ -93,4 +93,12 @@ public class CommunityServiceImpl implements CommunityService {
         List<CommunityResponseDto> communityResponseDtoList = communityDao.getAllCommunity();
         return communityResponseDtoList;
     }
+
+    @Override
+    public List<CommunityResponseDto> findCommunityBySearch(HttpServletRequest request, String search) {
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
+        List<CommunityResponseDto> communityResponseDtoList = communityDao.findCommunityBySearch(user.get().getId(), search);
+
+        return communityResponseDtoList;
+    }
 }

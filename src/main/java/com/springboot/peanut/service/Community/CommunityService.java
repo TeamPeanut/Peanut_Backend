@@ -4,6 +4,7 @@ import com.springboot.peanut.data.dto.community.CommunityDetailResponseDto;
 import com.springboot.peanut.data.dto.community.CommunityRequestDto;
 import com.springboot.peanut.data.dto.community.CommunityResponseDto;
 import com.springboot.peanut.data.dto.signDto.ResultDto;
+import com.springboot.peanut.data.entity.Community;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -14,5 +15,7 @@ public interface CommunityService {
     ResultDto deleteCommunity(Long id, HttpServletRequest request);
     CommunityDetailResponseDto detailsCommunity(Long id, HttpServletRequest request);
     List<CommunityResponseDto>getAllCommunity(HttpServletRequest request);
+    List<CommunityResponseDto> findCommunityBySearch(HttpServletRequest request, String search);
+
 
 }

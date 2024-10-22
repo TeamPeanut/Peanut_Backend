@@ -16,4 +16,6 @@ public interface CommunityDao {
     List<GetCommunityByUserDto> getCreateAllCommunityByUser(Long userId);
     List<GetCommunityByUserDto> getCommentAllCommunityByUser(Long userId);
     List<GetCommunityByUserDto> getLikeAllCommunityByUser(Long userId);
+    List<CommunityResponseDto> findCommunityBySearch(Long userId,String search);
+
 }
