@@ -1,7 +1,8 @@
 package com.springboot.peanut.service.fcm;
 
 import com.springboot.peanut.data.dto.fcm.FcmSendDto;
+import org.springframework.http.ResponseEntity;
 
 public interface FcmService {
-    int sendMessageTo  (FcmSendDto fcmSendDto) throws Exception;
+    ResponseEntity<?> sendMessageTo  (FcmSendDto fcmSendDto) throws Exception;
 }

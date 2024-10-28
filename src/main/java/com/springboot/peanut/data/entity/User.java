@@ -57,6 +57,8 @@ public class User implements UserDetails {
 
     private boolean insulinAlam = false;
 
+    private String fcmToken;
+
     private LocalDateTime create_At;
 
     private LocalDateTime update_At;

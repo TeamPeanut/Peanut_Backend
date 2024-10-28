@@ -10,11 +10,14 @@ import com.springboot.peanut.data.entity.MealInfo;
 import com.springboot.peanut.data.entity.User;
 import com.springboot.peanut.data.repository.BloodSugar.BloodSugarRepository;
 import com.springboot.peanut.data.repository.FoodNutrition.FoodNutritionRepository;
+import com.springboot.peanut.data.repository.UserRepository;
 import com.springboot.peanut.service.Food.FoodRecordNormalService;
 import com.springboot.peanut.service.Result.ResultStatusService;
 import com.springboot.peanut.jwt.JwtAuthenticationService;
+import com.springboot.peanut.service.notification.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,6 +38,8 @@ public class FoodRecordNormalServiceImpl implements FoodRecordNormalService {
     private final ResultStatusService resultStatusService;
     private final MealDao mealDao;
     private final S3Uploader s3Uploader;
+    private final NotificationService notificationService;
+    private final UserRepository userRepository;
 
     @Override
     public List<FoodNutritionDto> getFoodNutritionByName(List<String> name, HttpServletRequest request) {
@@ -166,4 +171,57 @@ public class FoodRecordNormalServiceImpl implements FoodRecordNormalService {
         // 최종 예상 혈당 계산 (현재 혈당 + 총 혈당 상승량)
         return currentBloodSugar + totalBloodSugarIncrease;
     }
+
+
+    // 스케줄링된 메서드에서 모든 사용자의 FCM 토큰을 가져와 알림을 보냄
+    @Scheduled(cron = "0 0 8 * * ?")
+    public void sendMorningNotification() throws Exception {
+        List<User> users = userRepository.findAll();  // 모든 사용자 조회 또는 특정 조건에 맞는 사용자 조회
+
+        for (User user : users) {
+            String fcmToken = user.getFcmToken();
+            String userName = user.getUsername();
+            String body = userName + "님! 아침 식사시간이에요! 제 시간에 하는 식사도 혈당 관리에 도움이 돼요. 오늘도 식사 기록을 해볼까요?";
+
+            if (fcmToken != null && !fcmToken.isEmpty()) {
+                notificationService.sendAllNotification(fcmToken, "식사 알림", body);
+            } else {
+                log.warn("해당 사용자의 FCM 토큰이 없습니다: " + user.getUsername());
+            }
+        }
+    }
+
+    @Scheduled(cron = "0 0 12 * * ?")
+    public void sendLunchNotification() throws Exception {
+        List<User> users = userRepository.findAll();  // 모든 사용자 조회 또는 특정 조건에 맞는 사용자 조회
+
+        for (User user : users) {
+            String fcmToken = user.getFcmToken();
+            String userName = user.getUsername();
+            String body = userName + "님! 점심 식사시간이에요! 제 시간에 하는 식사도 혈당 관리에 도움이 돼요. 점심 식사 기록을 해볼까요?";
+
+            if (fcmToken != null && !fcmToken.isEmpty()) {
+                notificationService.sendAllNotification(fcmToken, "식사 알림", body);
+            } else {
+                log.warn("해당 사용자의 FCM 토큰이 없습니다: " + user.getUsername());
+            }
+        }
+    }
+    @Scheduled(cron = "0 0 18 * * ?")
+    public void sendDinnerNotification() throws Exception {
+        List<User> users = userRepository.findAll();  // 모든 사용자 조회 또는 특정 조건에 맞는 사용자 조회
+
+        for (User user : users) {
+            String fcmToken = user.getFcmToken();
+            String userName = user.getUsername();
+            String body = userName + "님! 저녁 식사시간이에요! 제 시간에 하는 식사도 혈당 관리에 도움이 돼요. 저녁 식사 기록을 해볼까요?";
+
+            if (fcmToken != null && !fcmToken.isEmpty()) {
+                notificationService.sendAllNotification(fcmToken, "식사 알림", body);
+            } else {
+                log.warn("해당 사용자의 FCM 토큰이 없습니다: " + user.getUsername());
+            }
+        }
+    }
+
 }
