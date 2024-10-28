@@ -24,10 +24,10 @@ public class FcmController {
     private final FcmService fcmService;
 
     @PostMapping("/send")
-    public ResponseEntity<Integer> pushMessage(@RequestBody @Validated FcmSendDto fcmSendDto) throws Exception {
+    public ResponseEntity<?> pushMessage(@RequestBody @Validated FcmSendDto fcmSendDto) throws Exception {
         log.debug("[+] 푸시 메시지를 전송합니다. ");
         HashMap<String, String> map = new HashMap<>();
-        int result = fcmService.sendMessageTo(fcmSendDto);
+        ResponseEntity<?> result = fcmService.sendMessageTo(fcmSendDto);
         map.put("result", String.valueOf(result));
 
         return ResponseEntity.status(HttpStatus.OK).body(result);
