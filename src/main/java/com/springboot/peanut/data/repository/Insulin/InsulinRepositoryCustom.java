@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface InsulinRepositoryCustom {
-    Optional<Insulin> findByTodayInsulinName(Long userId, LocalDate date);
-    Optional<Insulin> findInsulinInfoByDate(Long userId, LocalDate date);
-    List<Insulin> findInsulinByYearAndMonth(Long userId, int year, int month);
+  List<Insulin> findInsulinByYearAndMonth(Long userId, int year, int month);
+  Optional<Insulin> findInsulinInfoByDate(Long userId, LocalDate date);
+  Insulin findAllInsulinByUserId(Long userId);
     }

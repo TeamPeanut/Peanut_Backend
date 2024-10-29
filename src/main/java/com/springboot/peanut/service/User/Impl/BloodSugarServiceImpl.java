@@ -1,6 +1,7 @@
 package com.springboot.peanut.service.User.Impl;
 
 import com.springboot.peanut.data.dao.BloodSugarDao;
+import com.springboot.peanut.data.dao.UserDao;
 import com.springboot.peanut.data.dto.bloodSugar.BloodSugarRequestDto;
 import com.springboot.peanut.data.dto.bloodSugar.DailyBloodSugarStatus;
 import com.springboot.peanut.data.dto.bloodSugar.MonthlyBloodSugarStatus;
@@ -33,6 +34,7 @@ public class BloodSugarServiceImpl implements BloodSugarService {
     private final ResultStatusService resultStatusService;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
+    private final UserDao userDao;
     @Override
     public ResultDto saveBloodSugar(BloodSugarRequestDto bloodSugarRequestDto, HttpServletRequest request) {
         Optional<User> user = jwtAuthenticationService.authenticationToken(request);
@@ -137,7 +139,7 @@ public class BloodSugarServiceImpl implements BloodSugarService {
         }
     @Scheduled(cron = "0 0 8 * * ?")
     public void sendSpandrelNotification() throws Exception {
-        List<User> users = userRepository.findAll();  // 모든 사용자 조회 또는 특정 조건에 맞는 사용자 조회
+        List<User> users = userDao.findAllUser();  // 모든 사용자 조회 또는 특정 조건에 맞는 사용자 조회
 
         for (User user : users) {
             String fcmToken = user.getFcmToken();

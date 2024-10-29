@@ -140,4 +140,8 @@ public class UserDaoImpl implements UserDao {
         return getConnectingInfoDtos;
     }
 
+    @Override
+    public List<User> findAllUser() {
+        return userRepository.findAll();
+    }
 }

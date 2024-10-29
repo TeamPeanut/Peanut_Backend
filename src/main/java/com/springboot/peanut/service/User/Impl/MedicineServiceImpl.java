@@ -3,6 +3,7 @@ package com.springboot.peanut.service.User.Impl;
 import com.springboot.peanut.data.dao.IntakeDao;
 import com.springboot.peanut.data.dao.MedicineDao;
 import com.springboot.peanut.data.dao.MedicineRecordDao;
+import com.springboot.peanut.data.dao.UserDao;
 import com.springboot.peanut.data.dto.medicine.MedicineRecordResponseDto;
 import com.springboot.peanut.data.dto.medicine.MedicineReportResponseDto;
 import com.springboot.peanut.data.dto.medicine.MedicineReportStatus;
@@ -15,8 +16,10 @@ import com.springboot.peanut.data.entity.User;
 import com.springboot.peanut.jwt.JwtAuthenticationService;
 import com.springboot.peanut.service.Result.ResultStatusService;
 import com.springboot.peanut.service.User.MedicineService;
+import com.springboot.peanut.service.notification.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -37,6 +40,8 @@ public class MedicineServiceImpl implements MedicineService {
     private final JwtAuthenticationService jwtAuthenticationService;
     private final ResultStatusService resultStatusService;
     private final IntakeDao intakeDao;
+    private final UserDao userDao;
+    private final NotificationService notificationService;
 
     @Override
     public ResultDto saveMedicineInfo(MedicineRequestDto medicineRequestDto, HttpServletRequest request) {
@@ -142,6 +147,57 @@ public class MedicineServiceImpl implements MedicineService {
             throw new IllegalArgumentException("복용 약이 없습니다.");
         }
 
+    }
+
+    // 각 시간대에 대한 알림 스케줄링 메서드
+    @Scheduled(cron = "0 0 8 * * ?")  // "아침 후" 시간대 알림
+    public void sendMorningAfterNotification() throws Exception {
+        sendScheduledInsulinNotification("아침 후");
+    }
+
+    @Scheduled(cron = "0 30 11 * * ?") // "점심 전" 시간대 알림
+    public void sendLunchBeforeNotification() throws Exception {
+        sendScheduledInsulinNotification("점심 전");
+    }
+
+    @Scheduled(cron = "0 0 13 * * ?")  // "점심 후" 시간대 알림
+    public void sendLunchAfterNotification() throws Exception {
+        sendScheduledInsulinNotification("점심 후");
+    }
+
+    @Scheduled(cron = "0 0 17 * * ?")  // "저녁 전" 시간대 알림
+    public void sendDinnerBeforeNotification() throws Exception {
+        sendScheduledInsulinNotification("저녁 전");
+    }
+
+    @Scheduled(cron = "0 0 19 * * ?")  // "저녁 후" 시간대 알림
+    public void sendDinnerAfterNotification() throws Exception {
+        sendScheduledInsulinNotification("저녁 후");
+    }
+
+    @Scheduled(cron = "0 0 22 * * ?")  // "자기 전" 시간대 알림
+    public void sendBedtimeNotification() throws Exception {
+        sendScheduledInsulinNotification("자기 전");
+    }
+
+    public void sendScheduledInsulinNotification(String administrationTime) throws Exception {
+        List<User> users = userDao.findAllUser();
+
+        for (User user : users) {
+            List<String> administrationTimes = intakeDao.findIntakeTime(user.getId());
+
+            // 사용자가 설정한 투약 시간대가 현재 스케줄링된 시간대와 일치하는지 확인
+            if (administrationTimes.contains(administrationTime)) {
+                String fcmToken = user.getFcmToken();
+                String message = user.getUsername() + "님! " + administrationTime + " 복약 시간입니다. 적시에 복약해 주세요.";
+
+                if (fcmToken != null && !fcmToken.isEmpty()) {
+                    notificationService.sendAllNotification(fcmToken, "복약 알림", message);
+                } else {
+                    log.warn("해당 사용자의 FCM 토큰이 없습니다: " + user.getUsername());
+                }
+            }
+        }
     }
     // 매일 측정 상태를 반환하는 메서드
     public String cntStatus(int cnt) {
