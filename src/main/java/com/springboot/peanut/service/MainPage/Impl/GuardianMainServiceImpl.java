@@ -45,6 +45,7 @@ public class GuardianMainServiceImpl implements GuardianMainService {
     private final MedicineRecordDao medicineRecordDao;
     private final InsulinDao insulinDao;
     private  final MainPageTimeService mainPageTimeService;
+    private final NotificationService notificationService;
 
     @Override
     public MainPageGetUserDto getUserInfoMainPage(HttpServletRequest request) {
@@ -161,6 +162,9 @@ public class GuardianMainServiceImpl implements GuardianMainService {
                         // 기존 레코드가 있으면 상태만 업데이트
                         MedicineRecord medicineRecord = existingRecord.get().get(0);  // 첫 번째 레코드만 업데이트
                         medicineRecord.setMedicineStatus(newMedicineStatus);  // 상태만 업데이트
+                        String title = "보호자 알림";
+                        String body = user.getUserName()+"님의 보호자께서 알림을 보냈습니다 \n 복약 시간이 지났습니다. 복약 후 복약 체크를 진행해주세요.";
+                        notificationService.sendNotification(user.getId(),title,body,request);
                         log.info("[medicine] : {} 기존 레코드 상태 업데이트 완료", medicine.getMedicineName());
                     } else {
                         // 기존 레코드가 없으면 새 레코드 생성
@@ -190,6 +194,9 @@ public class GuardianMainServiceImpl implements GuardianMainService {
                     // 기존 레코드가 있으면 상태만 업데이트
                     InsulinRecord insulinRecord = existingInsulinRecord.get();
                     insulinRecord.setInsulinStatus(newInsulinStatus);  // 상태만 업데이트
+                    String title = "보호자 알림";
+                    String body = user.getUserName()+"님의 보호자께서 알림을 보냈습니다 \n 인슐린 투약 시간이 지났습니다. 복약 후 복약 체크를 진행해주세요.";
+                    notificationService.sendNotification(user.getId(),title,body,request);
                     log.info("[insulin] : {} 기존 레코드 상태 업데이트 완료", insulin.getProductName());
                 } else {
                     // 기존 레코드가 없으면 새 레코드 생성
