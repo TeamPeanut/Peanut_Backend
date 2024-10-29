@@ -90,7 +90,9 @@ public class PatientMainPageServiceImpl implements PatientMainPageService {
 
         // 인슐린 정보 가져오기
         Insulin insulin = insulinDao.getInsulinByUserId(user.get().getId());
-        InsulinRecord insulinRecord = mainPageTimeService.getInsulinRecordTime(user.get().getId(), date);
+        Optional<InsulinRecord> insulinRecord = mainPageTimeService.getInsulinRecordTime(user.get().getId(), date);
+        boolean insulinStatus = insulinRecord.map(InsulinRecord::isInsulinStatus).orElse(false);  // 값이 없을 경우 false로 처리
+
 
         // 약 목록에서 첫 번째 약 가져오기
         Medicine medicine = medicineList.isEmpty() ? null : medicineList.get(0);  // 약이 없으면 null 처리
@@ -104,7 +106,7 @@ public class PatientMainPageServiceImpl implements PatientMainPageService {
 
         // 인슐린 관련 처리
         String insulinName = insulin != null ? insulin.getProductName() : "인슐린 정보 없음";
-        boolean insulinStatus = insulinRecord != null && insulinRecord.isInsulinStatus();
+
         List<String> insulinTimeList = insulin != null ? insulin.getAdministrationTime() : new ArrayList<>();
         String insulinTime = mainPageTimeService.getInsulinTimeByCurrentTime(insulinTimeList);
         String insulinDosage = insulin != null ? insulin.getDosage() : "용량 정보 없음";
