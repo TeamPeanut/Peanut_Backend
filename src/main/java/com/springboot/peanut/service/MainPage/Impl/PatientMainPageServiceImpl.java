@@ -13,6 +13,7 @@ import com.springboot.peanut.data.repository.InsulinRecord.InsulinRecordReposito
 import com.springboot.peanut.data.repository.Intake.IntakeRepository;
 import com.springboot.peanut.data.repository.MealInfo.MealInfoRepository;
 import com.springboot.peanut.data.repository.Medicine.MedicineRepository;
+import com.springboot.peanut.data.repository.PatientGuardianRepository;
 import com.springboot.peanut.jwt.JwtAuthenticationService;
 import com.springboot.peanut.service.MainPage.MainPageTimeService;
 import com.springboot.peanut.service.MainPage.PatientMainPageService;
@@ -46,6 +47,7 @@ public class PatientMainPageServiceImpl implements PatientMainPageService {
     private final MedicineRecordDao medicineRecordDao;
     private final InsulinDao insulinDao;
     private  final MainPageTimeService mainPageTimeService;
+    private final PatientGuardianRepository patientGuardianRepository;
 
     @Override
     public MainPageGetUserDto getUserInfoMainPage(HttpServletRequest request) {
@@ -136,6 +138,9 @@ public class PatientMainPageServiceImpl implements PatientMainPageService {
         Optional<User> user = jwtAuthenticationService.authenticationToken(request);
         ResultDto resultDto = new ResultDto();
         Long userId = user.get().getId();
+        PatientGuardian patientGuardian = patientGuardianRepository.findByGuardianId(user.get().getId());
+        User guardian = patientGuardian.getGuardian();
+
 
         // Medicine과 Insulin 정보를 가져온다
         List<Medicine> medicineList = mainPageTimeService.getMedicineListByTime(userId);
@@ -155,7 +160,10 @@ public class PatientMainPageServiceImpl implements PatientMainPageService {
                     if (existingRecord.isPresent() && !existingRecord.get().isEmpty()) {
                         // 기존 레코드가 있으면 상태만 업데이트
                         MedicineRecord medicineRecord = existingRecord.get().get(0);  // 첫 번째 레코드만 업데이트
-                        medicineRecord.setMedicineStatus(newMedicineStatus);  // 상태만 업데이트
+                        medicineRecord.setMedicineStatus(newMedicineStatus);
+                        String title = "환자 알림";
+                        String body = user.get().getUserName()+"님의 환자님께서 알림을 보냈습니다 \n  금일 복약 기록을 완료했습니다.";
+                        notificationService.sendNotification(guardian.getId(),title,body,request);// 상태만 업데이트
                         log.info("[medicine] : {} 기존 레코드 상태 업데이트 완료", medicine.getMedicineName());
                     } else {
                         // 기존 레코드가 없으면 새 레코드 생성
@@ -185,6 +193,10 @@ public class PatientMainPageServiceImpl implements PatientMainPageService {
                     // 기존 레코드가 있으면 상태만 업데이트
                     InsulinRecord insulinRecord = existingInsulinRecord.get();
                     insulinRecord.setInsulinStatus(newInsulinStatus);  // 상태만 업데이트
+                    String title = "환자 알림";
+                    String body = user.get().getUserName()+"님의 환자님께서 알림을 보냈습니다 \n  금일 인슐린 투약 기록을 완료했습니다.";
+                    notificationService.sendNotification(guardian.getId(),title,body,request);
+
                     log.info("[insulin] : {} 기존 레코드 상태 업데이트 완료", insulin.getProductName());
                 } else {
                     // 기존 레코드가 없으면 새 레코드 생성
