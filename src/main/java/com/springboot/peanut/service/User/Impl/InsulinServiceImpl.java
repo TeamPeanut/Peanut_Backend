@@ -2,6 +2,7 @@ package com.springboot.peanut.service.User.Impl;
 
 import com.springboot.peanut.data.dao.InsulinDao;
 import com.springboot.peanut.data.dao.InsulinRecordDao;
+import com.springboot.peanut.data.dao.UserDao;
 import com.springboot.peanut.data.dto.Insulin.InsulinRecordResponseDto;
 import com.springboot.peanut.data.dto.Insulin.InsulinReportResponseDto;
 import com.springboot.peanut.data.dto.Insulin.InsulinRequestDto;
@@ -11,10 +12,16 @@ import com.springboot.peanut.data.entity.*;
 import com.springboot.peanut.jwt.JwtAuthenticationService;
 import com.springboot.peanut.service.Result.ResultStatusService;
 import com.springboot.peanut.service.User.InsulinService;
+import com.springboot.peanut.service.notification.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -30,6 +37,9 @@ public class InsulinServiceImpl implements InsulinService {
     private final InsulinRecordDao insulinRecordDao;
     private final JwtAuthenticationService jwtAuthenticationService;
     private final ResultStatusService resultStatusService;
+    private final TaskScheduler taskScheduler;
+    private final NotificationService notificationService;
+    private final UserDao userDao;
 
     @Override
     public ResultDto saveInsulinInfo(InsulinRequestDto insulinRequestDto, HttpServletRequest request) {
@@ -109,6 +119,56 @@ public class InsulinServiceImpl implements InsulinService {
             throw new IllegalArgumentException("투약 인슐린 정보가 없습니다.");
         }
     }
+    // 각 시간대에 대한 알림 스케줄링 메서드
+    @Scheduled(cron = "0 0 8 * * ?")  // "아침 후" 시간대 알림
+    public void sendMorningAfterNotification() throws Exception {
+        sendScheduledInsulinNotification("아침 후");
+    }
+
+    @Scheduled(cron = "0 30 11 * * ?") // "점심 전" 시간대 알림
+    public void sendLunchBeforeNotification() throws Exception {
+        sendScheduledInsulinNotification("점심 전");
+    }
+
+    @Scheduled(cron = "0 0 13 * * ?")  // "점심 후" 시간대 알림
+    public void sendLunchAfterNotification() throws Exception {
+        sendScheduledInsulinNotification("점심 후");
+    }
+
+    @Scheduled(cron = "0 0 17 * * ?")  // "저녁 전" 시간대 알림
+    public void sendDinnerBeforeNotification() throws Exception {
+        sendScheduledInsulinNotification("저녁 전");
+    }
+
+    @Scheduled(cron = "0 0 19 * * ?")  // "저녁 후" 시간대 알림
+    public void sendDinnerAfterNotification() throws Exception {
+        sendScheduledInsulinNotification("저녁 후");
+    }
+
+    @Scheduled(cron = "0 0 22 * * ?")  // "자기 전" 시간대 알림
+    public void sendBedtimeNotification() throws Exception {
+        sendScheduledInsulinNotification("자기 전");
+    }
+
+    public void sendScheduledInsulinNotification(String administrationTime) throws Exception {
+        List<User> users = userDao.findAllUser();
+
+        for (User user : users) {
+            List<String> administrationTimes = insulinDao.findAdministrationTimeByUserId(user.getId());
+
+            // 사용자가 설정한 투약 시간대가 현재 스케줄링된 시간대와 일치하는지 확인
+            if (administrationTimes.contains(administrationTime)) {
+                String fcmToken = user.getFcmToken();
+                String message = user.getUsername() + "님! " + administrationTime + " 인슐린 투여 시간입니다. 적시에 투약해 주세요.";
+
+                if (fcmToken != null && !fcmToken.isEmpty()) {
+                    notificationService.sendAllNotification(fcmToken, "인슐린 알림", message);
+                } else {
+                    log.warn("해당 사용자의 FCM 토큰이 없습니다: " + user.getUsername());
+                }
+            }
+        }
+    }
 
     // 매일 측정 상태를 반환하는 메서드
     public String cntStatus(int cnt) {
@@ -139,4 +199,6 @@ public class InsulinServiceImpl implements InsulinService {
         }
     }
 
-}
+    }
+
+

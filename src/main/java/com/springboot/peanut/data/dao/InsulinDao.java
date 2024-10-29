@@ -8,5 +8,6 @@ public interface InsulinDao {
     void saveInsulin(Insulin insulin);
     Insulin getInsulinByUserId(Long userId);
     List<Insulin> findInsulinByYearAndMonth(Long userId, int year, int month) ;
-
+    List<String> findAdministrationTimeByUserId(Long userId);
+    List<Insulin> findInsulinByUserId(Long userId);
     }

@@ -22,5 +22,6 @@ public interface UserDao {
     GetPatientResponseDto findPatientByGuardian(Long id);
     GetPatientResponseDto findGuardianByPatient(Long id);
     List<GetConnectingInfoDto> findConnectingInfo(String email);
+    List<User> findAllUser();
 
 }
