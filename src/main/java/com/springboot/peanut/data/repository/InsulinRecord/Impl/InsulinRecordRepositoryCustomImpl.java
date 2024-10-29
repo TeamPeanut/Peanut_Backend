@@ -15,26 +15,25 @@ import java.util.List;
 import java.util.Optional;
 
 
-
 @Service
 @RequiredArgsConstructor
 public class InsulinRecordRepositoryCustomImpl implements InsulinRecordRepositoryCustom {
 
-        private final JPAQueryFactory jpaQueryFactory;
+    private final JPAQueryFactory jpaQueryFactory;
 
-        @Override
-        public Optional<InsulinRecord> findInsulinRecordByUserIdAndDate(Long userId, LocalDate date) {
-            QInsulinRecord qInsulinRecord = QInsulinRecord.insulinRecord;
-            return Optional.ofNullable(jpaQueryFactory
-                    .selectFrom(qInsulinRecord)
-                    .where(qInsulinRecord.user.id.eq(userId)
-                            .and(qInsulinRecord.recordDate.eq(date)))
-                    .fetchOne());
-        }
+    @Override
+    public Optional<InsulinRecord> findInsulinRecordByUserIdAndDate(Long userId, LocalDate date) {
+        QInsulinRecord qInsulinRecord = QInsulinRecord.insulinRecord;
+        return Optional.ofNullable(jpaQueryFactory
+                .selectFrom(qInsulinRecord)
+                .where(qInsulinRecord.user.id.eq(userId)
+                        .and(qInsulinRecord.recordDate.eq(date)))
+                .fetchOne());
+    }
 
     @Override
     public List<InsulinRecord> findInsulinByYearAndMonth(Long userId, int year, int month) {
-            QInsulinRecord qInsulinRecord = QInsulinRecord.insulinRecord;
+        QInsulinRecord qInsulinRecord = QInsulinRecord.insulinRecord;
 
         return jpaQueryFactory
                 .selectFrom(qInsulinRecord)
