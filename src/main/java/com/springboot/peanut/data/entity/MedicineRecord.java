@@ -22,6 +22,8 @@ public class MedicineRecord {
 
     private boolean medicineStatus;
 
+    private boolean guardianMedicineStatus;
+
     @ManyToOne
     @JoinColumn(name = "medicine_id")
     private Medicine medicine;

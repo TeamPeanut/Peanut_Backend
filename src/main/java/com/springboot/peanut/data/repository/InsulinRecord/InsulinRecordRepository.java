@@ -7,5 +7,4 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 public interface InsulinRecordRepository extends JpaRepository<InsulinRecord,Long>,InsulinRecordRepositoryCustom {
-    Optional<InsulinRecord> findInsulinRecordByUserId(Long userId);
 }

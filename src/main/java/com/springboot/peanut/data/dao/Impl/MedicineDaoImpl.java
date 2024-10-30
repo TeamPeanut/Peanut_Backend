@@ -27,4 +27,9 @@ public class MedicineDaoImpl implements MedicineDao {
     }
 
 
+    @Override
+    public Optional<Medicine> findMedicineByUserId(Long userId) {
+        Optional<Medicine> medicine = medicineRepository.findById(userId);
+        return medicine;
+    }
 }

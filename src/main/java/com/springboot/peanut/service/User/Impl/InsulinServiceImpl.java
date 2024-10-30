@@ -2,11 +2,13 @@ package com.springboot.peanut.service.User.Impl;
 
 import com.springboot.peanut.data.dao.InsulinDao;
 import com.springboot.peanut.data.dao.InsulinRecordDao;
+import com.springboot.peanut.data.dao.NotificationDao;
 import com.springboot.peanut.data.dao.UserDao;
 import com.springboot.peanut.data.dto.Insulin.InsulinRecordResponseDto;
 import com.springboot.peanut.data.dto.Insulin.InsulinReportResponseDto;
 import com.springboot.peanut.data.dto.Insulin.InsulinRequestDto;
 import com.springboot.peanut.data.dto.Insulin.InsulinReportStatus;
+import com.springboot.peanut.data.dto.notification.NotificationRequestDto;
 import com.springboot.peanut.data.dto.signDto.ResultDto;
 import com.springboot.peanut.data.entity.*;
 import com.springboot.peanut.jwt.JwtAuthenticationService;
@@ -37,7 +39,7 @@ public class InsulinServiceImpl implements InsulinService {
     private final InsulinRecordDao insulinRecordDao;
     private final JwtAuthenticationService jwtAuthenticationService;
     private final ResultStatusService resultStatusService;
-    private final TaskScheduler taskScheduler;
+    private final NotificationDao notificationDao;
     private final NotificationService notificationService;
     private final UserDao userDao;
 
@@ -130,7 +132,7 @@ public class InsulinServiceImpl implements InsulinService {
         sendScheduledInsulinNotification("점심 전");
     }
 
-    @Scheduled(cron = "0 0 13 * * ?")  // "점심 후" 시간대 알림
+    @Scheduled(cron = "0 11 13 * * ?")  // "점심 후" 시간대 알림
     public void sendLunchAfterNotification() throws Exception {
         sendScheduledInsulinNotification("점심 후");
     }
@@ -150,19 +152,25 @@ public class InsulinServiceImpl implements InsulinService {
         sendScheduledInsulinNotification("자기 전");
     }
 
+
     public void sendScheduledInsulinNotification(String administrationTime) throws Exception {
         List<User> users = userDao.findAllUser();
 
         for (User user : users) {
             List<String> administrationTimes = insulinDao.findAdministrationTimeByUserId(user.getId());
-
+            log.info("[user] : {}", user);
+            log.info("[administrationTimes] : {}", administrationTimes);
             // 사용자가 설정한 투약 시간대가 현재 스케줄링된 시간대와 일치하는지 확인
             if (administrationTimes.contains(administrationTime)) {
                 String fcmToken = user.getFcmToken();
-                String message = user.getUsername() + "님! " + administrationTime + " 인슐린 투여 시간입니다. 적시에 투약해 주세요.";
-
+                String title = "인슐린 알림";
+                String body = user.getUserName() + "님! " + administrationTime + " 인슐린 투여 시간입니다. 적시에 투약해주세요.";
+                log.info("[fcmToken] : {}", fcmToken);
+                log.info("[userName] : {}", user.getUserName());
+                log.info("[body] : {}", body);
+                saveNotification( title, body, fcmToken, user);
                 if (fcmToken != null && !fcmToken.isEmpty()) {
-                    notificationService.sendAllNotification(fcmToken, "인슐린 알림", message);
+                    notificationService.sendAllNotification(fcmToken, "인슐린 알림", body);
                 } else {
                     log.warn("해당 사용자의 FCM 토큰이 없습니다: " + user.getUsername());
                 }
@@ -198,7 +206,16 @@ public class InsulinServiceImpl implements InsulinService {
             return null;
         }
     }
+    public void saveNotification(String title, String body,String fcnToken, User user) {
+        NotificationRequestDto notificationRequestDto = new NotificationRequestDto(
+                title,
+                body,
+                fcnToken
+        );
+        Notification notification = Notification.saveNotificationInfo(notificationRequestDto,user);
 
+        notificationDao.save(notification);
     }
+}
 
 

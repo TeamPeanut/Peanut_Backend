@@ -37,6 +37,14 @@ public class MedicineRecordRepositoryCustomImpl implements MedicineRecordReposit
                         .and(qMedicineRecord.recordDate.month().eq(month)))
                 .fetch();
     }
-
+    @Override
+    public Optional<MedicineRecord> getMedicineRecordByUserId(Long userId, LocalDate date) {
+        QMedicineRecord qMedicineRecord = QMedicineRecord.medicineRecord;
+        return Optional.ofNullable(jpaQueryFactory
+                .selectFrom(qMedicineRecord)
+                .where(qMedicineRecord.user.id.eq(userId)
+                        .and(qMedicineRecord.recordDate.eq(date)))
+                .fetchOne());
+    }
 
 }

@@ -9,5 +9,5 @@ import java.util.Optional;
 
 public interface IntakeRepositoryCustom {
     Optional<Intake> findByTodayIntakeStatus(Long userId, LocalDate date );
-    Optional<Intake> findByUserId(Long UserId);
+
 }

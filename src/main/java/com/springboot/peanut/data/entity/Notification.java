@@ -1,42 +1,38 @@
 package com.springboot.peanut.data.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import com.springboot.peanut.data.dto.notification.NotificationRequestDto;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String message;
+    private String body;
 
-    private String status;
+    private String title;
 
     private LocalDateTime create_At;
 
-    @ManyToOne
-    @JoinColumn(name = "patient_id",nullable = false)
-    private User patient;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "guardian_id",nullable = false)
-    private User guardian;
-
-    public static Notification createNotification(User patient, User guardian, String message, String status){
-        Notification notification = new Notification();
-        notification.message = message;
-        notification.status = status;
-        notification.patient = patient;
-        notification.guardian = guardian;
-        notification.create_At = LocalDateTime.now();
-        return notification;
+    public static Notification saveNotificationInfo(NotificationRequestDto notificationRequestDto,User user) {
+        return Notification.builder()
+                .body(notificationRequestDto.getBody())
+                .title(notificationRequestDto.getTitle())
+                .user(user)
+                .create_At(LocalDateTime.now())
+                .build();
     }
-
-
 }

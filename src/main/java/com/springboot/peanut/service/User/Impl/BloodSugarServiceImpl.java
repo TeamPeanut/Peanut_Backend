@@ -1,12 +1,15 @@
 package com.springboot.peanut.service.User.Impl;
 
 import com.springboot.peanut.data.dao.BloodSugarDao;
+import com.springboot.peanut.data.dao.NotificationDao;
 import com.springboot.peanut.data.dao.UserDao;
 import com.springboot.peanut.data.dto.bloodSugar.BloodSugarRequestDto;
 import com.springboot.peanut.data.dto.bloodSugar.DailyBloodSugarStatus;
 import com.springboot.peanut.data.dto.bloodSugar.MonthlyBloodSugarStatus;
+import com.springboot.peanut.data.dto.notification.NotificationRequestDto;
 import com.springboot.peanut.data.dto.signDto.ResultDto;
 import com.springboot.peanut.data.entity.BloodSugar;
+import com.springboot.peanut.data.entity.Notification;
 import com.springboot.peanut.data.entity.User;
 import com.springboot.peanut.data.repository.UserRepository;
 import com.springboot.peanut.jwt.JwtAuthenticationService;
@@ -34,6 +37,7 @@ public class BloodSugarServiceImpl implements BloodSugarService {
     private final ResultStatusService resultStatusService;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
+    private final NotificationDao notificationDao;
     private final UserDao userDao;
     @Override
     public ResultDto saveBloodSugar(BloodSugarRequestDto bloodSugarRequestDto, HttpServletRequest request) {
@@ -137,69 +141,73 @@ public class BloodSugarServiceImpl implements BloodSugarService {
         }
 
         }
+    // 공통 메서드: 알림 보내기
+    private void sendNotificationToAllUsers(String title, String bodyTemplate) {
+        List<User> users = userRepository.findAll();  // 모든 사용자 조회 또는 특정 조건에 맞는 사용자 조회
+        log.info("스케줄링된 알림이 실행되었습니다: {}", title);
+
+        for (User user : users) {
+            String fcmToken = user.getFcmToken();
+            String userName = user.getUserName();
+            String body = bodyTemplate.replace("{username}", userName);
+
+            log.info("[fcmToken] : {}", fcmToken);
+            log.info("[userName] : {}", userName);
+            log.info("[body] : {}", body);
+
+            if (fcmToken != null && !fcmToken.isEmpty()) {
+                try {
+                    notificationService.sendAllNotification(fcmToken, title, body);
+                    saveNotification(title, body, fcmToken, user);
+                } catch (Exception e) {
+                    log.error("알림 전송 중 오류 발생: ", e);
+                }
+            } else {
+                log.warn("해당 사용자의 FCM 토큰이 없습니다: " + user.getUsername());
+            }
+        }
+    }
+
+    // 스케줄링된 메서드들: 알림 메시지 템플릿을 전달
     @Scheduled(cron = "0 0 8 * * ?")
-    public void sendSpandrelNotification() throws Exception {
-        List<User> users = userDao.findAllUser();  // 모든 사용자 조회 또는 특정 조건에 맞는 사용자 조회
-
-        for (User user : users) {
-            String fcmToken = user.getFcmToken();
-            String userName = user.getUsername();
-            String body = userName + "님을 정확하게 진단 해드리고 싶어요. 공복 혈당을 재고 기록헤주세요!";
-
-            if (fcmToken != null && !fcmToken.isEmpty()) {
-                notificationService.sendAllNotification(fcmToken, "혈당 알림", body);
-            } else {
-                log.warn("해당 사용자의 FCM 토큰이 없습니다: " + user.getUsername());
-            }
-        }
+    public void sendSpandrelNotification() {
+        String title = "혈당 알림";
+        String bodyTemplate = "{username} 님을 정확하게 진단 해드리고 싶어요. 공복 혈당을 재고 기록해주세요!";
+        sendNotificationToAllUsers(title, bodyTemplate);
     }
 
-    @Scheduled(cron = "0 0 12 * * ?")
-    public void sendBeforeMealNotification() throws Exception {
-        List<User> users = userRepository.findAll();  // 모든 사용자 조회 또는 특정 조건에 맞는 사용자 조회
-
-        for (User user : users) {
-            String fcmToken = user.getFcmToken();
-            String userName = user.getUsername();
-            String body = userName + "님을 정확하게 진단 하기 위해서 오늘의 식전 혈당을 재고 기록헤주세요!";
-
-            if (fcmToken != null && !fcmToken.isEmpty()) {
-                notificationService.sendAllNotification(fcmToken, "혈당 알림", body);
-            } else {
-                log.warn("해당 사용자의 FCM 토큰이 없습니다: " + user.getUsername());
-            }
-        }
+    @Scheduled(cron = "0 30 12 * * ?")
+    public void sendBeforeMealNotification() {
+        String title = "혈당 알림";
+        String bodyTemplate = "{username} 님을 정확하게 진단 하기 위해서 오늘의 식전 혈당을 재고 기록해주세요!";
+        sendNotificationToAllUsers(title, bodyTemplate);
     }
+
     @Scheduled(cron = "0 0 18 * * ?")
-    public void sendAfterMealNotification() throws Exception {
-        List<User> users = userRepository.findAll();  // 모든 사용자 조회 또는 특정 조건에 맞는 사용자 조회
-
-        for (User user : users) {
-            String fcmToken = user.getFcmToken();
-            String userName = user.getUsername();
-            String body = userName + "님을 정확하게 진단 하기 위해서 오늘의 식후 혈당을 재고 기록헤주세요!";
-
-            if (fcmToken != null && !fcmToken.isEmpty()) {
-                notificationService.sendAllNotification(fcmToken, "혈당 알림", body);
-            } else {
-                log.warn("해당 사용자의 FCM 토큰이 없습니다: " + user.getUsername());
-            }
-        }
+    public void sendAfterMealNotification() {
+        String title = "혈당 알림";
+        String bodyTemplate = "{username} 님을 정확하게 진단 하기 위해서 오늘의 식후 혈당을 재고 기록해주세요!";
+        sendNotificationToAllUsers(title, bodyTemplate);
     }
-    @Scheduled(cron = "0 0 18 * * ?")
-    public void sendBeforeSleepNotification() throws Exception {
-        List<User> users = userRepository.findAll();  // 모든 사용자 조회 또는 특정 조건에 맞는 사용자 조회
 
-        for (User user : users) {
-            String fcmToken = user.getFcmToken();
-            String userName = user.getUsername();
-            String body = userName + "님! 오늘 하루 혈당 기록을 하셨나요? 자기 전 혈당을 재고 기록헤주세요!";
-
-            if (fcmToken != null && !fcmToken.isEmpty()) {
-                notificationService.sendAllNotification(fcmToken, "혈당 알림", body);
-            } else {
-                log.warn("해당 사용자의 FCM 토큰이 없습니다: " + user.getUsername());
-            }
-        }
+    @Scheduled(cron = "0 0 22 * * ?")
+    public void sendBeforeSleepNotification() {
+        String title = "혈당 알림";
+        String bodyTemplate = "{username} 님! 오늘 하루 혈당 기록을 하셨나요? \n 자기 전 혈당을 재고 기록해주세요!";
+        sendNotificationToAllUsers(title, bodyTemplate);
     }
+
+
+    public void saveNotification(String title, String body,String fcnToken, User user) {
+        NotificationRequestDto notificationRequestDto = new NotificationRequestDto(
+                title,
+                body,
+                fcnToken
+        );
+        Notification notification = Notification.saveNotificationInfo(notificationRequestDto,user);
+
+        notificationDao.save(notification);
+    }
+
+
 }
