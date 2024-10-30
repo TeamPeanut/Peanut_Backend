@@ -23,7 +23,7 @@ public class InsulinDaoImpl implements InsulinDao {
 
     @Override
     public Insulin getInsulinByUserId(Long userId) {
-        Insulin insulin = insulinRepository.findByUserId(userId).get();
+        Insulin insulin = insulinRepository.findByUserId(userId).orElse(null);
         return insulin;
     }
 

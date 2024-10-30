@@ -26,6 +26,8 @@ public class InsulinRecord {
 
     private boolean insulinStatus;
 
+    private  boolean guardianStatus;
+
     @ManyToOne
     @JoinColumn(name = "insulin_id")
     private Insulin insulin;

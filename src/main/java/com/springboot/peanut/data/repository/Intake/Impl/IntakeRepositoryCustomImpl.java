@@ -55,14 +55,5 @@ public class IntakeRepositoryCustomImpl implements IntakeRepositoryCustom {
         });
     }
 
-    @Override
-    public Optional<Intake> findByUserId(Long UserId) {
-        QIntake qIntake = QIntake.intake;
 
-        return Optional.ofNullable(jpaQueryFactory
-                .selectFrom(qIntake)
-                .where(qIntake.user.id.eq(UserId))
-                .fetchOne()
-        );
-    }
 }

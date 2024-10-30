@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,16 +25,10 @@ public class IntakeDaoImpl implements IntakeDao {
 
     @Override
     public List<String> findIntakeTime(Long userId) {
-        Optional<Intake> optionalIntake = intakeRepository.findByUserId(userId);
+        List<Intake> intakeList = intakeRepository.findAllByUserId(userId);
 
-        if (optionalIntake.isPresent()) {
-            Intake intake = optionalIntake.get();
-            // administrationTime 리스트를 직접 반환
-            return intake.getIntakeTime();
-        } else {
-            // 사용자가 존재하지 않을 경우 빈 리스트 반환
-            return Collections.emptyList();
-        }
-
+        return intakeList.stream()
+                .flatMap(intake -> intake.getIntakeTime().stream())
+                .collect(Collectors.toList());
     }
 }

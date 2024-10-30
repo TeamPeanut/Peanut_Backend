@@ -89,7 +89,7 @@ public class MainPageTimeServiceImpl implements MainPageTimeService {
     public   Optional<InsulinRecord>  getInsulinRecordTime(Long userId, LocalDate date) {
         // 현재 시간 확인
         Optional<InsulinRecord> insulinRecord = insulinRecordRepository.findInsulinRecordByUserIdAndDate(userId, date);
-        log.info("[insulinRecord] : {}", insulinRecord.get().isInsulinStatus());
+
         if (insulinRecord.isEmpty()) {
             return null;  // 인슐린 기록이 없으면 null 반환
         }

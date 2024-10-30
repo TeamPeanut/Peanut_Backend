@@ -12,5 +12,6 @@ public interface MedicineRecordDao {
     void saveMedicineRecord(MedicineRecord medicineRecord);
     Optional<List<MedicineRecord>>  findMedicineRecordByUserId(Long userId, LocalDate date);
     List<MedicineRecord> findMedicineByYearAndMonth(Long userId, int year, int month) ;
+    Optional<MedicineRecord>  getMedicineRecordByUserId(Long userId, LocalDate date);
 
 }

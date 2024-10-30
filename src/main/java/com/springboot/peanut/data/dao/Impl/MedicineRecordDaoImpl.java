@@ -31,4 +31,9 @@ public class MedicineRecordDaoImpl implements MedicineRecordDao {
     public List<MedicineRecord> findMedicineByYearAndMonth(Long userId, int year, int month) {
         return  medicineRecordRepository.findMedicineByYearAndMonth(userId, year, month);
     }
+
+    @Override
+    public Optional<MedicineRecord> getMedicineRecordByUserId(Long userId, LocalDate date) {
+        return medicineRecordRepository.getMedicineRecordByUserId(userId, date);
+    }
 }

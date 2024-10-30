@@ -6,6 +6,7 @@ import com.springboot.peanut.data.dto.mainPage.GuardianMainPageGetAdditionalInfo
 import com.springboot.peanut.data.dto.mainPage.MainPageGetUserDto;
 import com.springboot.peanut.data.dto.mainPage.MedicineInsulinStatusRequestDto;
 import com.springboot.peanut.data.dto.mainPage.PatientMainPageGetAdditionalInfoDto;
+import com.springboot.peanut.data.dto.notification.NotificationRequestDto;
 import com.springboot.peanut.data.dto.signDto.ResultDto;
 import com.springboot.peanut.data.entity.*;
 import com.springboot.peanut.data.repository.BloodSugar.BloodSugarRepository;
@@ -36,16 +37,17 @@ import java.util.stream.Collectors;
 public class GuardianMainServiceImpl implements GuardianMainService {
 
     private final BloodSugarDao bloodSugarDao;
-    private final IntakeRepository intakeRepository;
+    private final NotificationDao notificationDao;
     private final InsulinRecordDao insulinRecordDao;
     private final JwtAuthenticationService jwtAuthenticationService;
-    private final MealDao mealDao;
+    private final MedicineDao medicineDao;
     private final PatientGuardianRepository patientGuardianRepository;
     private final ResultStatusService resultStatusService;
     private final MedicineRecordDao medicineRecordDao;
     private final InsulinDao insulinDao;
     private  final MainPageTimeService mainPageTimeService;
     private final NotificationService notificationService;
+    private final MealDao mealDao;
 
     @Override
     public MainPageGetUserDto getUserInfoMainPage(HttpServletRequest request) {
@@ -76,48 +78,43 @@ public class GuardianMainServiceImpl implements GuardianMainService {
 
     @Override
     public PatientMainPageGetAdditionalInfoDto getAdditionalInfoMainPage(HttpServletRequest request, LocalDate date) {
-        Optional<User> guardian = jwtAuthenticationService.authenticationToken(request);
-        PatientGuardian patientGuardian = patientGuardianRepository.findByGuardianId(guardian.get().getId());
-        User user = patientGuardian.getPatient();
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
+
         // 혈당 정보 가져오기
-        List<BloodSugar> bloodSugarList = bloodSugarDao.findTodayBloodSugar(user.getId(), date);
+        List<BloodSugar> bloodSugarList = bloodSugarDao.findTodayBloodSugar(user.get().getId(), date);
+        bloodSugarList = (bloodSugarList != null) ? bloodSugarList : Collections.emptyList();
 
         // 약 정보 가져오기
-        List<Medicine> medicineList = mainPageTimeService.getMedicineListByTime(user.getId());
+        List<Medicine> medicineList = mainPageTimeService.getMedicineListByTime(user.get().getId());
+        medicineList = (medicineList != null) ? medicineList : Collections.emptyList();
 
-        // 약 복용 기록 정보 가져오기 (Optional 처리)
-        Optional<MedicineRecord> medicineRecordInfo = mainPageTimeService.getMedicineRecordByTime(user.getId(), date);
-        boolean medicineStatus = medicineRecordInfo.map(MedicineRecord::isMedicineStatus).orElse(false);  // 값이 없을 경우 false로 처리
+        // 약 복용 기록 정보 가져오기
+        Optional<MedicineRecord> medicineRecordInfo = mainPageTimeService.getMedicineRecordByTime(user.get().getId(), date);
+        boolean medicineStatus = medicineRecordInfo.map(MedicineRecord::isMedicineStatus).orElse(false);
 
         // 인슐린 정보 가져오기
-        Insulin insulin = insulinDao.getInsulinByUserId(user.getId());
-        Optional<InsulinRecord> insulinRecord = mainPageTimeService.getInsulinRecordTime(user.getId(), date);
-        boolean insulinStatus = insulinRecord.get().isInsulinStatus();
-        log.info("[insulinStatus] : {}", insulinRecord.get().isInsulinStatus());
+        Optional<Insulin> insulin = Optional.ofNullable(insulinDao.getInsulinByUserId(user.get().getId()));
+        Optional<InsulinRecord> insulinRecord = mainPageTimeService.getInsulinRecordTime(user.get().getId(), date);
+        boolean insulinStatus = insulinRecord.map(InsulinRecord::isInsulinStatus).orElse(false);
 
-        // 약 목록에서 첫 번째 약 가져오기
-        Medicine medicine = medicineList.isEmpty() ? null : medicineList.get(0);  // 약이 없으면 null 처리
+        // 약과 인슐린 관련 정보 설정
+        Medicine medicine = medicineList.isEmpty() ? null : medicineList.get(0);
         String medicineName = (medicine != null) ? medicine.getMedicineName() : "약 정보 없음";
 
-        // 복약 시간 추출
         List<String> intakeTimes = medicine != null ? medicine.getIntakes().stream()
                 .flatMap(intake -> intake.getIntakeTime().stream())
-                .collect(Collectors.toList()) : new ArrayList<>();
-        String medicineTime = mainPageTimeService.getIntakeTimeByCurrentTime(intakeTimes);  // 시간대별로 처리
+                .collect(Collectors.toList()) : Collections.emptyList();
+        String medicineTime = mainPageTimeService.getIntakeTimeByCurrentTime(intakeTimes);
 
-        // 인슐린 관련 처리
-        String insulinName = insulin != null ? insulin.getProductName() : "인슐린 정보 없음";
-
-        List<String> insulinTimeList = insulin != null ? insulin.getAdministrationTime() : new ArrayList<>();
+        String insulinName = insulin.map(Insulin::getProductName).orElse("인슐린 정보 없음");
+        List<String> insulinTimeList = insulin.map(Insulin::getAdministrationTime).orElse(Collections.emptyList());
         String insulinTime = mainPageTimeService.getInsulinTimeByCurrentTime(insulinTimeList);
-        String insulinDosage = insulin != null ? insulin.getDosage() : "용량 정보 없음";
+        String insulinDosage = insulin.map(Insulin::getDosage).orElse("용량 정보 없음");
 
-        // 혈당 기록 리스트 처리
         List<Map<String, Map<Integer, LocalDateTime>>> bloodSugarLevels = bloodSugarList.stream()
                 .map(bloodSugar -> {
                     Map<Integer, LocalDateTime> innerMap = new HashMap<>();
                     innerMap.put(Integer.parseInt(bloodSugar.getBloodSugarLevel()), bloodSugar.getMeasurementTime());
-
                     Map<String, Map<Integer, LocalDateTime>> map = new HashMap<>();
                     map.put(bloodSugar.getMeasurementCondition(), innerMap);
                     return map;
@@ -154,20 +151,23 @@ public class GuardianMainServiceImpl implements GuardianMainService {
 
         try {
             // Medicine 상태 업데이트
-            if (medicineList != null && !medicineList.isEmpty()) {
+            if (medicineList != null || medicineList.isEmpty()) {
                 for (Medicine medicine : medicineList) {
                     // 기존에 같은 날짜에 기록된 MedicineRecord가 있는지 확인
                     Optional<List<MedicineRecord>> existingRecord = medicineRecordDao.findMedicineRecordByUserId(userId, date);
-
+                    log.info("[existingRecord] : {} ",existingRecord.isPresent());
                     // 기존 기록이 존재하고 리스트가 비어있지 않은지 확인
                     if (existingRecord.isPresent() && !existingRecord.get().isEmpty()) {
                         // 기존 레코드가 있으면 상태만 업데이트
                         MedicineRecord medicineRecord = existingRecord.get().get(0);  // 첫 번째 레코드만 업데이트
-                        medicineRecord.setMedicineStatus(newMedicineStatus);  // 상태만 업데이트
-                        String title = "보호자 알림";
-                        String body = user.getUserName()+"님의 보호자께서 알림을 보냈습니다 \n 복약 시간이 지났습니다. 복약 후 복약 체크를 진행해주세요.";
-                        notificationService.sendNotification(user.getId(),title,body,request);
-                        log.info("[medicine] : {} 기존 레코드 상태 업데이트 완료", medicine.getMedicineName());
+                        medicineRecord.setGuardianMedicineStatus(newMedicineStatus);  // 상태만 업데이트
+                        if(medicineRecord.isMedicineStatus()){
+                            String fcmToken = user.getFcmToken();
+                            String title = "보호자 알림";
+                            String body = user.getUserName()+"님의 보호자께서 알림을 보냈습니다 \n 복약 시간이 지났습니다. 복약 후 복약 체크를 진행해주세요.";
+                            notificationService.sendNotification(fcmToken,title,body);
+                            log.info("[medicine] : {} 기존 레코드 상태 업데이트 완료", medicine.getMedicineName());
+                        }
                     } else {
                         // 기존 레코드가 없으면 새 레코드 생성
                         MedicineRecord newMedicineRecord = MedicineRecord.createInsulinRecord(
@@ -195,11 +195,19 @@ public class GuardianMainServiceImpl implements GuardianMainService {
                 if (existingInsulinRecord.isPresent()) {
                     // 기존 레코드가 있으면 상태만 업데이트
                     InsulinRecord insulinRecord = existingInsulinRecord.get();
-                    insulinRecord.setInsulinStatus(newInsulinStatus);  // 상태만 업데이트
-                    String title = "보호자 알림";
-                    String body = user.getUserName()+"님의 보호자께서 알림을 보냈습니다 \n 인슐린 투약 시간이 지났습니다. 복약 후 복약 체크를 진행해주세요.";
-                    notificationService.sendNotification(user.getId(),title,body,request);
-                    log.info("[insulin] : {} 기존 레코드 상태 업데이트 완료", insulin.getProductName());
+                    insulinRecord.setGuardianStatus(newInsulinStatus);  // 상태만 업데이트
+                    if(insulinRecord.isGuardianStatus()){
+                        String fcmToken = user.getFcmToken();
+                        String title = "보호자 알림";
+                        String body = user.getUserName()+"님의 보호자께서 알림을 보냈습니다 \n 인슐린 투약 시간이 지났습니다. 투약 후 복약 체크를 진행해주세요.";
+
+                        notificationService.sendNotification(fcmToken,title,body);
+                        log.info("[fcmToken] : {}", fcmToken);
+                        log.info("[userName] : {}", user.getUserName());
+                        log.info("[body] : {}", body);
+                        log.info("[insulin] : {} 기존 레코드 상태 업데이트 완료", insulin.getProductName());
+                        saveNotification( title, body, fcmToken, user);
+                    }
                 } else {
                     // 기존 레코드가 없으면 새 레코드 생성
                     InsulinRecord newInsulinRecord = InsulinRecord.createInsulinRecord(
@@ -296,5 +304,14 @@ public class GuardianMainServiceImpl implements GuardianMainService {
         }
     }
 
+    public void saveNotification(String title, String body,String fcnToken, User user) {
+        NotificationRequestDto notificationRequestDto = new NotificationRequestDto(
+                title,
+                body,
+                fcnToken
+        );
+        Notification notification = Notification.saveNotificationInfo(notificationRequestDto,user);
 
+        notificationDao.save(notification);
+    }
 }
