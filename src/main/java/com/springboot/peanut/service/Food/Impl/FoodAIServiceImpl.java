@@ -45,7 +45,7 @@ public class FoodAIServiceImpl implements FoodAIService {
                              BloodSugarRepository bloodSugarRepository,MealDao mealDao,JwtAuthenticationService jwtAuthenticationService,ResultStatusService resultStatusService  ) throws IOException {
         this.foodPredictDao = foodPredictDao;
         this.s3Uploader = s3Uploader;
-        this.webClient = webClientBuilder.baseUrl("http://52.78.145.50:8000").build();
+        this.webClient = webClientBuilder.baseUrl("http://3.34.186.220:8000").build();
         this.foodNutritionRepository = foodNutritionRepository;
         this.bloodSugarRepository = bloodSugarRepository;
         this.mealDao = mealDao;

@@ -142,7 +142,7 @@ public class SignServiceImpl implements SignService {
         message.setSubject("이메일 인증");
         String msgg = "";
         msgg += "<div style='margin:20px;'>";
-        msgg += "<h1> OVER-DOSE </h1>";
+        msgg += "<h1> PEANUT </h1>";
         msgg += "<br>";
         msgg += "<p>인증번호 입니다.</p>";
         msgg += "<br>";
@@ -154,7 +154,7 @@ public class SignServiceImpl implements SignService {
         msgg += ePw + "</strong><div><br/> ";
         msgg += "</div>";
         message.setText(msgg, "utf-8", "html");//내용
-        message.setFrom(new InternetAddress("nankys0510@naver.com", "OverDose"));//보내는 사람
+        message.setFrom(new InternetAddress("nankys0510@naver.com", "PEANUT"));//보내는 사람
 
         return message;
     }

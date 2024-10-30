@@ -7,8 +7,8 @@ import org.checkerframework.checker.units.qual.A;
 @Getter
 @AllArgsConstructor
 public class NotificationRequestDto {
-    private String body;
     private String title;
+    private String body;
     private String fcmToken;
 
 }
