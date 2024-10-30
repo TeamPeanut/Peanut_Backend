@@ -4,6 +4,7 @@ import com.google.firebase.messaging.FirebaseMessagingException;
 import com.springboot.peanut.data.dao.NotificationDao;
 import com.springboot.peanut.data.dao.UserDao;
 import com.springboot.peanut.data.dto.fcm.FcmSendDto;
+import com.springboot.peanut.data.dto.notification.NotificationListResponseDto;
 import com.springboot.peanut.data.entity.Notification;
 import com.springboot.peanut.data.entity.PatientGuardian;
 import com.springboot.peanut.data.entity.User;
@@ -30,6 +31,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     private final JwtAuthenticationService jwtAuthenticationService;
     private final FcmService fcmService;
+    private final NotificationDao notificationDao;
 
     @Override
     public void sendNotification(String token, String title, String body) throws Exception {
@@ -41,5 +43,13 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendAllNotification(String token, String title, String body) throws Exception {
         FcmSendDto fcmSendDto = new FcmSendDto(token,title,body);
         fcmService.sendMessageTo(fcmSendDto);
+    }
+
+    @Override
+    public List<NotificationListResponseDto> getNotificationList(HttpServletRequest request) throws Exception {
+        Optional<User> userOpt = jwtAuthenticationService.authenticationToken(request);
+        User user = userOpt.orElseThrow(RuntimeException::new);
+        List<NotificationListResponseDto> notificationListResponseDtoList = notificationDao.getNotificationListByUserId(user.getId());
+        return notificationListResponseDtoList;
     }
 }
