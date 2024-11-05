@@ -36,7 +36,7 @@ jobs:
         run: |
           echo "Contents of target directory:"
           ls -la target
-          if [ ! -f target/peanut-0.0.1-SNAPSHOT.jar ]; then
+          if [ ! -f target/Peanut-0.0.1-SNAPSHOT.jar ]; then
             echo "Error: Jar file not found!"
             exit 1
           fi
