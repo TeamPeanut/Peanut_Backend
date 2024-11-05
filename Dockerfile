@@ -5,7 +5,7 @@ FROM openjdk:11-jre-slim
 WORKDIR /app
 
 # 3. 빌드된 JAR 파일을 컨테이너로 복사
-COPY target/peanut-0.0.1-SNAPSHOT.jar app.jar
+COPY target/Peanut-0.0.1-SNAPSHOT.jar app.jar
 
 # 4. 포트 설정 (Spring Boot의 기본 포트)
 EXPOSE 8080
