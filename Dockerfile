@@ -9,7 +9,7 @@ COPY target/Peanut-0.0.1-SNAPSHOT.jar app.jar
 
 # 4. 설정 파일 복사
 COPY config/application.properties /app/config/application.properties
-COPY src/main/resources/firebase/peanut-bc734-firebase-adminsdk-bsc10-1d0f1c01e4.json /app/src/main/resources/firebase/peanut-bc734-firebase-adminsdk-bsc10-1d0f1c01e4.json
+COPY config/firebase/peanut-bc734-firebase-adminsdk-bsc10-1d0f1c01e4.json /app/config/firebase/peanut-bc734-firebase-adminsdk-bsc10-1d0f1c01e4.json
 
 # 파일 존재 여부 확인
 RUN ls -la /app/src/main/resources/firebase/
