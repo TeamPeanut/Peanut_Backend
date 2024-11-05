@@ -57,7 +57,7 @@ jobs:
         with:
           host: ${{ secrets.PEANUT_HOST }}
           username: ${{ secrets.PEANUT_USERNAME }}
-          password: ${{ secrets.PEANUT_SSH_PRIVATE_KEY }}
+          key: ${{ secrets.PEANUT_SSH_PRIVATE_KEY }}
           script: |
             sudo docker stop peanut-backend || true
             sudo docker rm peanut-backend || true
