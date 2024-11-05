@@ -11,6 +11,8 @@ COPY target/Peanut-0.0.1-SNAPSHOT.jar app.jar
 COPY config/application.properties /app/config/application.properties
 COPY src/main/resources/firebase/peanut-bc734-firebase-adminsdk-bsc10-1d0f1c01e4.json /app/src/main/resources/firebase/peanut-bc734-firebase-adminsdk-bsc10-1d0f1c01e4.json
 
+# 파일 존재 여부 확인
+RUN ls -la /app/src/main/resources/firebase/
 
 # 5. 포트 설정 (Spring Boot의 기본 포트)
 EXPOSE 8080
