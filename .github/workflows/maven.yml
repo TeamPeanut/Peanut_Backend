@@ -59,6 +59,7 @@ jobs:
           username: ${{ secrets.PEANUT_USERNAME }}
           key: ${{ secrets.PEANUT_SSH_PRIVATE_KEY }}
           script: |
+            sudo docker network create peanut || true
             sudo docker stop peanut-backend || true
             sudo docker rm peanut-backend || true
             sudo docker pull ${{ secrets.PEANUT_DOCKER_REPO }}/peanut-backend:latest
