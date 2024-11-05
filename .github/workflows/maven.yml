@@ -62,4 +62,4 @@ jobs:
             sudo docker stop peanut-backend || true
             sudo docker rm peanut-backend || true
             sudo docker pull ${{ secrets.PEANUT_DOCKER_REPO }}/peanut-backend:latest
-            sudo docker run -d -p 8080:80 --net paddo --name peanut-backend ${{ secrets.PEANUT_DOCKER_REPO }}/peanut-backend:latest
+            sudo docker run -d -p 8080:80 --net peanut --name peanut-backend ${{ secrets.PEANUT_DOCKER_REPO }}/peanut-backend:latest
