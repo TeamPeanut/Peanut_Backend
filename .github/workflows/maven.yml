@@ -55,8 +55,8 @@ jobs:
       - name: Prepare Firebase JSON
         run: |
           mkdir -p src/main/resources/firebase
-          echo -e "${{ secrets.PEANUT_FIREBASE_CREDENTIALS }}" > src/main/resources/firebase/peanut-bc734-firebase-adminsdk-bsc10-1d0f1c01e4.json
-      
+          printf "%s" "${{ secrets.PEANUT_FIREBASE_CREDENTIALS }}" > src/main/resources/firebase/peanut-bc734-firebase-adminsdk-bsc10-1d0f1c01e4.json
+
       - name: Run tests
         run: |
           mvn test
@@ -83,8 +83,8 @@ jobs:
       - name: Prepare Firebase JSON
         run: |
           mkdir -p src/main/resources/firebase
-          echo -e "${{ secrets.PEANUT_FIREBASE_CREDENTIALS }}" > src/main/resources/firebase/peanut-bc734-firebase-adminsdk-bsc10-1d0f1c01e4.json
-      
+          printf "%s" "${{ secrets.PEANUT_FIREBASE_CREDENTIALS }}" > src/main/resources/firebase/peanut-bc734-firebase-adminsdk-bsc10-1d0f1c01e4.json
+
       - name: web docker build and push
         run: |
           docker login -u ${{ secrets.PEANUT_DOCKER_REPO }} -p ${{ secrets.PEANUT_DOCKER_KEY }}
