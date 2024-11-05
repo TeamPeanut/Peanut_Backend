@@ -7,8 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 
 @Slf4j
@@ -20,9 +20,9 @@ public class FcmConfig {
 
     @Bean
     public void initializeFirebaseApp() throws IOException {
-        // ClassPathResource를 사용하여 리소스 폴더 내 파일 접근
+        // FileInputStream을 사용하여 파일 시스템에서 직접 Firebase JSON 파일 로드
         GoogleCredentials googleCredentials = GoogleCredentials
-                .fromStream(new ClassPathResource(firebaseConfigPath).getInputStream());
+                .fromStream(new FileInputStream(firebaseConfigPath));
 
         FirebaseOptions options = new FirebaseOptions.Builder()
                 .setCredentials(googleCredentials)
