@@ -33,8 +33,8 @@ jobs:
         uses: jsdaniell/create-json@v1.2.2
         with:
           name: "peanut-bc734-firebase-adminsdk-bsc10-1d0f1c01e4.json"
-          json: ${{ secrets.FIREBASE_JSON }}
-          dir: '/src/main/resources/firebase/'
+          json: ${{ secrets.PEANUT_FIREBASE_CREDENTIALS }}
+          dir: 'src/main/resources/firebase/'  
 
       - name: Build with Maven
         run: mvn clean package -DskipTests
