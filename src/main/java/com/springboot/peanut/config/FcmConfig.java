@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 
 @Slf4j
@@ -23,7 +22,8 @@ public class FcmConfig {
     public void initializeFirebaseApp() throws IOException {
         // ClassPathResource를 사용하여 리소스 폴더 내 파일 접근
         GoogleCredentials googleCredentials = GoogleCredentials
-                .fromStream(new FileInputStream(firebaseConfigPath));
+                .fromStream(new ClassPathResource(firebaseConfigPath).getInputStream());
+
         FirebaseOptions options = new FirebaseOptions.Builder()
                 .setCredentials(googleCredentials)
                 .build();
@@ -34,4 +34,3 @@ public class FcmConfig {
         }
     }
 }
-
