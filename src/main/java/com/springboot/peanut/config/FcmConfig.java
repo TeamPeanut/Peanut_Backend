@@ -14,15 +14,25 @@ import java.io.IOException;
 @Slf4j
 @Configuration
 public class FcmConfig {
-
     @Value("${firebase.config.path}")
     private String firebaseConfigPath;
 
     @Bean
     public void initializeFirebaseApp() throws IOException {
-        // ClassPathResource를 사용하여 리소스 폴더 내 파일 접근
-        GoogleCredentials googleCredentials = GoogleCredentials
-                .fromStream(new ClassPathResource(firebaseConfigPath).getInputStream());
+        // 파일 경로를 직접 확인해보고, null이나 빈 파일이 아닌지 로그를 통해 확인할 수 있습니다.
+        ClassPathResource resource = new ClassPathResource(firebaseConfigPath);
+
+        // Firebase JSON 파일이 존재하지 않는 경우
+        if (!resource.exists()) {
+            throw new IllegalArgumentException("Firebase JSON file not found");
+        }
+
+        // Firebase JSON 파일이 비어 있는 경우
+        if (resource.contentLength() == 0) {
+            throw new IllegalArgumentException("Firebase JSON file is empty");
+        }
+
+        GoogleCredentials googleCredentials = GoogleCredentials.fromStream(resource.getInputStream());
 
         FirebaseOptions options = new FirebaseOptions.Builder()
                 .setCredentials(googleCredentials)
