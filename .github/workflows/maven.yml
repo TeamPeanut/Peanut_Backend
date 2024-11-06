@@ -24,11 +24,14 @@ jobs:
           mkdir config
           echo "${{ secrets.PEANUT_APP_PROPERTIES }}" > config/application.properties
           
-      - name: Prepare Firebase JSON
-        run: |
-          mkdir config/firebase
-          echo -e "${{ secrets.PEANUT_FIREBASE_CREDENTIALS }}" > config/firebase/peanut-bc734-firebase-adminsdk-bsc10-1d0f1c01e4.json
-      
+      - name: Create Firebase JSON
+        id: create-json
+        uses: jsdaniell/create-json@v1.2.2
+        with:
+          name: "peanut-bc734-firebase-adminsdk-bsc10-1d0f1c01e4.json"
+          json: ${{ secrets.FIREBASE_JSON }}
+          dir: 'src/main/resources/firebase/'
+
       - name: Build with Maven
         run: mvn clean package -DskipTests
           
