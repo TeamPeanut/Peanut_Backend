@@ -18,11 +18,15 @@ jobs:
         with:
           java-version: "17"
           distribution: "temurin"
-
+          
       - name: Prepare application.properties
         run: |
           mkdir config
           echo "${{ secrets.PEANUT_APP_PROPERTIES }}" > config/application.properties
+      
+      - name: Create Firebase JSON directory
+        run: |
+          mkdir -p src/main/resources/firebase/
           
       - name: Create Firebase JSON
         id: create-json
