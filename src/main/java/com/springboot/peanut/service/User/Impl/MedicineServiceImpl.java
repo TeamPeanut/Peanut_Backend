@@ -74,6 +74,19 @@ public class MedicineServiceImpl implements MedicineService {
     }
 
     @Override
+    public ResultDto stopMedicine(Long medicineId, boolean activeStatus, HttpServletRequest request) {
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
+        Long userId = user.get().getId();
+        ResultDto resultDto = new ResultDto();
+
+        medicineDao.stopMedicine(medicineId, userId, activeStatus);
+        resultDto.setDetailMessage("회원님의 복약 정보가 저장되었습니다.");
+        resultStatusService.setSuccess(resultDto);
+
+        return resultDto;
+
+    }
+    @Override
     public List<MedicineRecordResponseDto> getMedicineInfoList(HttpServletRequest request) {
         Optional<User> user = jwtAuthenticationService.authenticationToken(request);
         if (user.isPresent()) {
@@ -83,7 +96,7 @@ public class MedicineServiceImpl implements MedicineService {
             // 각 약에 대해 반복
             for (Medicine m : medicine) {
                 List<Intake> intakeList = m.getIntakes();
-
+                if(m.isActiveStatus()){
                 // Intake 리스트에서 intakeDays를 추출하여 하나의 리스트로 병합
                 List<String> allIntakeDays = intakeList.stream()
                         .flatMap(intake -> intake.getIntakeDays().stream())
@@ -98,12 +111,26 @@ public class MedicineServiceImpl implements MedicineService {
                 MedicineRecordResponseDto medicineRecordResponseDto = new MedicineRecordResponseDto(
                         m.getId(),
                         m.getMedicineName(),
+                        "복약 중",
                         allIntakeDays,
                         allIntakeTimes
                 );
 
                 // DTO를 리스트에 추가
                 medicineRecordResponseDtoList.add(medicineRecordResponseDto);
+                }else{
+                    MedicineRecordResponseDto medicineRecordResponseDto = new MedicineRecordResponseDto(
+                            m.getId(),
+                            m.getMedicineName(),
+                            "복약 중단",
+                            null,
+                            null
+                    );
+
+                    // DTO를 리스트에 추가
+                    medicineRecordResponseDtoList.add(medicineRecordResponseDto);
+
+                }
             }
             return medicineRecordResponseDtoList;
         }else{
