@@ -19,17 +19,6 @@ public class InsulinRepositoryCustomImpl implements InsulinRepositoryCustom {
 
     @Autowired
     private JPAQueryFactory jpaQueryFactory;
-//
-//    @Override
-//    public Optional<Insulin> findByTodayInsulinName(Long userId, LocalDate date) {
-//        QInsulin qInsulin = QInsulin.insulin;
-//
-//        return Optional.ofNullable(jpaQueryFactory
-//                .selectFrom(qInsulin)
-//                .where(qInsulin.user.id.eq(userId)
-//                        .and(qInsulin.create_At.eq(date)))
-//                .fetchOne());
-//    }
 
     @Override
     public Optional<Insulin> findInsulinInfoByDate(Long userId, LocalDate date) {
@@ -72,5 +61,14 @@ public class InsulinRepositoryCustomImpl implements InsulinRepositoryCustom {
         return jpaQueryFactory.selectFrom(qInsulin)
                 .where(qInsulin.user.id.eq(userId))
                 .fetchOne();
+    }
+
+    @Override
+    public Optional<Insulin> findInsulinByIdAndUserId(Long id, Long userId) {
+        QInsulin qInsulin = QInsulin.insulin;
+        return Optional.ofNullable(jpaQueryFactory.selectFrom(qInsulin)
+                .where(qInsulin.user.id.eq(userId)
+                        .and(qInsulin.id.eq(id)))
+                .fetchOne());
     }
 }

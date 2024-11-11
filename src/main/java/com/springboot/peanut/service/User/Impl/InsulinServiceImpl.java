@@ -4,10 +4,7 @@ import com.springboot.peanut.data.dao.InsulinDao;
 import com.springboot.peanut.data.dao.InsulinRecordDao;
 import com.springboot.peanut.data.dao.NotificationDao;
 import com.springboot.peanut.data.dao.UserDao;
-import com.springboot.peanut.data.dto.Insulin.InsulinRecordResponseDto;
-import com.springboot.peanut.data.dto.Insulin.InsulinReportResponseDto;
-import com.springboot.peanut.data.dto.Insulin.InsulinRequestDto;
-import com.springboot.peanut.data.dto.Insulin.InsulinReportStatus;
+import com.springboot.peanut.data.dto.Insulin.*;
 import com.springboot.peanut.data.dto.notification.NotificationRequestDto;
 import com.springboot.peanut.data.dto.signDto.ResultDto;
 import com.springboot.peanut.data.entity.*;
@@ -49,8 +46,7 @@ public class InsulinServiceImpl implements InsulinService {
 
         ResultDto resultDto = new ResultDto();
 
-
-        if (user != null){
+        if (user.isPresent()){
             Insulin insulin = Insulin.createInsulin(insulinRequestDto,user.get());
 
             insulinDao.saveInsulin(insulin);
@@ -64,27 +60,52 @@ public class InsulinServiceImpl implements InsulinService {
         }
         return resultDto;
     }
+
+    @Override
+    public ResultDto stopInsulin(Long insulinId, boolean activeStatus, HttpServletRequest request) {
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
+        Long userId = user.get().getId();
+        ResultDto resultDto = new ResultDto();
+
+        insulinDao.stopInsulin(insulinId, userId, activeStatus);
+        resultDto.setDetailMessage("회원님의 인슐린 정보가 저장되었습니다.");
+        resultStatusService.setSuccess(resultDto);
+
+        return resultDto;
+
+    }
+
     @Override
     public List<InsulinRecordResponseDto> getInsulinInfoList(HttpServletRequest request) {
         Optional<User> user = jwtAuthenticationService.authenticationToken(request);
         if (user.isPresent()) {
             Insulin insulin = insulinDao.getInsulinByUserId(user.get().getId());
             List<InsulinRecordResponseDto> insulinRecordResponseDtoList = new ArrayList<>();
-            List<String> administrationTime = insulin.getAdministrationTime();
-
-            InsulinRecordResponseDto insulinRecordResponseDto = new InsulinRecordResponseDto(
-                    insulin.getId(),
-                    insulin.getProductName(),
-                    insulin.getDosage(),
-                    administrationTime
-
-            );
-            insulinRecordResponseDtoList.add(insulinRecordResponseDto);
+                if (insulin.isActiveStatus()) {
+                List<String> administrationTime = insulin.getAdministrationTime();
+                InsulinRecordResponseDto insulinRecordResponseDto = new InsulinRecordResponseDto(
+                        insulin.getId(),
+                        insulin.getProductName(),
+                        "투약 중",
+                        insulin.getDosage(),
+                        administrationTime
+                );
+                    insulinRecordResponseDtoList.add(insulinRecordResponseDto);
+                }else{
+                    InsulinRecordResponseDto insulinRecordResponseDto = new InsulinRecordResponseDto(
+                            insulin.getId(),
+                            insulin.getProductName(),
+                            "투약 중단 상태",
+                            null,
+                            null
+                    );
+                    insulinRecordResponseDtoList.add(insulinRecordResponseDto);
+                }
             return insulinRecordResponseDtoList;
+
         }else{
             throw new IllegalArgumentException("투약 인슐린이 없습니다.");
         }
-
 
     }
     @Override

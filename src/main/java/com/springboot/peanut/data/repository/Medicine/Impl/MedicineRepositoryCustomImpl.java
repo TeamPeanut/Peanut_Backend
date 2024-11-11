@@ -30,6 +30,15 @@ public class MedicineRepositoryCustomImpl implements MedicineRepositoryCustom {
     }
 
     @Override
+    public Optional<Medicine> findMedicineByIdAndUserId(Long id, Long userId) {
+        QMedicine qMedicine = QMedicine.medicine;
+        return Optional.ofNullable(jpaQueryFactory.selectFrom(qMedicine)
+                .where(qMedicine.user.id.eq(userId)
+                        .and(qMedicine.id.eq(id)))
+                .fetchOne());
+    }
+
+    @Override
     public Optional<List<Medicine>> findByUserIdAndDate(Long userId, LocalDate date) {
         QMedicine qMedicine = QMedicine.medicine;
 

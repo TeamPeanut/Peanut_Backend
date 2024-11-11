@@ -12,4 +12,5 @@ public interface InsulinRepositoryCustom {
   List<Insulin> findInsulinByYearAndMonth(Long userId, int year, int month);
   Optional<Insulin> findInsulinInfoByDate(Long userId, LocalDate date);
   Insulin findAllInsulinByUserId(Long userId);
+  Optional<Insulin> findInsulinByIdAndUserId(Long id,Long userId);
     }

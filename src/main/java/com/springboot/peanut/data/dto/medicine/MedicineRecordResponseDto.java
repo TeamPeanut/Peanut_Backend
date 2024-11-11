@@ -10,6 +10,7 @@ public class MedicineRecordResponseDto {
 
     private Long id;
     private String medicineName;
+    private String activeStatus;
     private List<String> intakeTime;
     private List<String> intakeDays;
 }
