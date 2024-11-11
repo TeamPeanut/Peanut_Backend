@@ -10,6 +10,7 @@ import java.util.List;
 
 public interface InsulinService {
     ResultDto saveInsulinInfo(InsulinRequestDto insulinRequestDto, HttpServletRequest request);
+    ResultDto stopInsulin(Long insulinId, boolean activeStatus, HttpServletRequest request);
     InsulinReportStatus getInsulinInfoList(int year, int month, HttpServletRequest request);
     List<InsulinRecordResponseDto> getInsulinInfoList(HttpServletRequest request);
 

@@ -39,4 +39,11 @@ public class InsulinController {
         List<InsulinRecordResponseDto> insulinRecordResponseDtoList = insulinService.getInsulinInfoList(request);
         return ResponseEntity.status(HttpStatus.OK).body(insulinRecordResponseDtoList);
     }
+
+    @PutMapping("/update-status/record")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    public ResponseEntity<ResultDto> stopInsulin(Long insulinId, boolean activeStatus, HttpServletRequest request){
+        ResultDto resultDto = insulinService.stopInsulin(insulinId,activeStatus,request);
+        return ResponseEntity.status(HttpStatus.OK).body(resultDto);
+    }
 }
