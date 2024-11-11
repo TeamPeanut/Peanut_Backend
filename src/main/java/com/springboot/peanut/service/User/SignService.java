@@ -9,7 +9,6 @@ import java.util.Map;
 public interface SignService {
     Map<String,String> sendSimpleMessage(String to, HttpServletRequest request) throws Exception;
     Map<String,String> verifyEmail(String confirmationCode, HttpServletRequest request);
-
     ResultDto SignUp (SignUpDto signUpDto,HttpServletRequest request);
-    ResultDto SignIn(String email, String password);
+    ResultDto SignIn(String email, String password,String fcmToken);
 }

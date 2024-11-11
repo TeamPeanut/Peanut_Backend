@@ -2,7 +2,7 @@ package com.springboot.peanut.controller;
 
 import com.springboot.peanut.data.dto.Insulin.InsulinRecordResponseDto;
 import com.springboot.peanut.data.dto.Insulin.InsulinRequestDto;
-import com.springboot.peanut.data.dto.medicine.MedicineRecordResponseDto;
+import com.springboot.peanut.data.dto.Insulin.InsulinReportStatus;
 import com.springboot.peanut.data.dto.signDto.ResultDto;
 import com.springboot.peanut.service.User.InsulinService;
 import io.swagger.annotations.ApiImplicitParam;
@@ -27,10 +27,16 @@ public class InsulinController {
         ResultDto resultDto = insulinService.saveInsulinInfo(insulinRequestDto,request);
         return ResponseEntity.status(HttpStatus.OK).body(resultDto);
     }
+    @GetMapping("/get/report")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    public ResponseEntity<InsulinReportStatus> getInsulinInfoReportList(int year, int month, HttpServletRequest request) {
+        InsulinReportStatus insulinReportStatus = insulinService.getInsulinInfoList(year,month,request);
+        return ResponseEntity.status(HttpStatus.OK).body(insulinReportStatus);
+    }
     @GetMapping("/get/record")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
     public ResponseEntity<List<InsulinRecordResponseDto>> getInsulinInfoList(HttpServletRequest request) {
-        List<InsulinRecordResponseDto> insulinRecordResponseDtos = insulinService.getInsulinInfoList(request);
-        return ResponseEntity.status(HttpStatus.OK).body(insulinRecordResponseDtos);
+        List<InsulinRecordResponseDto> insulinRecordResponseDtoList = insulinService.getInsulinInfoList(request);
+        return ResponseEntity.status(HttpStatus.OK).body(insulinRecordResponseDtoList);
     }
 }

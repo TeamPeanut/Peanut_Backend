@@ -6,6 +6,7 @@ import com.springboot.peanut.data.dto.mainPage.MedicineInsulinStatusRequestDto;
 import com.springboot.peanut.data.dto.mainPage.PatientMainPageGetAdditionalInfoDto;
 import com.springboot.peanut.data.dto.mainPage.MainPageGetUserDto;
 import com.springboot.peanut.data.dto.signDto.ResultDto;
+import com.springboot.peanut.service.MainPage.Impl.GuardianMainServiceImpl;
 import com.springboot.peanut.service.MainPage.PatientMainPageService;
 import com.springboot.peanut.service.MainPage.GuardianMainService;
 import io.swagger.annotations.ApiImplicitParam;
@@ -26,6 +27,7 @@ public class MainPageController {
 
     private final PatientMainPageService patientMainPageService;
     private final GuardianMainService GuardianMainService;
+    private final GuardianMainServiceImpl guardianMainServiceImpl;
 
     @GetMapping("/get-user")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
@@ -34,59 +36,63 @@ public class MainPageController {
         return ResponseEntity.status(HttpStatus.OK).body(mainPageGetUserDto);
     }
 
-    @GetMapping("/get-add-info")
+    @GetMapping("/patient/get-add-info")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
     public ResponseEntity<PatientMainPageGetAdditionalInfoDto> getAdditionalInfoMainPage(@RequestParam("date")@DateTimeFormat(iso= DateTimeFormat.ISO.DATE) LocalDate date ,HttpServletRequest request){
         PatientMainPageGetAdditionalInfoDto patientMainPageGetAdditionalInfoDto = patientMainPageService.getAdditionalInfoMainPage(request,date);
         return ResponseEntity.status(HttpStatus.OK).body(patientMainPageGetAdditionalInfoDto);
     }
-     @PutMapping("/get-add-info/save/status")
+     @PutMapping("/patient/get-add-info/save/status")
      @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-      public ResponseEntity<ResultDto> saveMedicineInsulinStatus(HttpServletRequest request, @RequestParam("date")@DateTimeFormat(iso= DateTimeFormat.ISO.DATE) LocalDate date, MedicineInsulinStatusRequestDto medicineInsulinStatusRequestDto){
+      public ResponseEntity<ResultDto> saveGuardianMedicineInsulinStatus(HttpServletRequest request, @RequestParam("date")@DateTimeFormat(iso= DateTimeFormat.ISO.DATE) LocalDate date, MedicineInsulinStatusRequestDto medicineInsulinStatusRequestDto){
         ResultDto resultDto = patientMainPageService.saveMedicineInsulinStatus(request,date,medicineInsulinStatusRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(resultDto);
       }
 
-
-    @GetMapping("/get-all-food")
+    @GetMapping("/patient/get-all-food")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
     public ResponseEntity<FoodAllDetailDto> getFoodAllDetail(@RequestParam("date")@DateTimeFormat(iso= DateTimeFormat.ISO.DATE) LocalDate date,HttpServletRequest request) {
         FoodAllDetailDto foodAllDetailDto = patientMainPageService.getFoodAllDetail(date,request);
         return ResponseEntity.status(HttpStatus.OK).body(foodAllDetailDto);
     }
 
-    @GetMapping("/get-time-food")
+    @GetMapping("/patient/get-time-food")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
     public ResponseEntity<FoodAllDetailDto> getFoodDetailByEatTime(@RequestParam("date")@DateTimeFormat(iso= DateTimeFormat.ISO.DATE) LocalDate date, @RequestParam String eatTime, HttpServletRequest request) {
         FoodAllDetailDto foodAllDetailDto = patientMainPageService.getFoodDetailByEatTime(date,eatTime,request);
         return ResponseEntity.status(HttpStatus.OK).body(foodAllDetailDto);
     }
 
-    @GetMapping("/patient/get-user")
+    @GetMapping("/guardian/get-patient")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
     public ResponseEntity<MainPageGetUserDto> getPatientUserInfoMainPage(HttpServletRequest request){
-        MainPageGetUserDto mainPageGetUserDto = GuardianMainService.getPatientUserInfoMainPage(request);
+        MainPageGetUserDto mainPageGetUserDto = GuardianMainService.getUserInfoMainPage(request);
         return ResponseEntity.status(HttpStatus.OK).body(mainPageGetUserDto);
     }
 
-    @GetMapping("/patient/get-add-info")
+    @GetMapping("/guardian/get-add-info")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-    public ResponseEntity<GuardianMainPageGetAdditionalInfoDto> getPatientAdditionalInfoMainPage(@RequestParam("date")@DateTimeFormat(iso= DateTimeFormat.ISO.DATE) LocalDate date, HttpServletRequest request){
-        GuardianMainPageGetAdditionalInfoDto guardianMainPageGetAdditionalInfoDto = GuardianMainService.getPatientAdditionalInfoMainPage(request,date);
+    public ResponseEntity<PatientMainPageGetAdditionalInfoDto> getPatientAdditionalInfoMainPage(@RequestParam("date")@DateTimeFormat(iso= DateTimeFormat.ISO.DATE) LocalDate date, HttpServletRequest request){
+        PatientMainPageGetAdditionalInfoDto guardianMainPageGetAdditionalInfoDto = GuardianMainService.getAdditionalInfoMainPage(request,date);
         return ResponseEntity.status(HttpStatus.OK).body(guardianMainPageGetAdditionalInfoDto);
     }
-
-    @GetMapping("/patient/get-all-food")
+    @PutMapping("/guardian/get-add-info/save/status")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    public ResponseEntity<ResultDto> saveMedicineInsulinStatus(HttpServletRequest request, @RequestParam("date")@DateTimeFormat(iso= DateTimeFormat.ISO.DATE) LocalDate date, MedicineInsulinStatusRequestDto medicineInsulinStatusRequestDto){
+        ResultDto resultDto = guardianMainServiceImpl.saveMedicineInsulinStatus(request,date,medicineInsulinStatusRequestDto);
+        return ResponseEntity.status(HttpStatus.OK).body(resultDto);
+    }
+    @GetMapping("/guardian/get-all-food")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
     public ResponseEntity<FoodAllDetailDto> getPatientFoodAllDetail(@RequestParam("date")@DateTimeFormat(iso= DateTimeFormat.ISO.DATE) LocalDate date,HttpServletRequest request) {
-        FoodAllDetailDto foodAllDetailDto = GuardianMainService.getPatientFoodAllDetail(date,request);
+        FoodAllDetailDto foodAllDetailDto = GuardianMainService.getFoodAllDetail(date,request);
         return ResponseEntity.status(HttpStatus.OK).body(foodAllDetailDto);
     }
 
-    @GetMapping("/patient/get-time-food")
+    @GetMapping("/guardian/get-time-food")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
     public ResponseEntity<FoodAllDetailDto> getFoodPatientDetailByEatTime(@RequestParam("date")@DateTimeFormat(iso= DateTimeFormat.ISO.DATE) LocalDate date, @RequestParam String eatTime, HttpServletRequest request) {
-        FoodAllDetailDto foodAllDetailDto = GuardianMainService.getPatientFoodDetailByEatTime(date,eatTime,request);
+        FoodAllDetailDto foodAllDetailDto = GuardianMainService.getFoodDetailByEatTime(date,eatTime,request);
         return ResponseEntity.status(HttpStatus.OK).body(foodAllDetailDto);
     }
 }

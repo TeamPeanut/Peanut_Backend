@@ -10,6 +10,7 @@ import com.springboot.peanut.data.repository.Medicine.MedicineRepository;
 import com.springboot.peanut.data.repository.MedicineRecord.MedicineRecordRepository;
 import com.springboot.peanut.service.MainPage.MainPageTimeService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -18,6 +19,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class MainPageTimeServiceImpl implements MainPageTimeService {
@@ -84,7 +86,7 @@ public class MainPageTimeServiceImpl implements MainPageTimeService {
     }
 
     @Override
-    public InsulinRecord getInsulinRecordTime(Long userId, LocalDate date) {
+    public   Optional<InsulinRecord>  getInsulinRecordTime(Long userId, LocalDate date) {
         // 현재 시간 확인
         Optional<InsulinRecord> insulinRecord = insulinRecordRepository.findInsulinRecordByUserIdAndDate(userId, date);
 
@@ -98,30 +100,30 @@ public class MainPageTimeServiceImpl implements MainPageTimeService {
         // 아침 시간대 (06:00 ~ 11:00)
         if (currentTime.isAfter(LocalTime.of(6, 0)) && currentTime.isBefore(LocalTime.of(11, 0))) {
             if (recordTime.isAfter(LocalTime.of(6, 0)) && recordTime.isBefore(LocalTime.of(11, 0))) {
-                return insulinRecord.get();
+                return Optional.of(insulinRecord.get());
             }
         }
         // 점심 시간대 (11:00 ~ 17:00)
         else if (currentTime.isAfter(LocalTime.of(11, 0)) && currentTime.isBefore(LocalTime.of(17, 0))) {
             if (recordTime.isAfter(LocalTime.of(11, 0)) && recordTime.isBefore(LocalTime.of(17, 0))) {
-                return insulinRecord.get();
+                return Optional.of(insulinRecord.get());
             }
         }
         // 저녁 시간대 (17:00 ~ 22:00)
         else if (currentTime.isAfter(LocalTime.of(17, 0)) && currentTime.isBefore(LocalTime.of(22, 0))) {
             if (recordTime.isAfter(LocalTime.of(17, 0)) && recordTime.isBefore(LocalTime.of(22, 0))) {
-                return insulinRecord.get();
+                return Optional.of(insulinRecord.get());
             }
         }
         // 밤 시간대 (22:00 ~ 06:00)
         else {
             if ((recordTime.isAfter(LocalTime.of(22, 0)) && recordTime.isBefore(LocalTime.MIDNIGHT)) ||
                     (recordTime.isAfter(LocalTime.MIDNIGHT) && recordTime.isBefore(LocalTime.of(6, 0)))) {
-                return insulinRecord.get();
+                return Optional.of(insulinRecord.get());
             }
         }
 
-        return null;  // 해당 시간대에 기록이 없을 경우
+        return insulinRecord;
     }
     @Override
     public Optional<MedicineRecord> getMedicineRecordByTime(Long userId, LocalDate date) {

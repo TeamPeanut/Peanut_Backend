@@ -95,7 +95,7 @@ public class SignServiceImpl implements SignService {
     }
 
     @Override
-    public ResultDto SignIn(String email, String password) {
+    public ResultDto SignIn(String email, String password,String fcmToken) {
         // 로그인 로직
         Optional<User> user = userRepository.findByEmail(email);
         logger.info("[user] : {}", user);
@@ -105,6 +105,9 @@ public class SignServiceImpl implements SignService {
             throw new RuntimeException("Invalid credentials");
         }
         logger.info("[getSignInResult] 패스워드 일치");
+
+        user.get().setFcmToken(fcmToken);
+        userRepository.save(user.get());
 
         logger.info("[getSignInResult] SignInResultDto 객체 생성");
         SignInResultDto signInResultDto = new SignInResultDto().builder()
@@ -139,7 +142,7 @@ public class SignServiceImpl implements SignService {
         message.setSubject("이메일 인증");
         String msgg = "";
         msgg += "<div style='margin:20px;'>";
-        msgg += "<h1> OVER-DOSE </h1>";
+        msgg += "<h1> PEANUT </h1>";
         msgg += "<br>";
         msgg += "<p>인증번호 입니다.</p>";
         msgg += "<br>";
@@ -151,10 +154,13 @@ public class SignServiceImpl implements SignService {
         msgg += ePw + "</strong><div><br/> ";
         msgg += "</div>";
         message.setText(msgg, "utf-8", "html");//내용
-        message.setFrom(new InternetAddress("nankys0510@naver.com", "OverDose"));//보내는 사람
+        message.setFrom(new InternetAddress("nankys0510@naver.com", "PEANUT"));//보내는 사람
 
         return message;
     }
+
+
+
     public static String createKey(){
         int number = (int)(Math.random()*90000)+100000;
         return String.valueOf(number);

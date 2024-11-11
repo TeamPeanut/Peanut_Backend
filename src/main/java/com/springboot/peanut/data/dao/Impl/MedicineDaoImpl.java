@@ -25,4 +25,11 @@ public class MedicineDaoImpl implements MedicineDao {
         List<Medicine> medicine = medicineRepository.findByUserId(userId);
         return medicine;
     }
+
+
+    @Override
+    public Optional<Medicine> findMedicineByUserId(Long userId) {
+        Optional<Medicine> medicine = medicineRepository.findById(userId);
+        return medicine;
+    }
 }

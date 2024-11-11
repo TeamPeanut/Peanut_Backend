@@ -1,11 +1,11 @@
-package com.springboot.peanut.data.dto.user;
+package com.springboot.peanut.data.dto.user.Requset;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class UserAlamInfoDto {
+public class UserAlamInfoRequestDto {
     private boolean guardianAlam;
 
     private boolean medicationAlam;

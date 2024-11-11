@@ -52,4 +52,5 @@ public class MedicineRepositoryCustomImpl implements MedicineRepositoryCustom {
                         .and(qMedicineRecord.recordDate.eq(date)))
                 .fetchOne());
     }
+
 }

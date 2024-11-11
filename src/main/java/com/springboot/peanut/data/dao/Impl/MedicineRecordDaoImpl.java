@@ -1,6 +1,7 @@
 package com.springboot.peanut.data.dao.Impl;
 
 import com.springboot.peanut.data.dao.MedicineRecordDao;
+import com.springboot.peanut.data.entity.Medicine;
 import com.springboot.peanut.data.entity.MedicineRecord;
 import com.springboot.peanut.data.repository.MedicineRecord.MedicineRecordRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,5 +25,15 @@ public class MedicineRecordDaoImpl implements MedicineRecordDao {
     @Override
     public Optional<List<MedicineRecord>> findMedicineRecordByUserId(Long userId, LocalDate date) {
         return medicineRecordRepository.findMedicineRecordByUserId(userId, date);
+    }
+
+    @Override
+    public List<MedicineRecord> findMedicineByYearAndMonth(Long userId, int year, int month) {
+        return  medicineRecordRepository.findMedicineByYearAndMonth(userId, year, month);
+    }
+
+    @Override
+    public Optional<MedicineRecord> getMedicineRecordByUserId(Long userId, LocalDate date) {
+        return medicineRecordRepository.getMedicineRecordByUserId(userId, date);
     }
 }
