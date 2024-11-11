@@ -173,7 +173,8 @@ public class CommunityDaoImpl implements CommunityDao {
                     community.getTitle(),
                     community.getContent(),
                     community.getUser().getProfileUrl(),
-                    community.getUser().getUserName(), community.getUser().getGender(),
+                    community.getUser().getUserName(),
+                    community.getUser().getGender(),
                     community.getComments().size(),
                     community.getCommunityLike(),
                     community.getCreate_At()

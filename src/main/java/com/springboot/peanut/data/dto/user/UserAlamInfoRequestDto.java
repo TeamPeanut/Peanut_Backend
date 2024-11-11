@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class UserAlamInfoDto {
+public class UserAlamInfoRequestDto {
     private boolean guardianAlam;
 
     private boolean medicationAlam;

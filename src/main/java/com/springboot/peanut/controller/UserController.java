@@ -12,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -104,9 +103,9 @@ public class UserController {
 
     @PutMapping("/alam-info")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-    public ResponseEntity<UserAlamInfoDto> UserAlamInfo(UserAlamInfoDto alamInfoDto, HttpServletRequest request) {
-        UserAlamInfoDto userAlamInfoDto = userService.UserAlamInfo(alamInfoDto, request);
-        return ResponseEntity.status(HttpStatus.OK).body(userAlamInfoDto);
+    public ResponseEntity<UserAlamInfoRequestDto> saveUserAlamInfo(UserAlamInfoRequestDto alamInfoDto, HttpServletRequest request) {
+        UserAlamInfoRequestDto userAlamInfoRequestDto = userService.saveUserAlamInfo(alamInfoDto, request);
+        return ResponseEntity.status(HttpStatus.OK).body(userAlamInfoRequestDto);
     }
 
 }

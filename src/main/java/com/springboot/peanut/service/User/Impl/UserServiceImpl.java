@@ -19,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -238,26 +237,34 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserAlamInfoDto UserAlamInfo(UserAlamInfoDto alamInfoDto, HttpServletRequest request) {
+    public UserAlamInfoRequestDto saveUserAlamInfo(UserAlamInfoRequestDto alamInfoDto, HttpServletRequest request) {
         User user = jwtAuthenticationService.authenticationToken(request).get();
-
         if(user != null) {
-            // 알람 정보를 기존 사용자 객체에 업데이트
-            user.setGuardianAlam(alamInfoDto.isGuardianAlam());
-            user.setMedicationAlam(alamInfoDto.isMedicationAlam());
-            user.setInsulinAlam(alamInfoDto.isInsulinAlam());
-            log.info("[user] : {} ",user);
-            userDao.save(user);
-            UserAlamInfoDto userAlamInfoDto = new UserAlamInfoDto(
+            userDao.saveUserAlamInfo(alamInfoDto);
+            return new UserAlamInfoRequestDto(
                     user.isGuardianAlam(),
                     user.isMedicationAlam(),
                     user.isInsulinAlam()
             );
-
-            return userAlamInfoDto;
         }else{
             throw new IllegalArgumentException();
         }
+    }
+
+    @Override
+    public UserAlamInfoResponseDto getUserAlamInfo(HttpServletRequest request) {
+        User user = jwtAuthenticationService.authenticationToken(request).get();
+        if(user != null) {
+            return new UserAlamInfoResponseDto(
+                    user.getId(),
+                    user.isGuardianAlam(),
+                    user.isMedicationAlam(),
+                    user.isInsulinAlam()
+            );
+        }else{
+            throw new IllegalArgumentException();
+        }
+
     }
 
     private ResultDto createFailureResult(ResultDto resultDto, String message) {

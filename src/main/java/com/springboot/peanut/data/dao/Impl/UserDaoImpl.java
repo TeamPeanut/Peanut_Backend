@@ -1,10 +1,7 @@
 package com.springboot.peanut.data.dao.Impl;
 
 import com.springboot.peanut.data.dao.UserDao;
-import com.springboot.peanut.data.dto.user.GetConnectingInfoDto;
-import com.springboot.peanut.data.dto.user.GetPatientResponseDto;
-import com.springboot.peanut.data.dto.user.PatientConnectingResponse;
-import com.springboot.peanut.data.dto.user.UserUpdateResponseDto;
+import com.springboot.peanut.data.dto.user.*;
 import com.springboot.peanut.data.entity.ConnectionWaiting;
 import com.springboot.peanut.data.entity.PatientGuardian;
 import com.springboot.peanut.data.entity.User;
@@ -143,5 +140,14 @@ public class UserDaoImpl implements UserDao {
     @Override
     public List<User> findAllUser() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public void saveUserAlamInfo(UserAlamInfoRequestDto userAlamInfoRequestDto) {
+        User user = new User();
+        user.setGuardianAlam(userAlamInfoRequestDto.isGuardianAlam());
+        user.setMedicationAlam(userAlamInfoRequestDto.isMedicationAlam());
+        user.setInsulinAlam(userAlamInfoRequestDto.isInsulinAlam());
+        userRepository.save(user);
     }
 }

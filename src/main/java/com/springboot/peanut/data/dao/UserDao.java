@@ -1,9 +1,6 @@
 package com.springboot.peanut.data.dao;
 
-import com.springboot.peanut.data.dto.user.GetConnectingInfoDto;
-import com.springboot.peanut.data.dto.user.GetPatientResponseDto;
-import com.springboot.peanut.data.dto.user.PatientConnectingResponse;
-import com.springboot.peanut.data.dto.user.UserUpdateResponseDto;
+import com.springboot.peanut.data.dto.user.*;
 import com.springboot.peanut.data.entity.PatientGuardian;
 import com.springboot.peanut.data.entity.User;
 
@@ -23,5 +20,6 @@ public interface UserDao {
     GetPatientResponseDto findGuardianByPatient(Long id);
     List<GetConnectingInfoDto> findConnectingInfo(String email);
     List<User> findAllUser();
+    void saveUserAlamInfo(UserAlamInfoRequestDto userAlamInfoRequestDto);
 
 }
