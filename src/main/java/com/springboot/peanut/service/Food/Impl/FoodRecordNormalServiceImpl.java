@@ -184,7 +184,7 @@ public class FoodRecordNormalServiceImpl implements FoodRecordNormalService {
     }
 
 
-    @Scheduled(cron = "0 00 12 * * ?")
+    @Scheduled(cron = "0 0 12 * * ?")
     public void sendLunchNotification() {
         String title = "식사 알림";
         String bodyTemplate = "{userName} 님! 점심 식사시간이에요! \n 제 시간에 하는 식사도 혈당 관리에 도움이 돼요. 점심 식사 기록을 해볼까요?";

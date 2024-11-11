@@ -1,9 +1,9 @@
-package com.springboot.peanut.data.dto.user;
+package com.springboot.peanut.data.dto.user.Requset;
 
 import lombok.Getter;
 
 @Getter
-public class UserUpdateRequestDto{
+public class UpdateUserAddInfoDto {
     private String nickName;
     private String weight;
     private String height;

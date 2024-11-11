@@ -101,6 +101,7 @@ public class CommunityDaoImpl implements CommunityDao {
         Optional<List<Community>> communityList = communityRepository.findCreateCommunityById(userId);
         for(Community community : communityList.get()){
             GetCommunityByUserDto getCommunityByUserDto = new GetCommunityByUserDto(
+                    community.getId(),
                     community.getTitle(),
                     community.getContent(),
                     community.getComments().size(),
@@ -120,6 +121,7 @@ public class CommunityDaoImpl implements CommunityDao {
         List<Community> communityList = communityRepository.findCommentCommunityByUserId(userId) ;
         for (Community community : communityList) {
             GetCommunityByUserDto getCommunityByUserDto = new GetCommunityByUserDto(
+                    community.getId(),
                     community.getTitle(),
                     community.getContent(),
                     community.getComments().size(),
@@ -138,6 +140,7 @@ public class CommunityDaoImpl implements CommunityDao {
         List<Community> communityList = communityRepository.findLikeCommunityByUserId(userId);
         for(Community community : communityList){
             GetCommunityByUserDto getCommunityByUserDto = new GetCommunityByUserDto(
+                    community.getId(),
                     community.getTitle(),
                     community.getContent(),
                     community.getComments().size(),
@@ -170,7 +173,8 @@ public class CommunityDaoImpl implements CommunityDao {
                     community.getTitle(),
                     community.getContent(),
                     community.getUser().getProfileUrl(),
-                    community.getUser().getUserName(), community.getUser().getGender(),
+                    community.getUser().getUserName(),
+                    community.getUser().getGender(),
                     community.getComments().size(),
                     community.getCommunityLike(),
                     community.getCreate_At()

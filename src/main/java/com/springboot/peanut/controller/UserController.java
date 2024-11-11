@@ -2,6 +2,9 @@ package com.springboot.peanut.controller;
 
 import com.springboot.peanut.data.dto.signDto.ResultDto;
 import com.springboot.peanut.data.dto.user.*;
+import com.springboot.peanut.data.dto.user.Requset.UpdateUserInfoDto;
+import com.springboot.peanut.data.dto.user.Requset.UserAlamInfoRequestDto;
+import com.springboot.peanut.data.dto.user.Requset.UpdateUserAddInfoDto;
 import com.springboot.peanut.service.User.UserService;
 import io.swagger.annotations.ApiImplicitParam;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,10 +33,17 @@ public class UserController {
     }
 
 
-    @PutMapping("/update")
+    @PutMapping("/update/add-info")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-    public ResponseEntity<ResultDto> updateUserInfo(UserUpdateRequestDto requestDto, @RequestPart("image") MultipartFile image, HttpServletRequest request) throws IOException {
+    public ResponseEntity<ResultDto> updateUserAddInfo(UpdateUserAddInfoDto requestDto, @RequestPart("image") MultipartFile image, HttpServletRequest request) throws IOException {
         ResultDto resultDto = userService.updateAdditionalUserInfo(requestDto, image, request);
+        return ResponseEntity.status(HttpStatus.OK).body(resultDto);
+    }
+
+    @PutMapping("/update/user-info")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    public ResponseEntity<ResultDto> updateUserInfo(UpdateUserInfoDto updateUserInfoDto, HttpServletRequest request) throws IOException {
+        ResultDto resultDto = userService.updateUserInfo(updateUserInfoDto,request);
         return ResponseEntity.status(HttpStatus.OK).body(resultDto);
     }
 
@@ -102,12 +111,18 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(communityList);
     }
 
-    @PutMapping("/alam-info")
+    @PutMapping("/alam-info/save")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-    public ResponseEntity<UserAlamInfoDto> UserAlamInfo(UserAlamInfoDto alamInfoDto, HttpServletRequest request) {
-        UserAlamInfoDto userAlamInfoDto = userService.UserAlamInfo(alamInfoDto, request);
-        return ResponseEntity.status(HttpStatus.OK).body(userAlamInfoDto);
+    public ResponseEntity<UserAlamInfoRequestDto> saveUserAlamInfo(UserAlamInfoRequestDto alamInfoDto, HttpServletRequest request) {
+        UserAlamInfoRequestDto userAlamInfoRequestDto = userService.saveUserAlamInfo(alamInfoDto, request);
+        return ResponseEntity.status(HttpStatus.OK).body(userAlamInfoRequestDto);
     }
 
+    @GetMapping("/alam-info/get")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    public ResponseEntity<UserAlamInfoResponseDto> saveUserAlamInfo(HttpServletRequest request) {
+        UserAlamInfoResponseDto userAlamInfoResponseDto = userService.getUserAlamInfo(request);
+        return ResponseEntity.status(HttpStatus.OK).body(userAlamInfoResponseDto);
+    }
 }
 
