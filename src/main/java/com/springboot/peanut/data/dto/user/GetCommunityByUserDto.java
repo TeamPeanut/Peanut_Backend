@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 public class GetCommunityByUserDto {
+    private Long userId;
     private String title;
     private String content;
     private int comment;
