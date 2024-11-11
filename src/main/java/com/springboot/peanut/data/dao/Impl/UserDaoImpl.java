@@ -2,6 +2,8 @@ package com.springboot.peanut.data.dao.Impl;
 
 import com.springboot.peanut.data.dao.UserDao;
 import com.springboot.peanut.data.dto.user.*;
+import com.springboot.peanut.data.dto.user.Requset.UpdateUserInfoDto;
+import com.springboot.peanut.data.dto.user.Requset.UserAlamInfoRequestDto;
 import com.springboot.peanut.data.entity.ConnectionWaiting;
 import com.springboot.peanut.data.entity.PatientGuardian;
 import com.springboot.peanut.data.entity.User;
@@ -15,7 +17,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +38,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void updateUser(UserUpdateResponseDto userUpdateResponseDto) {
+    public void updateUserAdditionalInfo(UserUpdateResponseDto userUpdateResponseDto) {
         // 기존 사용자 정보 불러오기
         User existingUser = userRepository.findById(userUpdateResponseDto.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -56,6 +57,28 @@ public class UserDaoImpl implements UserDao {
         }
 
         // 저장
+        userRepository.save(existingUser);
+    }
+
+    @Override
+    public void updateUserInfo(Long userId, UpdateUserInfoDto updateUserInfoDto) {
+        User existingUser = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+
+        if(updateUserInfoDto.getPhoneNumber() != null) {
+            existingUser.setPhoneNumber(updateUserInfoDto.getPhoneNumber());
+        }
+        if (updateUserInfoDto.getGender() != null) {
+            existingUser.setGender(updateUserInfoDto.getGender());
+        }
+        if(updateUserInfoDto.getBirthday() != null) {
+            existingUser.setBirth(updateUserInfoDto.getBirthday());
+        }
+        if(updateUserInfoDto.getUserName() != null) {
+            existingUser.setUserName(updateUserInfoDto.getUserName());
+        }
+        if (updateUserInfoDto.getPassword() != null) {
+            existingUser.setPassword(updateUserInfoDto.getPassword());
+        }
         userRepository.save(existingUser);
     }
 
@@ -143,8 +166,9 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void saveUserAlamInfo(UserAlamInfoRequestDto userAlamInfoRequestDto) {
-        User user = new User();
+    public void saveUserAlamInfo(Long userId,UserAlamInfoRequestDto userAlamInfoRequestDto) {
+
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         user.setGuardianAlam(userAlamInfoRequestDto.isGuardianAlam());
         user.setMedicationAlam(userAlamInfoRequestDto.isMedicationAlam());
         user.setInsulinAlam(userAlamInfoRequestDto.isInsulinAlam());

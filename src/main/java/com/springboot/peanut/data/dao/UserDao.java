@@ -1,18 +1,17 @@
 package com.springboot.peanut.data.dao;
 
 import com.springboot.peanut.data.dto.user.*;
-import com.springboot.peanut.data.entity.PatientGuardian;
+import com.springboot.peanut.data.dto.user.Requset.UpdateUserInfoDto;
+import com.springboot.peanut.data.dto.user.Requset.UserAlamInfoRequestDto;
 import com.springboot.peanut.data.entity.User;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 
 public interface UserDao {
-    void updateUser(UserUpdateResponseDto userUpdateResponseDto);
+    void updateUserAdditionalInfo(UserUpdateResponseDto userUpdateResponseDto);
+    void updateUserInfo(Long userId, UpdateUserInfoDto updateUserInfoDto);
     User save(User user);
     PatientConnectingResponse findPatientConnecting(String email);
     Optional<User> findUserByEmail(String email);
@@ -20,6 +19,6 @@ public interface UserDao {
     GetPatientResponseDto findGuardianByPatient(Long id);
     List<GetConnectingInfoDto> findConnectingInfo(String email);
     List<User> findAllUser();
-    void saveUserAlamInfo(UserAlamInfoRequestDto userAlamInfoRequestDto);
+    void saveUserAlamInfo(Long userId,UserAlamInfoRequestDto userAlamInfoRequestDto);
 
 }

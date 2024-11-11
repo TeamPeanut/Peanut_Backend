@@ -7,6 +7,9 @@ import com.springboot.peanut.data.dao.PatientGuardianDao;
 import com.springboot.peanut.data.dao.UserDao;
 import com.springboot.peanut.data.dto.signDto.ResultDto;
 import com.springboot.peanut.data.dto.user.*;
+import com.springboot.peanut.data.dto.user.Requset.UpdateUserInfoDto;
+import com.springboot.peanut.data.dto.user.Requset.UserAlamInfoRequestDto;
+import com.springboot.peanut.data.dto.user.Requset.UpdateUserAddInfoDto;
 import com.springboot.peanut.data.entity.ConnectionWaiting;
 import com.springboot.peanut.data.entity.PatientGuardian;
 import com.springboot.peanut.data.entity.User;
@@ -61,7 +64,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResultDto updateAdditionalUserInfo(UserUpdateRequestDto userUpdateRequestDto, MultipartFile image, HttpServletRequest request) throws IOException {
+    public ResultDto updateAdditionalUserInfo(UpdateUserAddInfoDto updateUserAddInfoDto, MultipartFile image, HttpServletRequest request) throws IOException {
         Optional<User> user = jwtAuthenticationService.authenticationToken(request);
         log.info("[userEmail] : {}",user.get().getEmail());
         ResultDto resultDto = new ResultDto();
@@ -71,15 +74,28 @@ public class UserServiceImpl implements UserService {
             String imageUrl = s3Uploader.uploadImage(image, "peanut");
             UserUpdateResponseDto userUpdateResponseDto = new UserUpdateResponseDto(
                     user.get().getId(),
-                    userUpdateRequestDto.getNickName(),
-                    userUpdateRequestDto.getWeight(),
-                    userUpdateRequestDto.getHeight(),
+                    updateUserAddInfoDto.getNickName(),
+                    updateUserAddInfoDto.getWeight(),
+                    updateUserAddInfoDto.getHeight(),
                     imageUrl
             );
-            userDao.updateUser(userUpdateResponseDto);
-            resultDto.setDetailMessage("회원 정보 수정 완료.");
+            userDao.updateUserAdditionalInfo(userUpdateResponseDto);
+            resultDto.setDetailMessage("회원 추가 정보 수정 완료.");
             resultStatusService.setSuccess(resultDto);
 
+        }
+        return resultDto;
+    }
+
+    @Override
+    public ResultDto updateUserInfo(UpdateUserInfoDto updateUserInfoDto, HttpServletRequest request) throws IOException {
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
+        log.info("[userEmail] : {}",user.get().getEmail());
+        ResultDto resultDto = new ResultDto();
+        if(user != null) {
+            userDao.updateUserInfo(user.get().getId(), updateUserInfoDto);
+            resultDto.setDetailMessage("회원 추가 정보 수정 완료.");
+            resultStatusService.setSuccess(resultDto);
         }
         return resultDto;
     }
@@ -239,8 +255,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserAlamInfoRequestDto saveUserAlamInfo(UserAlamInfoRequestDto alamInfoDto, HttpServletRequest request) {
         User user = jwtAuthenticationService.authenticationToken(request).get();
+        Long userId = user.getId();
         if(user != null) {
-            userDao.saveUserAlamInfo(alamInfoDto);
+            userDao.saveUserAlamInfo(userId,alamInfoDto);
             return new UserAlamInfoRequestDto(
                     user.isGuardianAlam(),
                     user.isMedicationAlam(),
@@ -254,6 +271,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserAlamInfoResponseDto getUserAlamInfo(HttpServletRequest request) {
         User user = jwtAuthenticationService.authenticationToken(request).get();
+
         if(user != null) {
             return new UserAlamInfoResponseDto(
                     user.getId(),
