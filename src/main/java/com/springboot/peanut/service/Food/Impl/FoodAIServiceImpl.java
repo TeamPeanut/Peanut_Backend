@@ -96,27 +96,36 @@ public class FoodAIServiceImpl implements FoodAIService {
     // AI 음식 조회 (인식한거 + 직접추가한거 둘다)
     @Override
     public List<FoodDetailInfoDto> getFoodDetailInfo(HttpServletRequest request) {
-        List<FoodDetailInfoDto> foodDetailInfoDtoList = (List<FoodDetailInfoDto>) request.getSession().getAttribute("foodDetailInfoDtoList");
-        if (foodDetailInfoDtoList == null) {
-            return new ArrayList<>(); // 세션에 음식 정보가 없으면 빈 리스트 반환
+        List<FoodDetailInfoDto> recognizedFoodList = (List<FoodDetailInfoDto>) request.getSession().getAttribute("foodDetailInfoDtoList");
+        List<FoodDetailInfoDto> customFoodList = (List<FoodDetailInfoDto>) request.getSession().getAttribute("customFoodList");
+
+        if (recognizedFoodList == null) {
+            recognizedFoodList = new ArrayList<>();
         }
-        return foodDetailInfoDtoList; // 세션에 저장된 모든 음식 정보 반환
+        if (customFoodList == null) {
+            customFoodList = new ArrayList<>();
+        }
+
+        // 두 목록을 합쳐서 반환
+        List<FoodDetailInfoDto> allFoodList = new ArrayList<>(recognizedFoodList);
+        allFoodList.addAll(customFoodList);
+        return allFoodList;
     }
 
     // 사용자 직접 추가 음식 정보 저장
     @Override
     public ResultDto addCustomFood(String foodName, int servingCount, HttpServletRequest request) {
-        List<FoodDetailInfoDto> foodDetailInfoDtoList = (List<FoodDetailInfoDto>) request.getSession().getAttribute("foodDetailInfoDtoList");
+        List<FoodDetailInfoDto> customFoodList = (List<FoodDetailInfoDto>) request.getSession().getAttribute("customFoodList");
         ResultDto resultDto = new ResultDto();
-        if (foodDetailInfoDtoList == null) {
-            foodDetailInfoDtoList = new ArrayList<>();
+        if (customFoodList == null) {
+            customFoodList = new ArrayList<>();
         }
 
         Optional<FoodNutrition> foodNutritionOptional = foodNutritionRepository.findByName(foodName);
         if (foodNutritionOptional.isPresent()) {
             FoodNutrition foodNutrition = foodNutritionOptional.get();
             double expectedBloodSugar = calculateBloodSugarIncrease(foodNutrition, servingCount);
-            foodDetailInfoDtoList.add(new FoodDetailInfoDto(
+            customFoodList.add(new FoodDetailInfoDto(
                     foodNutrition.getId(),
                     foodNutrition.getName(),
                     foodNutrition.getCarbohydrate(),
@@ -131,7 +140,7 @@ public class FoodAIServiceImpl implements FoodAIService {
             resultDto.setDetailMessage("음식 추가 완료");
             resultStatusService.setSuccess(resultDto);
         }
-        request.getSession().setAttribute("foodDetailInfoDtoList", foodDetailInfoDtoList);
+        request.getSession().setAttribute("customFoodList", customFoodList);
         return resultDto;
     }
 
