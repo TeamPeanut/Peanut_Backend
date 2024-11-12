@@ -11,10 +11,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class GetCommunityByUserDto {
     private Long userId;
+    private Long communityId;
     private String title;
     private String content;
     private int comment;
     private int like;
     private LocalDateTime create_At;
     private String userName;
+    private String imageUrl;
 }
