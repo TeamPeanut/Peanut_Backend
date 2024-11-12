@@ -80,21 +80,22 @@ public class GuardianMainServiceImpl implements GuardianMainService {
     public PatientMainPageGetAdditionalInfoDto getAdditionalInfoMainPage(HttpServletRequest request, LocalDate date) {
         Optional<User> guardian = jwtAuthenticationService.authenticationToken(request);
         PatientGuardian patientGuardian = patientGuardianRepository.findByGuardianId(guardian.get().getId());
+        User user = patientGuardian.getPatient();
         // 혈당 정보 가져오기
-        List<BloodSugar> bloodSugarList = Optional.ofNullable(bloodSugarDao.findTodayBloodSugar(patientGuardian.getId(), date))
+        List<BloodSugar> bloodSugarList = Optional.ofNullable(bloodSugarDao.findTodayBloodSugar(user.getId(), date))
                 .orElse(Collections.emptyList());
 
         // 약 정보 가져오기
-        List<Medicine> medicineList = Optional.ofNullable(mainPageTimeService.getMedicineListByTime(patientGuardian.getId()))
+        List<Medicine> medicineList = Optional.ofNullable(mainPageTimeService.getMedicineListByTime(user.getId()))
                 .orElse(Collections.emptyList());
 
         // 약 복용 기록 정보 가져오기
-        Optional<MedicineRecord> medicineRecordInfo = mainPageTimeService.getMedicineRecordByTime(patientGuardian.getId(), date);
+        Optional<MedicineRecord> medicineRecordInfo = mainPageTimeService.getMedicineRecordByTime(user.getId(), date);
         boolean medicineStatus = medicineRecordInfo.map(MedicineRecord::isMedicineStatus).orElse(false);
 
         // 인슐린 정보 가져오기
-        Optional<Insulin> insulin = Optional.ofNullable(insulinDao.getInsulinByUserId(patientGuardian.getId()));
-        Optional<InsulinRecord> insulinRecord = mainPageTimeService.getInsulinRecordTime(patientGuardian.getId(), date);
+        Optional<Insulin> insulin = Optional.ofNullable(insulinDao.getInsulinByUserId(user.getId()));
+        Optional<InsulinRecord> insulinRecord = mainPageTimeService.getInsulinRecordTime(user.getId(), date);
         boolean insulinStatus = insulinRecord.map(InsulinRecord::isInsulinStatus).orElse(false);
 
         // 약과 인슐린 관련 정보 설정
@@ -273,7 +274,8 @@ public class GuardianMainServiceImpl implements GuardianMainService {
     public FoodAllDetailDto getFoodDetailByEatTime(LocalDate date,String eatTime, HttpServletRequest request) {
         Optional<User> guardian = jwtAuthenticationService.authenticationToken(request);
         PatientGuardian patientGuardian = patientGuardianRepository.findByGuardianId(guardian.get().getId());
-        Optional<MealInfo> mealInfoOptional = mealDao.getMealInfoByEatTime(date,patientGuardian.getId(),eatTime);
+        User user = patientGuardian.getPatient();
+        Optional<MealInfo> mealInfoOptional = mealDao.getMealInfoByEatTime(date,user.getId(),eatTime);
         log.info("[mealInfoOptional] {} : " + mealInfoOptional);
 
         if(mealInfoOptional.isPresent()){
