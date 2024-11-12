@@ -274,7 +274,7 @@ public class PatientMainPageServiceImpl implements PatientMainPageService {
                     totalFat
             );
         }else {
-            throw  new IllegalArgumentException("해당 식사 시간에 해당하는 정보가 없습니다.");
+            return null;
 
         }
     }
