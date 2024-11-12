@@ -105,7 +105,7 @@ public class CommunityDaoImpl implements CommunityDao {
         User user= userRepository.findById(userId).get();
         for(Community community : communityList.get()){
             GetCommunityByUserDto getCommunityByUserDto = new GetCommunityByUserDto(
-                    userId,
+                    community.getUser().getId(),
                     community.getId(),
                     community.getTitle(),
                     community.getContent(),
@@ -129,7 +129,7 @@ public class CommunityDaoImpl implements CommunityDao {
         User user= userRepository.findById(userId).get();
         for (Community community : communityList) {
             GetCommunityByUserDto getCommunityByUserDto = new GetCommunityByUserDto(
-                    userId,
+                    community.getUser().getId(),
                     community.getId(),
                     community.getTitle(),
                     community.getContent(),
@@ -151,7 +151,7 @@ public class CommunityDaoImpl implements CommunityDao {
         User user= userRepository.findById(userId).get();
         for(Community community : communityList){
             GetCommunityByUserDto getCommunityByUserDto = new GetCommunityByUserDto(
-                    userId,
+                    community.getUser().getId(),
                     community.getId(),
                     community.getTitle(),
                     community.getContent(),
