@@ -81,12 +81,12 @@ public class GuardianMainServiceImpl implements GuardianMainService {
         Optional<User> user = jwtAuthenticationService.authenticationToken(request);
 
         // 혈당 정보 가져오기
-        List<BloodSugar> bloodSugarList = bloodSugarDao.findTodayBloodSugar(user.get().getId(), date);
-        bloodSugarList = (bloodSugarList != null) ? bloodSugarList : Collections.emptyList();
+        List<BloodSugar> bloodSugarList = Optional.ofNullable(bloodSugarDao.findTodayBloodSugar(user.get().getId(), date))
+                .orElse(Collections.emptyList());
 
         // 약 정보 가져오기
-        List<Medicine> medicineList = mainPageTimeService.getMedicineListByTime(user.get().getId());
-        medicineList = (medicineList != null) ? medicineList : Collections.emptyList();
+        List<Medicine> medicineList = Optional.ofNullable(mainPageTimeService.getMedicineListByTime(user.get().getId()))
+                .orElse(Collections.emptyList());
 
         // 약 복용 기록 정보 가져오기
         Optional<MedicineRecord> medicineRecordInfo = mainPageTimeService.getMedicineRecordByTime(user.get().getId(), date);
@@ -102,7 +102,7 @@ public class GuardianMainServiceImpl implements GuardianMainService {
         String medicineName = (medicine != null) ? medicine.getMedicineName() : "약 정보 없음";
 
         List<String> intakeTimes = medicine != null ? medicine.getIntakes().stream()
-                .flatMap(intake -> intake.getIntakeTime().stream())
+                .flatMap(intake -> Optional.ofNullable(intake.getIntakeTime()).orElse(Collections.emptyList()).stream())
                 .collect(Collectors.toList()) : Collections.emptyList();
         String medicineTime = mainPageTimeService.getIntakeTimeByCurrentTime(intakeTimes);
 

@@ -71,40 +71,32 @@ public class PatientMainPageServiceImpl implements PatientMainPageService {
     public PatientMainPageGetAdditionalInfoDto getAdditionalInfoMainPage(HttpServletRequest request, LocalDate date) {
         Optional<User> user = jwtAuthenticationService.authenticationToken(request);
 
-        // 혈당 정보 가져오기
-        List<BloodSugar> bloodSugarList = bloodSugarDao.findTodayBloodSugar(user.get().getId(), date);
-        bloodSugarList = (bloodSugarList != null) ? bloodSugarList : Collections.emptyList(); // 값이 없으면 빈 리스트로 처리
+        List<BloodSugar> bloodSugarList = Optional.ofNullable(bloodSugarDao.findTodayBloodSugar(user.get().getId(), date))
+                .orElse(Collections.emptyList());
 
-        // 약 정보 가져오기
-        List<Medicine> medicineList = mainPageTimeService.getMedicineListByTime(user.get().getId());
-        medicineList = (medicineList != null) ? medicineList : Collections.emptyList(); // 값이 없으면 빈 리스트로 처리
+        List<Medicine> medicineList = Optional.ofNullable(mainPageTimeService.getMedicineListByTime(user.get().getId()))
+                .orElse(Collections.emptyList());
 
-        // 약 복용 기록 정보 가져오기 (Optional 처리)
         Optional<MedicineRecord> medicineRecordInfo = mainPageTimeService.getMedicineRecordByTime(user.get().getId(), date);
-        boolean medicineStatus = medicineRecordInfo.map(MedicineRecord::isMedicineStatus).orElse(false);  // 값이 없을 경우 false로 처리
+        boolean medicineStatus = medicineRecordInfo.map(MedicineRecord::isMedicineStatus).orElse(false);
 
-        // 인슐린 정보 가져오기 (빈 Optional을 반환하도록 변경)
         Optional<Insulin> insulin = Optional.ofNullable(insulinDao.getInsulinByUserId(user.get().getId()));
         Optional<InsulinRecord> insulinRecord = mainPageTimeService.getInsulinRecordTime(user.get().getId(), date);
-        boolean insulinStatus = insulinRecord.map(InsulinRecord::isInsulinStatus).orElse(false);  // 값이 없을 경우 false로 처리
+        boolean insulinStatus = insulinRecord.map(InsulinRecord::isInsulinStatus).orElse(false);
 
-        // 약 목록에서 첫 번째 약 가져오기
-        Medicine medicine = medicineList.isEmpty() ? null : medicineList.get(0);  // 약이 없으면 null 처리
+        Medicine medicine = medicineList.isEmpty() ? null : medicineList.get(0);
         String medicineName = (medicine != null) ? medicine.getMedicineName() : "약 정보 없음";
 
-        // 복약 시간 추출
         List<String> intakeTimes = medicine != null ? medicine.getIntakes().stream()
                 .flatMap(intake -> intake.getIntakeTime().stream())
                 .collect(Collectors.toList()) : Collections.emptyList();
-        String medicineTime = mainPageTimeService.getIntakeTimeByCurrentTime(intakeTimes);  // 시간대별로 처리
+        String medicineTime = mainPageTimeService.getIntakeTimeByCurrentTime(intakeTimes);
 
-        // 인슐린 관련 처리
         String insulinName = insulin.map(Insulin::getProductName).orElse("인슐린 정보 없음");
         List<String> insulinTimeList = insulin.map(Insulin::getAdministrationTime).orElse(Collections.emptyList());
         String insulinTime = mainPageTimeService.getInsulinTimeByCurrentTime(insulinTimeList);
         String insulinDosage = insulin.map(Insulin::getDosage).orElse("용량 정보 없음");
 
-        // 혈당 기록 리스트 처리
         List<Map<String, Map<Integer, LocalDateTime>>> bloodSugarLevels = bloodSugarList.stream()
                 .map(bloodSugar -> {
                     Map<Integer, LocalDateTime> innerMap = new HashMap<>();
