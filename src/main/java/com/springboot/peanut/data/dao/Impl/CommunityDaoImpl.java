@@ -7,7 +7,9 @@ import com.springboot.peanut.data.dto.community.CommunityResponseDto;
 import com.springboot.peanut.data.dto.user.GetCommunityByUserDto;
 import com.springboot.peanut.data.entity.Community;
 import com.springboot.peanut.data.entity.CommunityLike;
+import com.springboot.peanut.data.entity.User;
 import com.springboot.peanut.data.repository.CommentRepository;
+import com.springboot.peanut.data.repository.UserRepository;
 import com.springboot.peanut.data.repository.community.CommunityRepository;
 import com.springboot.peanut.data.repository.LikeRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ public class CommunityDaoImpl implements CommunityDao {
 
     private final CommunityRepository communityRepository;
     private final LikeRepository likeRepository;
+    private final UserRepository userRepository;
 
     @Override
     public void saveCommunity(Community community) {
@@ -99,15 +102,19 @@ public class CommunityDaoImpl implements CommunityDao {
     public List<GetCommunityByUserDto> getCreateAllCommunityByUser(Long userId) {
         List<GetCommunityByUserDto> getCommunityByUserList = new ArrayList<>();
         Optional<List<Community>> communityList = communityRepository.findCreateCommunityById(userId);
+        User user= userRepository.findById(userId).get();
         for(Community community : communityList.get()){
             GetCommunityByUserDto getCommunityByUserDto = new GetCommunityByUserDto(
+                    userId,
                     community.getId(),
                     community.getTitle(),
                     community.getContent(),
                     community.getComments().size(),
                     community.getCommunityLike(),
                     community.getCreate_At(),
-                    community.getUser().getUserName()
+                    community.getUser().getUserName(),
+                    user.getProfileUrl()
+
             );
 
             getCommunityByUserList.add(getCommunityByUserDto);
@@ -118,16 +125,19 @@ public class CommunityDaoImpl implements CommunityDao {
     @Override
     public List<GetCommunityByUserDto> getCommentAllCommunityByUser(Long userId) {
         List<GetCommunityByUserDto> getCommunityByUserList = new ArrayList<>();
-        List<Community> communityList = communityRepository.findCommentCommunityByUserId(userId) ;
+        List<Community> communityList = communityRepository.findCommentCommunityByUserId(userId);
+        User user= userRepository.findById(userId).get();
         for (Community community : communityList) {
             GetCommunityByUserDto getCommunityByUserDto = new GetCommunityByUserDto(
+                    userId,
                     community.getId(),
                     community.getTitle(),
                     community.getContent(),
                     community.getComments().size(),
                     community.getCommunityLike(),
                     community.getCreate_At(),
-                    community.getUser().getUserName()
+                    community.getUser().getUserName(),
+                    user.getProfileUrl()
             );
             getCommunityByUserList.add(getCommunityByUserDto);
         }
@@ -138,15 +148,18 @@ public class CommunityDaoImpl implements CommunityDao {
     public List<GetCommunityByUserDto> getLikeAllCommunityByUser(Long userId) {
         List<GetCommunityByUserDto> getCommunityByUserList = new ArrayList<>();
         List<Community> communityList = communityRepository.findLikeCommunityByUserId(userId);
+        User user= userRepository.findById(userId).get();
         for(Community community : communityList){
             GetCommunityByUserDto getCommunityByUserDto = new GetCommunityByUserDto(
+                    userId,
                     community.getId(),
                     community.getTitle(),
                     community.getContent(),
                     community.getComments().size(),
                     community.getCommunityLike(),
                     community.getCreate_At(),
-                    community.getUser().getUserName()
+                    community.getUser().getUserName(),
+                    user.getProfileUrl()
             );
 
             getCommunityByUserList.add(getCommunityByUserDto);
