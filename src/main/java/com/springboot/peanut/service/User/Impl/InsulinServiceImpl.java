@@ -149,10 +149,11 @@ public class InsulinServiceImpl implements InsulinService {
     public InsulinReportStatus getGuardianInsulinInfoList(int year, int month, HttpServletRequest request) {
         Optional<User> guardian = jwtAuthenticationService.authenticationToken(request);
         PatientGuardian patientGuardian = patientGuardianRepository.findByGuardianId(guardian.get().getId());
+        User user = patientGuardian.getPatient();
 
         if (patientGuardian !=null) {
             // 해당 유저의 년도와 달에 따른 인슐린 기록을 가져옵니다
-            List<InsulinRecord> insulinRecordList = insulinRecordDao.findInsulinByYearAndMonth(patientGuardian.getId(), year, month);
+            List<InsulinRecord> insulinRecordList = insulinRecordDao.findInsulinByYearAndMonth(user.getId(), year, month);
             List<InsulinReportResponseDto> insulinReportResponseDtoList = new ArrayList<>();
             int cnt = 0;
 

@@ -178,8 +178,9 @@ public class MedicineServiceImpl implements MedicineService {
     public MedicineReportStatus getGuardianMedicineInfoList(int year, int month, HttpServletRequest request) {
         Optional<User> guardian = jwtAuthenticationService.authenticationToken(request);
         PatientGuardian patientGuardian = patientGuardianRepository.findByGuardianId(guardian.get().getId());
-        if (patientGuardian!=null) {
-            List<MedicineRecord> medicineRecordList = medicineRecordDao.findMedicineByYearAndMonth(patientGuardian.getId(), year, month);
+        User user = patientGuardian.getPatient();
+        if (user!=null) {
+            List<MedicineRecord> medicineRecordList = medicineRecordDao.findMedicineByYearAndMonth(user.getId(), year, month);
             List<MedicineReportResponseDto> medicineReportResponseDtoList = new ArrayList<>();
             int cnt = 0;
             // 각 약에 대해 반복
