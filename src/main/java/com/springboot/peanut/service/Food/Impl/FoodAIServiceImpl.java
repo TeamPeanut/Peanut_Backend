@@ -197,11 +197,8 @@ public class FoodAIServiceImpl implements FoodAIService {
 
     // 인식된 음식을 세션에 저장하는 메서드
     private void addFoodsToSession(List<String> foodNames, HttpServletRequest request) {
-        List<FoodDetailInfoDto> foodDetailInfoDtoList = (List<FoodDetailInfoDto>) request.getSession().getAttribute("foodDetailInfoDtoList");
-
-        if (foodDetailInfoDtoList == null) {
-            foodDetailInfoDtoList = new ArrayList<>();
-        }
+        // 세션의 foodDetailInfoDtoList를 초기화하여 새로 인식한 음식 정보만 저장
+        List<FoodDetailInfoDto> foodDetailInfoDtoList = new ArrayList<>();
 
         // 음식 이름으로 영양 정보 조회 후 세션에 저장
         List<FoodNutrition> foodNutritionList = foodNutritionRepository.findFoodNutritionByFoodName(foodNames);

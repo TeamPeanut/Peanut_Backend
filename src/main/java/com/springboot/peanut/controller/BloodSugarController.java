@@ -44,5 +44,4 @@ public class BloodSugarController {
         return ResponseEntity.status(HttpStatus.OK).body(monthlyBloodSugarStatus);
     }
 
-
 }
