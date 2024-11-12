@@ -8,6 +8,7 @@ import com.springboot.peanut.data.dto.medicine.MedicineRequestDto;
 import com.springboot.peanut.data.dto.notification.NotificationRequestDto;
 import com.springboot.peanut.data.dto.signDto.ResultDto;
 import com.springboot.peanut.data.entity.*;
+import com.springboot.peanut.data.repository.PatientGuardianRepository;
 import com.springboot.peanut.jwt.JwtAuthenticationService;
 import com.springboot.peanut.service.Result.ResultStatusService;
 import com.springboot.peanut.service.User.MedicineService;
@@ -38,6 +39,7 @@ public class MedicineServiceImpl implements MedicineService {
     private final UserDao userDao;
     private final NotificationService notificationService;
     private final NotificationDao notificationDao;
+    private final PatientGuardianRepository patientGuardianRepository;
 
     @Override
     public ResultDto saveMedicineInfo(MedicineRequestDto medicineRequestDto, HttpServletRequest request) {
@@ -172,6 +174,38 @@ public class MedicineServiceImpl implements MedicineService {
 
     }
 
+    @Override
+    public MedicineReportStatus getGuardianMedicineInfoList(int year, int month, HttpServletRequest request) {
+        Optional<User> guardian = jwtAuthenticationService.authenticationToken(request);
+        PatientGuardian patientGuardian = patientGuardianRepository.findByGuardianId(guardian.get().getId());
+        if (patientGuardian!=null) {
+            List<MedicineRecord> medicineRecordList = medicineRecordDao.findMedicineByYearAndMonth(patientGuardian.getId(), year, month);
+            List<MedicineReportResponseDto> medicineReportResponseDtoList = new ArrayList<>();
+            int cnt = 0;
+            // 각 약에 대해 반복
+            for (MedicineRecord m : medicineRecordList) {
+                LocalDate date = m.getRecordDate();
+                cnt++;
+                String recordStatus = cntStatus(cnt);
+
+                // 각 약에 대한 DTO 생성
+                MedicineReportResponseDto medicineReportResponseDto = new MedicineReportResponseDto(
+                        date,
+                        recordStatus
+                );
+                medicineReportResponseDtoList.add(medicineReportResponseDto);
+            }
+            String monthlyReport = monthlyReport(cnt);
+            MedicineReportStatus medicineReportStatus = new MedicineReportStatus(
+                    medicineReportResponseDtoList,
+                    monthlyReport
+            );
+            return medicineReportStatus;
+        }else{
+            throw new IllegalArgumentException("복용 약이 없습니다.");
+        }
+
+    }
     // 각 시간대에 대한 알림 스케줄링 메서드
     @Scheduled(cron = "0 0 8 * * ?")  // "아침 후" 시간대 알림
     public void sendMorningAfterNotification() throws Exception {

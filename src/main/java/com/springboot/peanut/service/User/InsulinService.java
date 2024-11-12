@@ -13,5 +13,5 @@ public interface InsulinService {
     ResultDto stopInsulin(Long insulinId, boolean activeStatus, HttpServletRequest request);
     InsulinReportStatus getInsulinInfoList(int year, int month, HttpServletRequest request);
     List<InsulinRecordResponseDto> getInsulinInfoList(HttpServletRequest request);
-
+    InsulinReportStatus getGuardianInsulinInfoList(int year, int month, HttpServletRequest request);
     }
