@@ -8,6 +8,7 @@ import com.springboot.peanut.data.dto.Insulin.*;
 import com.springboot.peanut.data.dto.notification.NotificationRequestDto;
 import com.springboot.peanut.data.dto.signDto.ResultDto;
 import com.springboot.peanut.data.entity.*;
+import com.springboot.peanut.data.repository.PatientGuardianRepository;
 import com.springboot.peanut.jwt.JwtAuthenticationService;
 import com.springboot.peanut.service.Result.ResultStatusService;
 import com.springboot.peanut.service.User.InsulinService;
@@ -39,6 +40,7 @@ public class InsulinServiceImpl implements InsulinService {
     private final NotificationDao notificationDao;
     private final NotificationService notificationService;
     private final UserDao userDao;
+    private final PatientGuardianRepository patientGuardianRepository;
 
     @Override
     public ResultDto saveInsulinInfo(InsulinRequestDto insulinRequestDto, HttpServletRequest request) {
@@ -114,6 +116,43 @@ public class InsulinServiceImpl implements InsulinService {
         if (user.isPresent()) {
             // 해당 유저의 년도와 달에 따른 인슐린 기록을 가져옵니다
             List<InsulinRecord> insulinRecordList = insulinRecordDao.findInsulinByYearAndMonth(user.get().getId(), year, month);
+            List<InsulinReportResponseDto> insulinReportResponseDtoList = new ArrayList<>();
+            int cnt = 0;
+
+            // 각 날짜에 대해 일일 측정 횟수(cnt)를 계산합니다.
+            for (InsulinRecord insulinRecord : insulinRecordList) {
+                LocalDate date = insulinRecord.getRecordDate();
+                cnt++;
+                String recordStatus = cntStatus(cnt);
+
+                // 해당 날짜의 응답 DTO 생성
+                InsulinReportResponseDto insulinRecordResponseDto = new InsulinReportResponseDto(
+                        date,
+                        recordStatus
+                );
+                insulinReportResponseDtoList.add(insulinRecordResponseDto);
+            }
+            String monthlyReport = monthlyReport(cnt);
+            InsulinReportStatus insulinReportStatus = new InsulinReportStatus(
+                    insulinReportResponseDtoList,
+                    monthlyReport
+
+            );
+
+            return insulinReportStatus;
+        } else {
+            throw new IllegalArgumentException("투약 인슐린 정보가 없습니다.");
+        }
+    }
+
+    @Override
+    public InsulinReportStatus getGuardianInsulinInfoList(int year, int month, HttpServletRequest request) {
+        Optional<User> guardian = jwtAuthenticationService.authenticationToken(request);
+        PatientGuardian patientGuardian = patientGuardianRepository.findByGuardianId(guardian.get().getId());
+
+        if (patientGuardian !=null) {
+            // 해당 유저의 년도와 달에 따른 인슐린 기록을 가져옵니다
+            List<InsulinRecord> insulinRecordList = insulinRecordDao.findInsulinByYearAndMonth(patientGuardian.getId(), year, month);
             List<InsulinReportResponseDto> insulinReportResponseDtoList = new ArrayList<>();
             int cnt = 0;
 

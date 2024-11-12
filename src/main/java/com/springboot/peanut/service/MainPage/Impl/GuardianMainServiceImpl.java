@@ -78,23 +78,23 @@ public class GuardianMainServiceImpl implements GuardianMainService {
 
     @Override
     public PatientMainPageGetAdditionalInfoDto getAdditionalInfoMainPage(HttpServletRequest request, LocalDate date) {
-        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
-
+        Optional<User> guardian = jwtAuthenticationService.authenticationToken(request);
+        PatientGuardian patientGuardian = patientGuardianRepository.findByGuardianId(guardian.get().getId());
         // 혈당 정보 가져오기
-        List<BloodSugar> bloodSugarList = Optional.ofNullable(bloodSugarDao.findTodayBloodSugar(user.get().getId(), date))
+        List<BloodSugar> bloodSugarList = Optional.ofNullable(bloodSugarDao.findTodayBloodSugar(patientGuardian.getId(), date))
                 .orElse(Collections.emptyList());
 
         // 약 정보 가져오기
-        List<Medicine> medicineList = Optional.ofNullable(mainPageTimeService.getMedicineListByTime(user.get().getId()))
+        List<Medicine> medicineList = Optional.ofNullable(mainPageTimeService.getMedicineListByTime(patientGuardian.getId()))
                 .orElse(Collections.emptyList());
 
         // 약 복용 기록 정보 가져오기
-        Optional<MedicineRecord> medicineRecordInfo = mainPageTimeService.getMedicineRecordByTime(user.get().getId(), date);
+        Optional<MedicineRecord> medicineRecordInfo = mainPageTimeService.getMedicineRecordByTime(patientGuardian.getId(), date);
         boolean medicineStatus = medicineRecordInfo.map(MedicineRecord::isMedicineStatus).orElse(false);
 
         // 인슐린 정보 가져오기
-        Optional<Insulin> insulin = Optional.ofNullable(insulinDao.getInsulinByUserId(user.get().getId()));
-        Optional<InsulinRecord> insulinRecord = mainPageTimeService.getInsulinRecordTime(user.get().getId(), date);
+        Optional<Insulin> insulin = Optional.ofNullable(insulinDao.getInsulinByUserId(patientGuardian.getId()));
+        Optional<InsulinRecord> insulinRecord = mainPageTimeService.getInsulinRecordTime(patientGuardian.getId(), date);
         boolean insulinStatus = insulinRecord.map(InsulinRecord::isInsulinStatus).orElse(false);
 
         // 약과 인슐린 관련 정보 설정

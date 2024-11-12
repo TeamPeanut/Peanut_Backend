@@ -13,6 +13,7 @@ public interface BloodSugarService {
 
     ResultDto saveBloodSugar(BloodSugarRequestDto bloodSugarRequestDto, HttpServletRequest request);
      MonthlyBloodSugarStatus getMonthlyBloodSugarStatus(int year, int month, HttpServletRequest request);
+     MonthlyBloodSugarStatus getGuardianMonthlyBloodSugarStatus(int year, int month, HttpServletRequest request);
 
 
 
