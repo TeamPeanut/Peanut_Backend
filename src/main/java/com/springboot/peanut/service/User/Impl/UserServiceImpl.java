@@ -285,6 +285,18 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Override
+    public UpdateUserInfoResponseDto getUpdateUserInfo(HttpServletRequest request) {
+        User user = jwtAuthenticationService.authenticationToken(request).get();
+        return new UpdateUserInfoResponseDto(
+                user.getId(),
+                user.getPhoneNumber(),
+                user.getGender(),
+                user.getBirth(),
+                user.getUserName()
+        );
+    }
+
     private ResultDto createFailureResult(ResultDto resultDto, String message) {
         resultDto.setDetailMessage(message);
         resultDto.setSuccess(false);
