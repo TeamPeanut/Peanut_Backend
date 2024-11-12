@@ -91,7 +91,7 @@ public class MainPageTimeServiceImpl implements MainPageTimeService {
         Optional<InsulinRecord> insulinRecord = insulinRecordRepository.findInsulinRecordByUserIdAndDate(userId, date);
 
         if (insulinRecord.isEmpty()) {
-            return null;  // 인슐린 기록이 없으면 null 반환
+            return Optional.empty();  // 인슐린 기록이 없으면 null 반환
         }
 
         LocalTime currentTime = LocalTime.now();
