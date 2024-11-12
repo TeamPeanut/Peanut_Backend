@@ -148,7 +148,8 @@ public class FoodAIServiceImpl implements FoodAIService {
     @Override
     public ResultDto createAIMealInfo(String mealTime, HttpServletRequest request) {
         Optional<User> user = jwtAuthenticationService.authenticationToken(request);
-        List<FoodDetailInfoDto> foodDetailInfoDtoList = (List<FoodDetailInfoDto>)request.getSession().getAttribute("foodDetailInfoDtoList");
+        List<FoodDetailInfoDto> foodDetailInfoDtoList = (List<FoodDetailInfoDto>) request.getSession().getAttribute("foodDetailInfoDtoList");
+        List<FoodDetailInfoDto> customFoodList = (List<FoodDetailInfoDto>) request.getSession().getAttribute("customFoodList");
 
         if (user.isEmpty() || foodDetailInfoDtoList == null) {
             ResultDto resultDto = new ResultDto();
@@ -157,7 +158,7 @@ public class FoodAIServiceImpl implements FoodAIService {
             return resultDto;
         }
 
-        String imageUrl = (String)request.getSession().getAttribute("imageUrl");
+        String imageUrl = (String) request.getSession().getAttribute("imageUrl");
 
         // 음식 영양성분 아이디만 가져오기
         List<Long> foodNutritionIds = foodDetailInfoDtoList.stream()
@@ -171,6 +172,10 @@ public class FoodAIServiceImpl implements FoodAIService {
 
         mealDao.save(mealInfo);
 
+        // 세션에서 음식 목록 삭제
+        request.getSession().removeAttribute("foodDetailInfoDtoList");
+        request.getSession().removeAttribute("customFoodList");
+
         // MealInfo 객체 생성
         ResultDto resultDto = new ResultDto();
         resultDto.setDetailMessage("식사 기록 저장 완료!");
@@ -178,7 +183,6 @@ public class FoodAIServiceImpl implements FoodAIService {
 
         return resultDto;
     }
-
     // 세션에서 특정 음식을 삭제하는 메서드
     @Override
     public ResultDto removeFoodFromSession(String foodName, HttpServletRequest request) {
