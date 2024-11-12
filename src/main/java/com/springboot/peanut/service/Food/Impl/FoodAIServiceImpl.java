@@ -210,39 +210,29 @@ public class FoodAIServiceImpl implements FoodAIService {
 
     // 인식된 음식을 세션에 저장하는 메서드
     private void addFoodsToSession(List<String> foodNames, HttpServletRequest request) {
-        // 기존 세션에서 foodDetailInfoDtoList를 가져옵니다.
-        List<FoodDetailInfoDto> foodDetailInfoDtoList = (List<FoodDetailInfoDto>) request.getSession().getAttribute("foodDetailInfoDtoList");
-        if (foodDetailInfoDtoList == null) {
-            foodDetailInfoDtoList = new ArrayList<>();
-        }
+        // 세션의 foodDetailInfoDtoList를 초기화하여 새로 인식한 음식 정보만 저장
+        List<FoodDetailInfoDto> foodDetailInfoDtoList = new ArrayList<>();
 
         // 음식 이름으로 영양 정보 조회 후 세션에 저장
         List<FoodNutrition> foodNutritionList = foodNutritionRepository.findFoodNutritionByFoodName(foodNames);
         for (FoodNutrition food : foodNutritionList) {
-            // 중복 체크: 이미 추가된 음식인지 확인
-            boolean exists = foodDetailInfoDtoList.stream()
-                    .anyMatch(dto -> dto.getName().equals(food.getName()));
-
-            if (!exists) {
-                double expectedBloodSugar = calculateBloodSugarIncrease(food, 1); // 기본 인분 수를 1로 지정
-                foodDetailInfoDtoList.add(new FoodDetailInfoDto(
-                        food.getId(),
-                        food.getName(),
-                        food.getCarbohydrate(),
-                        food.getProtein(),
-                        food.getFat(),
-                        food.getCholesterol(),
-                        food.getGlIndex(),
-                        food.getGiIndex(),
-                        expectedBloodSugar,
-                        1 // 기본 인분 수를 1로 저장
-                ));
-            }
+            double expectedBloodSugar = calculateBloodSugarIncrease(food, 1); // 기본 인분 수를 1로 지정
+            foodDetailInfoDtoList.add(new FoodDetailInfoDto(
+                    food.getId(),
+                    food.getName(),
+                    food.getCarbohydrate(),
+                    food.getProtein(),
+                    food.getFat(),
+                    food.getCholesterol(),
+                    food.getGlIndex(),
+                    food.getGiIndex(),
+                    expectedBloodSugar,
+                    1 // 기본 인분 수를 1로 저장
+            ));
         }
 
         request.getSession().setAttribute("foodDetailInfoDtoList", foodDetailInfoDtoList);
     }
-
     // 총 혈당 상승량 계산 메서드
     private double calculateTotalExpectedBloodSugar(Long userId, List<FoodNutrition> foodNutritionList, List<FoodDetailInfoDto> foodDetailInfoDtoList) {
         Optional<BloodSugar> currentBloodSugar = bloodSugarRepository.findClosestBloodSugar(userId);
