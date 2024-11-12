@@ -41,9 +41,8 @@ public class FoodController {
 
     @GetMapping("/ai/details")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-    public ResponseEntity<List<FoodDetailInfoDto>> getFoodDetailInfo(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<List<FoodDetailInfoDto>> getFoodDetailInfo(HttpServletRequest request ) {
         List<FoodDetailInfoDto> foodDetailInfoDto = foodAIService.getFoodDetailInfo(request);
-        response.setHeader(HttpHeaders.CACHE_CONTROL, "no-store");
         return ResponseEntity.status(HttpStatus.OK).body(foodDetailInfoDto);
     }
 
@@ -84,9 +83,8 @@ public class FoodController {
 
     @PostMapping("/add-food")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-    public ResponseEntity<ResultDto> addCustomFood(String foodName, int servingCount, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<ResultDto> addCustomFood(String foodName, int servingCount, HttpServletRequest request) {
         ResultDto resultDto = foodAIService.addCustomFood(foodName, servingCount, request);
-        response.setHeader(HttpHeaders.CACHE_CONTROL, "no-store");
         return ResponseEntity.status(HttpStatus.OK).body(resultDto);
     }
 
