@@ -271,8 +271,9 @@ public class GuardianMainServiceImpl implements GuardianMainService {
     // 식사 시간에 따른 식사 기록 조회
     @Override
     public FoodAllDetailDto getFoodDetailByEatTime(LocalDate date,String eatTime, HttpServletRequest request) {
-        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
-        Optional<MealInfo> mealInfoOptional = mealDao.getMealInfoByEatTime(date,user.get().getId(),eatTime);
+        Optional<User> guardian = jwtAuthenticationService.authenticationToken(request);
+        PatientGuardian patientGuardian = patientGuardianRepository.findByGuardianId(guardian.get().getId());
+        Optional<MealInfo> mealInfoOptional = mealDao.getMealInfoByEatTime(date,patientGuardian.getId(),eatTime);
         log.info("[mealInfoOptional] {} : " + mealInfoOptional);
 
         if(mealInfoOptional.isPresent()){
@@ -299,8 +300,7 @@ public class GuardianMainServiceImpl implements GuardianMainService {
                     totalFat
             );
         }else {
-            throw  new IllegalArgumentException("해당 식사 시간에 해당하는 정보가 없습니다.");
-
+            return null;
         }
     }
 
