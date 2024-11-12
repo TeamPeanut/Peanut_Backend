@@ -2,19 +2,22 @@ package com.springboot.peanut.service.Food.Impl;
 
 import com.springboot.peanut.S3.S3Uploader;
 import com.springboot.peanut.data.dao.MealDao;
+import com.springboot.peanut.data.dao.NotificationDao;
 import com.springboot.peanut.data.dto.food.FoodNutritionDto;
+import com.springboot.peanut.data.dto.notification.NotificationRequestDto;
 import com.springboot.peanut.data.dto.signDto.ResultDto;
-import com.springboot.peanut.data.entity.BloodSugar;
-import com.springboot.peanut.data.entity.FoodNutrition;
-import com.springboot.peanut.data.entity.MealInfo;
-import com.springboot.peanut.data.entity.User;
+import com.springboot.peanut.data.entity.*;
 import com.springboot.peanut.data.repository.BloodSugar.BloodSugarRepository;
 import com.springboot.peanut.data.repository.FoodNutrition.FoodNutritionRepository;
+import com.springboot.peanut.data.repository.UserRepository;
 import com.springboot.peanut.service.Food.FoodRecordNormalService;
 import com.springboot.peanut.service.Result.ResultStatusService;
 import com.springboot.peanut.jwt.JwtAuthenticationService;
+import com.springboot.peanut.service.User.UserService;
+import com.springboot.peanut.service.notification.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,6 +38,10 @@ public class FoodRecordNormalServiceImpl implements FoodRecordNormalService {
     private final ResultStatusService resultStatusService;
     private final MealDao mealDao;
     private final S3Uploader s3Uploader;
+    private final NotificationService notificationService;
+    private final NotificationDao notificationDao;
+    private final UserRepository userRepository;
+
 
     @Override
     public List<FoodNutritionDto> getFoodNutritionByName(List<String> name, HttpServletRequest request) {
@@ -165,5 +172,66 @@ public class FoodRecordNormalServiceImpl implements FoodRecordNormalService {
 
         // 최종 예상 혈당 계산 (현재 혈당 + 총 혈당 상승량)
         return currentBloodSugar + totalBloodSugarIncrease;
+    }
+
+
+    // 스케줄링된 메서드들: 알림 메시지 템플릿을 전달
+    @Scheduled(cron = "0 0 8 * * ?")
+    public void sendMorningNotification() {
+        String title = "식사 알림";
+        String bodyTemplate = "{userName} 님! 아침 식사시간이에요! \n 제 시간에 하는 식사도 혈당 관리에 도움이 돼요. 오늘도 식사 기록을 해볼까요?";
+        sendNotificationToAllUsers(title, bodyTemplate);
+    }
+
+
+    @Scheduled(cron = "0 0 12 * * ?")
+    public void sendLunchNotification() {
+        String title = "식사 알림";
+        String bodyTemplate = "{userName} 님! 점심 식사시간이에요! \n 제 시간에 하는 식사도 혈당 관리에 도움이 돼요. 점심 식사 기록을 해볼까요?";
+        sendNotificationToAllUsers(title, bodyTemplate);
+    }
+
+    @Scheduled(cron = "0 0 18 * * ?")
+    public void sendDinnerNotification() {
+        String title = "식사 알림";
+        String bodyTemplate = "{userName} 님! 저녁 식사시간이에요! 제 시간에 하는 식사도 혈당 관리에 도움이 돼요. 저녁 식사 기록을 해볼까요?";
+        sendNotificationToAllUsers(title, bodyTemplate);
+    }
+
+    // 공통 메서드: 알림 보내기
+    private void sendNotificationToAllUsers(String title, String bodyTemplate) {
+        List<User> users = userRepository.findAll();  // 모든 사용자 조회 또는 특정 조건에 맞는 사용자 조회
+        log.info("스케줄링된 알림이 실행되었습니다: {}", title);
+
+        for (User user : users) {
+            String fcmToken = user.getFcmToken();
+            String userName = user.getUserName();
+            String body = bodyTemplate.replace("{userName}", userName);
+
+            log.info("[fcmToken] : {}", fcmToken);
+            log.info("[userName] : {}", userName);
+            log.info("[body] : {}", body);
+
+            if (fcmToken != null && !fcmToken.isEmpty()) {
+                try {
+                    notificationService.sendAllNotification(fcmToken, title, body);
+                    saveNotification(title, body, fcmToken, user);
+                } catch (Exception e) {
+                    log.error("알림 전송 중 오류 발생: ", e);
+                }
+            } else {
+                log.warn("해당 사용자의 FCM 토큰이 없습니다: " + user.getUsername());
+            }
+        }
+    }
+    public void saveNotification(String title, String body,String fcnToken, User user) {
+        NotificationRequestDto notificationRequestDto = new NotificationRequestDto(
+                title,
+                body,
+                fcnToken
+        );
+        Notification notification = Notification.saveNotificationInfo(notificationRequestDto,user);
+
+        notificationDao.save(notification);
     }
 }

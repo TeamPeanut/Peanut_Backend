@@ -33,10 +33,11 @@ public class SignController {
         return ResponseEntity.status(HttpStatus.OK).body(resultDto);
     }
     @PostMapping("/sign-in")
-    public ResponseEntity<ResultDto> SignIn(String email, String password){
-        ResultDto resultDto = signService.SignIn(email,password);
+    public ResponseEntity<ResultDto> SignIn(String email, String password,String fcmToken){
+        ResultDto resultDto = signService.SignIn(email,password,fcmToken);
         return ResponseEntity.status(HttpStatus.OK).body(resultDto);
     }
+
 
 
 }

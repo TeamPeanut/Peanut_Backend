@@ -1,6 +1,7 @@
 package com.springboot.peanut.data.dao.Impl;
 
 import com.springboot.peanut.data.dao.MedicineDao;
+import com.springboot.peanut.data.entity.Insulin;
 import com.springboot.peanut.data.entity.Medicine;
 import com.springboot.peanut.data.repository.Medicine.MedicineRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,4 +28,18 @@ public class MedicineDaoImpl implements MedicineDao {
     }
 
 
+    @Override
+    public Optional<Medicine> findMedicineByUserId(Long userId) {
+        Optional<Medicine> medicine = medicineRepository.findById(userId);
+        return medicine;
+    }
+
+    @Override
+    public void stopMedicine(Long medicineId, Long userId, boolean activeStatus) {
+        Optional<Medicine> medicineOpt = medicineRepository.findMedicineByIdAndUserId(medicineId,userId);
+        Medicine medicine = medicineOpt.get();
+        medicine.setActiveStatus(activeStatus);
+        medicineRepository.save(medicine);
+
+    }
 }

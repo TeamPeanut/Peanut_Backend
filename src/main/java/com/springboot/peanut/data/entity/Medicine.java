@@ -24,6 +24,7 @@ public class Medicine {
     private String medicineName;
 
     private boolean medicationStatus = false;
+    private boolean activeStatus ;
 
     private LocalDate create_At;
 

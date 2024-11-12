@@ -19,6 +19,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
@@ -50,7 +51,7 @@ public class AuthServiceImpl implements AuthService {
     private String kakaoUserInfoUrl;
 
     @Override
-    public ResponseEntity<?> getKakaoUserInfo(String authorizeCode) {
+    public SignInResultDto getKakaoUserInfo(String authorizeCode) {
         log.info("[kakao login] issue a authorizeCode");
         ObjectMapper objectMapper = new ObjectMapper(); //json 파싱 객체
         RestTemplate restTemplate = new RestTemplate(); //client 연결 객체
@@ -78,15 +79,15 @@ public class AuthServiceImpl implements AuthService {
 
             Object accessToken = responseMap.get("access_token");
 
-            return ResponseEntity.ok(kakao_SignIn((String)accessToken));
+            return kakao_SignIn((String)accessToken);
 
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to get Kakao access token");
+            return null;
         }
     }
 
-    private KakaoResponseDto getInfo(String accessToken) {
+    private KakaoResponseDto getKakaoInfo(String accessToken) {
         RestTemplate restTemplate = new RestTemplate();
         ObjectMapper objectMapper = new ObjectMapper();
         HttpHeaders headers = new HttpHeaders();
@@ -94,34 +95,38 @@ public class AuthServiceImpl implements AuthService {
         headers.add("Authorization", "Bearer " + accessToken);
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
 
-        MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
-        HttpEntity<?> entity = new HttpEntity<>(requestBody, headers);
-        ResponseEntity<String> response = restTemplate.exchange(kakaoUserInfoUrl, HttpMethod.POST, entity, String.class);
+        HttpEntity<?> entity = new HttpEntity<>(headers);
 
         try {
+            ResponseEntity<String> response = restTemplate.exchange(kakaoUserInfoUrl, HttpMethod.GET, entity, String.class);
+            log.info("Kakao API Response: {}", response.getBody());
+
             Map<String, Object> responseMap = objectMapper.readValue(response.getBody(), new TypeReference<Map<String, Object>>() {});
             Map<String, Object> kakaoAccount = (Map<String, Object>) responseMap.get("kakao_account");
             Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
 
             KakaoResponseDto responseDto = KakaoResponseDto.builder()
-                    .userName((String) kakaoAccount.get("name"))
+                    .userName((String) profile.get("nickname"))  // 프로필 정보에 맞게 필드 조정
                     .phoneNumber((String) kakaoAccount.get("phone_number"))
                     .email((String) kakaoAccount.get("email"))
                     .gender((String) kakaoAccount.get("gender"))
                     .birth((String) kakaoAccount.get("birthday"))
-                    .profileUrl((String) profile.get("profile_image_url"))
                     .build();
 
             return responseDto;
+
+        } catch (HttpClientErrorException e) {
+            log.error("Kakao API 요청 실패: 상태 코드 = {}, 오류 메시지 = {}", e.getStatusCode(), e.getResponseBodyAsString());
+            return null;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("예기치 못한 오류 발생", e);
             return null;
         }
     }
 
     @Override
     public SignInResultDto kakao_SignIn(String accessToken) {
-        KakaoResponseDto kakaoUserInfoResponse = getInfo(accessToken);
+        KakaoResponseDto kakaoUserInfoResponse = getKakaoInfo(accessToken);
 
         SignInResultDto signInResultDto = new SignInResultDto();
         if (kakaoUserInfoResponse == null) {
@@ -130,7 +135,7 @@ public class AuthServiceImpl implements AuthService {
 
         Optional<User> userInfo = authDao.kakaoUserFind(kakaoUserInfoResponse.getEmail());
         User user = userInfo.get();
-        if (user == null) {
+        if (userInfo == null) {
             user = User.createKakaoUser(kakaoUserInfoResponse);
             authDao.KakaoUserSave(user);
             resultStatusService.setSuccess(signInResultDto);

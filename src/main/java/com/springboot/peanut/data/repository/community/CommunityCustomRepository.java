@@ -9,5 +9,6 @@ public interface CommunityCustomRepository {
     Optional<List<Community>> findCreateCommunityById(Long id);
     List<Community> findCommentCommunityByUserId(Long userId);
     List<Community> findLikeCommunityByUserId(Long userId);
+    List<Community> findCommunityBySearch(Long userId,String search);
 
 }

@@ -1,7 +1,8 @@
 package com.springboot.peanut.controller;
 
+import com.springboot.peanut.data.dto.Insulin.InsulinRecordResponseDto;
 import com.springboot.peanut.data.dto.Insulin.InsulinRequestDto;
-import com.springboot.peanut.data.dto.Insulin.InsulinRecordStatus;
+import com.springboot.peanut.data.dto.Insulin.InsulinReportStatus;
 import com.springboot.peanut.data.dto.signDto.ResultDto;
 import com.springboot.peanut.service.User.InsulinService;
 import io.swagger.annotations.ApiImplicitParam;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/insulin")
@@ -25,10 +27,31 @@ public class InsulinController {
         ResultDto resultDto = insulinService.saveInsulinInfo(insulinRequestDto,request);
         return ResponseEntity.status(HttpStatus.OK).body(resultDto);
     }
+    @GetMapping("/get/report")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    public ResponseEntity<InsulinReportStatus> getInsulinInfoReportList(int year, int month, HttpServletRequest request) {
+        InsulinReportStatus insulinReportStatus = insulinService.getInsulinInfoList(year,month,request);
+        return ResponseEntity.status(HttpStatus.OK).body(insulinReportStatus);
+    }
+
+    @GetMapping("/get/guardian-report")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    public ResponseEntity<InsulinReportStatus> getGuardianInsulinInfoReportList(int year, int month, HttpServletRequest request) {
+        InsulinReportStatus insulinReportStatus = insulinService.getGuardianInsulinInfoList(year,month,request);
+        return ResponseEntity.status(HttpStatus.OK).body(insulinReportStatus);
+    }
+
     @GetMapping("/get/record")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-    public ResponseEntity<InsulinRecordStatus> getInsulinInfoList(int year, int month, HttpServletRequest request) {
-        InsulinRecordStatus insulinRecordStatus = insulinService.getInsulinInfoList(year,month,request);
-        return ResponseEntity.status(HttpStatus.OK).body(insulinRecordStatus);
+    public ResponseEntity<List<InsulinRecordResponseDto>> getInsulinInfoList(HttpServletRequest request) {
+        List<InsulinRecordResponseDto> insulinRecordResponseDtoList = insulinService.getInsulinInfoList(request);
+        return ResponseEntity.status(HttpStatus.OK).body(insulinRecordResponseDtoList);
+    }
+
+    @PutMapping("/update-status/record")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    public ResponseEntity<ResultDto> stopInsulin(Long insulinId, boolean activeStatus, HttpServletRequest request){
+        ResultDto resultDto = insulinService.stopInsulin(insulinId,activeStatus,request);
+        return ResponseEntity.status(HttpStatus.OK).body(resultDto);
     }
 }

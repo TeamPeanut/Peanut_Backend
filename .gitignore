@@ -32,3 +32,6 @@ build/
 ### VS Code ###
 .vscode/
 application.properties
+/src/main/resources/firebase/
+/src/main/resources/firebase/*.json
+/src/main/resources/firebase/peanut-bc734-firebase-adminsdk-bsc10-1d0f1c01e4.json

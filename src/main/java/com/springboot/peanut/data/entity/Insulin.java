@@ -24,6 +24,8 @@ public class Insulin {
 
     private String dosage;
 
+    private boolean activeStatus;
+
     @ElementCollection
     private List<String> administrationTime;
 

@@ -3,6 +3,7 @@ package com.springboot.peanut.data.repository.Insulin.Impl;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.springboot.peanut.data.entity.Insulin;
 import com.springboot.peanut.data.entity.QInsulin;
+import com.springboot.peanut.data.entity.QUser;
 import com.springboot.peanut.data.repository.Insulin.InsulinRepositoryCustom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,23 +12,13 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class InsulinRepositoryCustomImpl implements InsulinRepositoryCustom {
 
     @Autowired
     private JPAQueryFactory jpaQueryFactory;
-
-    @Override
-    public Optional<Insulin> findByTodayInsulinName(Long userId, LocalDate date) {
-        QInsulin qInsulin = QInsulin.insulin;
-
-        return Optional.ofNullable(jpaQueryFactory
-                .selectFrom(qInsulin)
-                .where(qInsulin.user.id.eq(userId)
-                        .and(qInsulin.create_At.eq(date)))
-                .fetchOne());
-    }
 
     @Override
     public Optional<Insulin> findInsulinInfoByDate(Long userId, LocalDate date) {
@@ -62,5 +53,22 @@ public class InsulinRepositoryCustomImpl implements InsulinRepositoryCustom {
                         .and(qInsulin.create_At.year().eq(year))
                         .and(qInsulin.create_At.month().eq(month)))
                 .fetch();
+    }
+
+    @Override
+    public Insulin findAllInsulinByUserId(Long userId) {
+        QInsulin qInsulin = QInsulin.insulin;
+        return jpaQueryFactory.selectFrom(qInsulin)
+                .where(qInsulin.user.id.eq(userId))
+                .fetchOne();
+    }
+
+    @Override
+    public Optional<Insulin> findInsulinByIdAndUserId(Long id, Long userId) {
+        QInsulin qInsulin = QInsulin.insulin;
+        return Optional.ofNullable(jpaQueryFactory.selectFrom(qInsulin)
+                .where(qInsulin.user.id.eq(userId)
+                        .and(qInsulin.id.eq(id)))
+                .fetchOne());
     }
 }

@@ -11,5 +11,6 @@ import java.util.Optional;
 public interface MedicineRecordRepositoryCustom {
     Optional<List<MedicineRecord>> findMedicineRecordByUserId(Long userId, LocalDate date);
     List<MedicineRecord> findMedicineByYearAndMonth(Long userId, int year, int month);
+    Optional<MedicineRecord> getMedicineRecordByUserId(Long userId, LocalDate date);
 
 }

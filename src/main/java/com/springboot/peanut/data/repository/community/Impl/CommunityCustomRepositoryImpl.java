@@ -54,4 +54,15 @@ public class CommunityCustomRepositoryImpl implements CommunityCustomRepository 
                 .distinct()
                 .fetch();
     }
+
+    @Override
+    public List<Community> findCommunityBySearch(Long userId,String search) {
+        QCommunity qCommunity = QCommunity.community;
+
+        return jpaQueryFactory
+                .selectFrom(qCommunity)
+                .where(qCommunity.user.id.eq(userId)
+                        .and(qCommunity.title.contains(search)))
+                .fetch();
+    }
 }

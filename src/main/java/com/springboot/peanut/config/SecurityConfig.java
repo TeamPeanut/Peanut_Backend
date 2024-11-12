@@ -54,6 +54,8 @@ public class SecurityConfig extends  WebSecurityConfigurerAdapter{
                 .antMatchers("/api/main-api/**").authenticated()
                 .antMatchers("/api/blood-sugar/**").authenticated()
                 .antMatchers("/api/notification/**").authenticated()
+                .antMatchers("/api/fcm/**").permitAll()
+                .antMatchers("/test/**").permitAll()
                 .antMatchers("**exception**").permitAll()
                 .and()
                 .exceptionHandling().accessDeniedHandler(new CustomAccessDeniedHandler())

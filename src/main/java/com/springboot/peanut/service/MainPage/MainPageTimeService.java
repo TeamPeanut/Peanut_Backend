@@ -16,7 +16,7 @@ public interface MainPageTimeService {
     List<Medicine> getMedicineListByTime(Long userId);
 
     String getIntakeTimeByCurrentTime(List<String> intakeTimes);
-    InsulinRecord getInsulinRecordTime(Long userId, LocalDate date);
+    Optional<InsulinRecord>  getInsulinRecordTime(Long userId, LocalDate date);
     Optional<MedicineRecord> getMedicineRecordByTime(Long userId, LocalDate date);
     String getInsulinTimeByCurrentTime(List<String> administrationTimes);
     }
