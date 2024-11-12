@@ -52,7 +52,7 @@ public class GuardianMainServiceImpl implements GuardianMainService {
     @Override
     public MainPageGetUserDto getUserInfoMainPage(HttpServletRequest request) {
         Optional<User> guardian = jwtAuthenticationService.authenticationToken(request);
-        PatientGuardian patientGuardian = patientGuardianRepository.findByPatientId(guardian.get().getId());
+        PatientGuardian patientGuardian = patientGuardianRepository.findByGuardianId(guardian.get().getId());
         User user = patientGuardian.getPatient();
         // 사용자 공복 혈당
         Optional<BloodSugar> fastingBloodSugar = bloodSugarDao.findFastingBloodSugar(user.getId());
@@ -79,7 +79,7 @@ public class GuardianMainServiceImpl implements GuardianMainService {
     @Override
     public PatientMainPageGetAdditionalInfoDto getAdditionalInfoMainPage(HttpServletRequest request, LocalDate date) {
         Optional<User> guardian = jwtAuthenticationService.authenticationToken(request);
-        PatientGuardian patientGuardian = patientGuardianRepository.findByPatientId(guardian.get().getId());
+        PatientGuardian patientGuardian = patientGuardianRepository.findByGuardianId(guardian.get().getId());
         // 혈당 정보 가져오기
         List<BloodSugar> bloodSugarList = Optional.ofNullable(bloodSugarDao.findTodayBloodSugar(patientGuardian.getId(), date))
                 .orElse(Collections.emptyList());
@@ -136,7 +136,7 @@ public class GuardianMainServiceImpl implements GuardianMainService {
     @Transactional
     public ResultDto saveMedicineInsulinStatus(HttpServletRequest request, LocalDate date, MedicineInsulinStatusRequestDto medicineInsulinStatusRequestDto) {
         Optional<User> guardian = jwtAuthenticationService.authenticationToken(request);
-        PatientGuardian patientGuardian = patientGuardianRepository.findByPatientId(guardian.get().getId());
+        PatientGuardian patientGuardian = patientGuardianRepository.findByGuardianId(guardian.get().getId());
         User user = patientGuardian.getPatient();
 
         ResultDto resultDto = new ResultDto();
@@ -239,7 +239,7 @@ public class GuardianMainServiceImpl implements GuardianMainService {
     @Override
     public FoodAllDetailDto getFoodAllDetail(LocalDate date,HttpServletRequest request) {
         Optional<User> guardian = jwtAuthenticationService.authenticationToken(request);
-        PatientGuardian patientGuardian = patientGuardianRepository.findByPatientId(guardian.get().getId());
+        PatientGuardian patientGuardian = patientGuardianRepository.findByGuardianId(guardian.get().getId());
         User user = patientGuardian.getPatient();
 
         Optional<List<MealInfo>> mealInfoList = mealDao.getByUserAllMealInfo(date,user.getId());
@@ -272,8 +272,8 @@ public class GuardianMainServiceImpl implements GuardianMainService {
     @Override
     public FoodAllDetailDto getFoodDetailByEatTime(LocalDate date,String eatTime, HttpServletRequest request) {
         Optional<User> guardian = jwtAuthenticationService.authenticationToken(request);
-        PatientGuardian patientGuardian = patientGuardianRepository.findByPatientId(guardian.get().getId()); Optional<MealInfo> mealInfoOptional = mealDao.getMealInfoByEatTime(date,patientGuardian.getId(),eatTime);
-
+        PatientGuardian patientGuardian = patientGuardianRepository.findByGuardianId(guardian.get().getId());
+        Optional<MealInfo> mealInfoOptional = mealDao.getMealInfoByEatTime(date,patientGuardian.getId(),eatTime);
         log.info("[mealInfoOptional] {} : " + mealInfoOptional);
 
         if(mealInfoOptional.isPresent()){

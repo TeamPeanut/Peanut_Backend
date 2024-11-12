@@ -120,8 +120,8 @@ public class BloodSugarServiceImpl implements BloodSugarService {
     public MonthlyBloodSugarStatus getGuardianMonthlyBloodSugarStatus(int year, int month, HttpServletRequest request) {
         Optional<User> guardian = jwtAuthenticationService.authenticationToken(request);
         PatientGuardian patientGuardian = patientGuardianRepository.findByGuardianId(guardian.get().getId());
-
-        List<BloodSugar> bloodSugarList = bloodSugarDao.findByUserAndMonth(patientGuardian.getId(),year,month);
+        User user = patientGuardian.getPatient();
+        List<BloodSugar> bloodSugarList = bloodSugarDao.findByUserAndMonth(user.getId(),year,month);
 
         Map<LocalDate,List<BloodSugar>> dailyRecords = new HashMap<>();
         for(BloodSugar bloodSugar : bloodSugarList) {
