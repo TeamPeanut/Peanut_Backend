@@ -1,16 +1,13 @@
 package com.springboot.peanut.data.repository.Intake.Impl;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-
-
 import com.springboot.peanut.data.entity.Intake;
 import com.springboot.peanut.data.entity.QIntake;
+import com.springboot.peanut.data.entity.QUser;
 import com.springboot.peanut.data.repository.Intake.IntakeRepositoryCustom;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Optional;
@@ -20,12 +17,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class IntakeRepositoryCustomImpl implements IntakeRepositoryCustom {
 
-    @Autowired
-    private JPAQueryFactory jpaQueryFactory;
+    private final JPAQueryFactory jpaQueryFactory;
 
     @Override
     public Optional<Intake> findByTodayIntakeStatus(Long userId, LocalDate date) {
         QIntake qIntake = QIntake.intake;
+        QUser qUser = QUser.user;
         LocalTime currentTime = LocalTime.now();
         String measureTime;
 
@@ -42,6 +39,7 @@ public class IntakeRepositoryCustomImpl implements IntakeRepositoryCustom {
 
         Optional<Intake> intake = Optional.ofNullable(jpaQueryFactory
                 .selectFrom(qIntake)
+                .leftJoin(qIntake.user, qUser).fetchJoin() // Fetch Join 추가
                 .where(qIntake.user.id.eq(userId)
                         .and(qIntake.intakeTime.any().contains(measureTime)) // 해당 시간대에 맞는 값 필터링
                 ).fetchOne());
@@ -54,6 +52,4 @@ public class IntakeRepositoryCustomImpl implements IntakeRepositoryCustom {
             return i;
         });
     }
-
-
 }
