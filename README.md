@@ -1,4 +1,5 @@
 # PEANUT (AI를 활용한 당뇨병 환자 관리 어플리케이션) 
+## 교내 졸업 전시회 및 경진 대회 대상(1위)
 
 <img width="649" alt="image" src="https://github.com/user-attachments/assets/74eb3580-2283-4ba7-81de-809f7d044929" />
 
