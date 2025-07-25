@@ -78,23 +78,24 @@ public class GuardianMainServiceImpl implements GuardianMainService {
 
     @Override
     public PatientMainPageGetAdditionalInfoDto getAdditionalInfoMainPage(HttpServletRequest request, LocalDate date) {
-        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
-
+        Optional<User> guardian = jwtAuthenticationService.authenticationToken(request);
+        PatientGuardian patientGuardian = patientGuardianRepository.findByGuardianId(guardian.get().getId());
+        User user = patientGuardian.getPatient();
         // 혈당 정보 가져오기
-        List<BloodSugar> bloodSugarList = bloodSugarDao.findTodayBloodSugar(user.get().getId(), date);
-        bloodSugarList = (bloodSugarList != null) ? bloodSugarList : Collections.emptyList();
+        List<BloodSugar> bloodSugarList = Optional.ofNullable(bloodSugarDao.findTodayBloodSugar(user.getId(), date))
+                .orElse(Collections.emptyList());
 
         // 약 정보 가져오기
-        List<Medicine> medicineList = mainPageTimeService.getMedicineListByTime(user.get().getId());
-        medicineList = (medicineList != null) ? medicineList : Collections.emptyList();
+        List<Medicine> medicineList = Optional.ofNullable(mainPageTimeService.getMedicineListByTime(user.getId()))
+                .orElse(Collections.emptyList());
 
         // 약 복용 기록 정보 가져오기
-        Optional<MedicineRecord> medicineRecordInfo = mainPageTimeService.getMedicineRecordByTime(user.get().getId(), date);
+        Optional<MedicineRecord> medicineRecordInfo = mainPageTimeService.getMedicineRecordByTime(user.getId(), date);
         boolean medicineStatus = medicineRecordInfo.map(MedicineRecord::isMedicineStatus).orElse(false);
 
         // 인슐린 정보 가져오기
-        Optional<Insulin> insulin = Optional.ofNullable(insulinDao.getInsulinByUserId(user.get().getId()));
-        Optional<InsulinRecord> insulinRecord = mainPageTimeService.getInsulinRecordTime(user.get().getId(), date);
+        Optional<Insulin> insulin = Optional.ofNullable(insulinDao.getInsulinByUserId(user.getId()));
+        Optional<InsulinRecord> insulinRecord = mainPageTimeService.getInsulinRecordTime(user.getId(), date);
         boolean insulinStatus = insulinRecord.map(InsulinRecord::isInsulinStatus).orElse(false);
 
         // 약과 인슐린 관련 정보 설정
@@ -102,7 +103,7 @@ public class GuardianMainServiceImpl implements GuardianMainService {
         String medicineName = (medicine != null) ? medicine.getMedicineName() : "약 정보 없음";
 
         List<String> intakeTimes = medicine != null ? medicine.getIntakes().stream()
-                .flatMap(intake -> intake.getIntakeTime().stream())
+                .flatMap(intake -> Optional.ofNullable(intake.getIntakeTime()).orElse(Collections.emptyList()).stream())
                 .collect(Collectors.toList()) : Collections.emptyList();
         String medicineTime = mainPageTimeService.getIntakeTimeByCurrentTime(intakeTimes);
 
@@ -271,8 +272,10 @@ public class GuardianMainServiceImpl implements GuardianMainService {
     // 식사 시간에 따른 식사 기록 조회
     @Override
     public FoodAllDetailDto getFoodDetailByEatTime(LocalDate date,String eatTime, HttpServletRequest request) {
-        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
-        Optional<MealInfo> mealInfoOptional = mealDao.getMealInfoByEatTime(date,user.get().getId(),eatTime);
+        Optional<User> guardian = jwtAuthenticationService.authenticationToken(request);
+        PatientGuardian patientGuardian = patientGuardianRepository.findByGuardianId(guardian.get().getId());
+        User user = patientGuardian.getPatient();
+        Optional<MealInfo> mealInfoOptional = mealDao.getMealInfoByEatTime(date,user.getId(),eatTime);
         log.info("[mealInfoOptional] {} : " + mealInfoOptional);
 
         if(mealInfoOptional.isPresent()){
@@ -299,8 +302,7 @@ public class GuardianMainServiceImpl implements GuardianMainService {
                     totalFat
             );
         }else {
-            throw  new IllegalArgumentException("해당 식사 시간에 해당하는 정보가 없습니다.");
-
+            return null;
         }
     }
 

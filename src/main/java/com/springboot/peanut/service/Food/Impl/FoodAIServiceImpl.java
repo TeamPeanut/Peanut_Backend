@@ -96,27 +96,36 @@ public class FoodAIServiceImpl implements FoodAIService {
     // AI 음식 조회 (인식한거 + 직접추가한거 둘다)
     @Override
     public List<FoodDetailInfoDto> getFoodDetailInfo(HttpServletRequest request) {
-        List<FoodDetailInfoDto> foodDetailInfoDtoList = (List<FoodDetailInfoDto>) request.getSession().getAttribute("foodDetailInfoDtoList");
-        if (foodDetailInfoDtoList == null) {
-            return new ArrayList<>(); // 세션에 음식 정보가 없으면 빈 리스트 반환
+        List<FoodDetailInfoDto> recognizedFoodList = (List<FoodDetailInfoDto>) request.getSession().getAttribute("foodDetailInfoDtoList");
+        List<FoodDetailInfoDto> customFoodList = (List<FoodDetailInfoDto>) request.getSession().getAttribute("customFoodList");
+
+        if (recognizedFoodList == null) {
+            recognizedFoodList = new ArrayList<>();
         }
-        return foodDetailInfoDtoList; // 세션에 저장된 모든 음식 정보 반환
+        if (customFoodList == null) {
+            customFoodList = new ArrayList<>();
+        }
+
+        // 두 목록을 합쳐서 반환
+        List<FoodDetailInfoDto> allFoodList = new ArrayList<>(recognizedFoodList);
+        allFoodList.addAll(customFoodList);
+        return allFoodList;
     }
 
     // 사용자 직접 추가 음식 정보 저장
     @Override
     public ResultDto addCustomFood(String foodName, int servingCount, HttpServletRequest request) {
-        List<FoodDetailInfoDto> foodDetailInfoDtoList = (List<FoodDetailInfoDto>) request.getSession().getAttribute("foodDetailInfoDtoList");
+        List<FoodDetailInfoDto> customFoodList = (List<FoodDetailInfoDto>) request.getSession().getAttribute("customFoodList");
         ResultDto resultDto = new ResultDto();
-        if (foodDetailInfoDtoList == null) {
-            foodDetailInfoDtoList = new ArrayList<>();
+        if (customFoodList == null) {
+            customFoodList = new ArrayList<>();
         }
 
         Optional<FoodNutrition> foodNutritionOptional = foodNutritionRepository.findByName(foodName);
         if (foodNutritionOptional.isPresent()) {
             FoodNutrition foodNutrition = foodNutritionOptional.get();
             double expectedBloodSugar = calculateBloodSugarIncrease(foodNutrition, servingCount);
-            foodDetailInfoDtoList.add(new FoodDetailInfoDto(
+            customFoodList.add(new FoodDetailInfoDto(
                     foodNutrition.getId(),
                     foodNutrition.getName(),
                     foodNutrition.getCarbohydrate(),
@@ -131,7 +140,7 @@ public class FoodAIServiceImpl implements FoodAIService {
             resultDto.setDetailMessage("음식 추가 완료");
             resultStatusService.setSuccess(resultDto);
         }
-        request.getSession().setAttribute("foodDetailInfoDtoList", foodDetailInfoDtoList);
+        request.getSession().setAttribute("customFoodList", customFoodList);
         return resultDto;
     }
 
@@ -139,7 +148,8 @@ public class FoodAIServiceImpl implements FoodAIService {
     @Override
     public ResultDto createAIMealInfo(String mealTime, HttpServletRequest request) {
         Optional<User> user = jwtAuthenticationService.authenticationToken(request);
-        List<FoodDetailInfoDto> foodDetailInfoDtoList = (List<FoodDetailInfoDto>)request.getSession().getAttribute("foodDetailInfoDtoList");
+        List<FoodDetailInfoDto> foodDetailInfoDtoList = (List<FoodDetailInfoDto>) request.getSession().getAttribute("foodDetailInfoDtoList");
+        List<FoodDetailInfoDto> customFoodList = (List<FoodDetailInfoDto>) request.getSession().getAttribute("customFoodList");
 
         if (user.isEmpty() || foodDetailInfoDtoList == null) {
             ResultDto resultDto = new ResultDto();
@@ -148,7 +158,7 @@ public class FoodAIServiceImpl implements FoodAIService {
             return resultDto;
         }
 
-        String imageUrl = (String)request.getSession().getAttribute("imageUrl");
+        String imageUrl = (String) request.getSession().getAttribute("imageUrl");
 
         // 음식 영양성분 아이디만 가져오기
         List<Long> foodNutritionIds = foodDetailInfoDtoList.stream()
@@ -162,6 +172,10 @@ public class FoodAIServiceImpl implements FoodAIService {
 
         mealDao.save(mealInfo);
 
+        // 세션에서 음식 목록 삭제
+        request.getSession().removeAttribute("foodDetailInfoDtoList");
+        request.getSession().removeAttribute("customFoodList");
+
         // MealInfo 객체 생성
         ResultDto resultDto = new ResultDto();
         resultDto.setDetailMessage("식사 기록 저장 완료!");
@@ -169,7 +183,6 @@ public class FoodAIServiceImpl implements FoodAIService {
 
         return resultDto;
     }
-
     // 세션에서 특정 음식을 삭제하는 메서드
     @Override
     public ResultDto removeFoodFromSession(String foodName, HttpServletRequest request) {
@@ -197,11 +210,8 @@ public class FoodAIServiceImpl implements FoodAIService {
 
     // 인식된 음식을 세션에 저장하는 메서드
     private void addFoodsToSession(List<String> foodNames, HttpServletRequest request) {
-        List<FoodDetailInfoDto> foodDetailInfoDtoList = (List<FoodDetailInfoDto>) request.getSession().getAttribute("foodDetailInfoDtoList");
-
-        if (foodDetailInfoDtoList == null) {
-            foodDetailInfoDtoList = new ArrayList<>();
-        }
+        // 세션의 foodDetailInfoDtoList를 초기화하여 새로 인식한 음식 정보만 저장
+        List<FoodDetailInfoDto> foodDetailInfoDtoList = new ArrayList<>();
 
         // 음식 이름으로 영양 정보 조회 후 세션에 저장
         List<FoodNutrition> foodNutritionList = foodNutritionRepository.findFoodNutritionByFoodName(foodNames);

@@ -26,17 +26,36 @@ public class MedicineController {
         ResultDto resultDto = medicineService.saveMedicineInfo(medicineRequestDto,request);
         return ResponseEntity.status(HttpStatus.OK).body(resultDto);
     }
+
+
     @GetMapping("/get/report")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
     public ResponseEntity<MedicineReportStatus> getMedicineInfoList(int year, int month, HttpServletRequest request) {
         MedicineReportStatus medicineReportStatuses = medicineService.getMedicineInfoList(year, month, request);
         return ResponseEntity.status(HttpStatus.OK).body(medicineReportStatuses);
     }
+
+    @GetMapping("/get/guardian-report")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    public ResponseEntity<MedicineReportStatus> getGuardianMedicineInfoList(int year, int month, HttpServletRequest request) {
+        MedicineReportStatus medicineReportStatuses = medicineService.getGuardianMedicineInfoList(year, month, request);
+        return ResponseEntity.status(HttpStatus.OK).body(medicineReportStatuses);
+    }
+
+
     @GetMapping("/get/record")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
     public ResponseEntity<List<MedicineRecordResponseDto>> getMedicineInfoList(HttpServletRequest request){
         List<MedicineRecordResponseDto> medicineRecordResponseDtoList = medicineService.getMedicineInfoList(request);
         return ResponseEntity.status(HttpStatus.OK).body(medicineRecordResponseDtoList);
+    }
+
+
+    @PutMapping("/update-status/record")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    public ResponseEntity<ResultDto> stopMedicine(Long medicineId, boolean activeStatus, HttpServletRequest request){
+        ResultDto resultDto = medicineService.stopMedicine(medicineId,activeStatus,request);
+        return ResponseEntity.status(HttpStatus.OK).body(resultDto);
     }
 
 }

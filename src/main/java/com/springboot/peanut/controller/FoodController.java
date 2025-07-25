@@ -1,5 +1,6 @@
 package com.springboot.peanut.controller;
 
+import com.google.common.net.HttpHeaders;
 import com.springboot.peanut.data.dto.food.*;
 import com.springboot.peanut.data.dto.signDto.ResultDto;
 import com.springboot.peanut.service.Food.FoodAIService;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
@@ -30,8 +32,8 @@ public class FoodController {
     @PostMapping("/ai/predict")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
     public ResponseEntity<FoodPredictResponseDto> BlockPlay(
-            @RequestPart("foodImage") MultipartFile foodImage, HttpServletRequest request) throws IOException {
-
+            @RequestPart("foodImage") MultipartFile foodImage, HttpServletRequest request,HttpServletResponse response) throws IOException {
+        response.setHeader(HttpHeaders.CACHE_CONTROL, "no-store");
         FoodPredictResponseDto results = foodAIService.FoodNamePredict(foodImage, request);
         return ResponseEntity.status(HttpStatus.OK).body(results);
 
@@ -39,8 +41,9 @@ public class FoodController {
 
     @GetMapping("/ai/details")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-    public ResponseEntity<List<FoodDetailInfoDto>> getFoodDetailInfo(HttpServletRequest request) {
+    public ResponseEntity<List<FoodDetailInfoDto>> getFoodDetailInfo(HttpServletRequest request, HttpServletResponse response) {
         List<FoodDetailInfoDto> foodDetailInfoDto = foodAIService.getFoodDetailInfo(request);
+        response.setHeader(HttpHeaders.CACHE_CONTROL, "no-store");
         return ResponseEntity.status(HttpStatus.OK).body(foodDetailInfoDto);
     }
 
@@ -81,8 +84,9 @@ public class FoodController {
 
     @PostMapping("/add-food")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
-    public ResponseEntity<ResultDto> addCustomFood(String foodName, int servingCount, HttpServletRequest request) {
+    public ResponseEntity<ResultDto> addCustomFood(String foodName, int servingCount, HttpServletRequest request, HttpServletResponse response) {
         ResultDto resultDto = foodAIService.addCustomFood(foodName, servingCount, request);
+        response.setHeader(HttpHeaders.CACHE_CONTROL, "no-store");
         return ResponseEntity.status(HttpStatus.OK).body(resultDto);
     }
 

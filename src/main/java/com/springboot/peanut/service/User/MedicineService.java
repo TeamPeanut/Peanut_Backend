@@ -10,6 +10,8 @@ import java.util.List;
 
 public interface MedicineService {
     ResultDto saveMedicineInfo (MedicineRequestDto medicineRequestDto, HttpServletRequest httpServletRequest);
+    ResultDto stopMedicine(Long medicineId, boolean activeStatus, HttpServletRequest request);
     MedicineReportStatus getMedicineInfoList (int year, int month , HttpServletRequest request);
     List<MedicineRecordResponseDto> getMedicineInfoList(HttpServletRequest request);
+    MedicineReportStatus getGuardianMedicineInfoList(int year, int month, HttpServletRequest request);
 }

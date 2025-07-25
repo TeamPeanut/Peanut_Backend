@@ -33,10 +33,25 @@ public class InsulinController {
         InsulinReportStatus insulinReportStatus = insulinService.getInsulinInfoList(year,month,request);
         return ResponseEntity.status(HttpStatus.OK).body(insulinReportStatus);
     }
+
+    @GetMapping("/get/guardian-report")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    public ResponseEntity<InsulinReportStatus> getGuardianInsulinInfoReportList(int year, int month, HttpServletRequest request) {
+        InsulinReportStatus insulinReportStatus = insulinService.getGuardianInsulinInfoList(year,month,request);
+        return ResponseEntity.status(HttpStatus.OK).body(insulinReportStatus);
+    }
+
     @GetMapping("/get/record")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
     public ResponseEntity<List<InsulinRecordResponseDto>> getInsulinInfoList(HttpServletRequest request) {
         List<InsulinRecordResponseDto> insulinRecordResponseDtoList = insulinService.getInsulinInfoList(request);
         return ResponseEntity.status(HttpStatus.OK).body(insulinRecordResponseDtoList);
+    }
+
+    @PutMapping("/update-status/record")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    public ResponseEntity<ResultDto> stopInsulin(Long insulinId, boolean activeStatus, HttpServletRequest request){
+        ResultDto resultDto = insulinService.stopInsulin(insulinId,activeStatus,request);
+        return ResponseEntity.status(HttpStatus.OK).body(resultDto);
     }
 }

@@ -47,6 +47,13 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(resultDto);
     }
 
+    @GetMapping("/get/user-info")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
+    public ResponseEntity<UpdateUserInfoResponseDto> getUpdateUserInfo(HttpServletRequest request) {
+        UpdateUserInfoResponseDto updateUserInfo = userService.getUpdateUserInfo(request);
+        return ResponseEntity.status(HttpStatus.OK).body(updateUserInfo);
+    }
+
     @GetMapping("/connect/get-patient")
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 발급 받은 access_token", required = true, dataType = "String", paramType = "header")
     public ResponseEntity<PatientConnectingResponse> getPatient(String email, HttpServletRequest request) {
@@ -124,5 +131,7 @@ public class UserController {
         UserAlamInfoResponseDto userAlamInfoResponseDto = userService.getUserAlamInfo(request);
         return ResponseEntity.status(HttpStatus.OK).body(userAlamInfoResponseDto);
     }
+
+
 }
 

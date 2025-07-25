@@ -14,4 +14,6 @@ public interface InsulinRepository extends JpaRepository<Insulin,Long>,InsulinRe
     @Query("SELECT i FROM Insulin i JOIN FETCH i.administrationTime WHERE i.user.id = :userId")
     Optional<Insulin> findByUserId(@Param("userId") Long userId);
 
+
+
 }

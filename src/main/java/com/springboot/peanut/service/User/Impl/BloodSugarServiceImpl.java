@@ -10,7 +10,9 @@ import com.springboot.peanut.data.dto.notification.NotificationRequestDto;
 import com.springboot.peanut.data.dto.signDto.ResultDto;
 import com.springboot.peanut.data.entity.BloodSugar;
 import com.springboot.peanut.data.entity.Notification;
+import com.springboot.peanut.data.entity.PatientGuardian;
 import com.springboot.peanut.data.entity.User;
+import com.springboot.peanut.data.repository.PatientGuardianRepository;
 import com.springboot.peanut.data.repository.UserRepository;
 import com.springboot.peanut.jwt.JwtAuthenticationService;
 import com.springboot.peanut.service.Result.ResultStatusService;
@@ -38,6 +40,7 @@ public class BloodSugarServiceImpl implements BloodSugarService {
     private final UserRepository userRepository;
     private final NotificationService notificationService;
     private final NotificationDao notificationDao;
+    private final PatientGuardianRepository patientGuardianRepository;
     private final UserDao userDao;
     @Override
     public ResultDto saveBloodSugar(BloodSugarRequestDto bloodSugarRequestDto, HttpServletRequest request) {
@@ -80,6 +83,44 @@ public class BloodSugarServiceImpl implements BloodSugarService {
     public MonthlyBloodSugarStatus getMonthlyBloodSugarStatus(int year, int month, HttpServletRequest request) {
         User user = jwtAuthenticationService.authenticationToken(request).get();
 
+        List<BloodSugar> bloodSugarList = bloodSugarDao.findByUserAndMonth(user.getId(),year,month);
+
+        Map<LocalDate,List<BloodSugar>> dailyRecords = new HashMap<>();
+        for(BloodSugar bloodSugar : bloodSugarList) {
+            LocalDate date = bloodSugar.getMeasurementTime().toLocalDate();
+            dailyRecords.computeIfAbsent(date, k -> new ArrayList<>()).add(bloodSugar);
+        }
+
+        double totalAverage = 0.0; // 월 평균 혈당 수치를 저장할 변수
+        int totalDays = dailyRecords.size(); // 총 일수
+
+        List<DailyBloodSugarStatus> dailyBloodSugarStatusList  = new ArrayList<>();
+        for(Map.Entry<LocalDate,List<BloodSugar>> entry : dailyRecords.entrySet()) {
+            LocalDate measurementDate = entry.getKey();
+            List<BloodSugar> dailyBloodSugars = entry.getValue();
+
+            double avgBloodSugar = dailyBloodSugars.stream()
+                    .mapToDouble(bloodSugar ->Double.parseDouble(bloodSugar.getBloodSugarLevel()))
+                    .average()
+                    .orElse(0.0);
+            String bloodSugarStatus = determineBloodSugarStatus(avgBloodSugar);
+            dailyBloodSugarStatusList.add(new DailyBloodSugarStatus(measurementDate,bloodSugarStatus));
+
+            totalAverage += avgBloodSugar;
+        }
+
+        double monthlyAvg = totalDays>0 ?totalAverage/totalDays : 0.0;
+        String monthlyStatusMessage = generateMonthlyStatusMessage(monthlyAvg);
+        String monthlyAvgStatus = determineBloodSugarStatus(monthlyAvg);
+
+        return new MonthlyBloodSugarStatus(monthlyAvg,monthlyAvgStatus, monthlyStatusMessage, dailyBloodSugarStatusList);
+    }
+
+    @Override
+    public MonthlyBloodSugarStatus getGuardianMonthlyBloodSugarStatus(int year, int month, HttpServletRequest request) {
+        Optional<User> guardian = jwtAuthenticationService.authenticationToken(request);
+        PatientGuardian patientGuardian = patientGuardianRepository.findByGuardianId(guardian.get().getId());
+        User user = patientGuardian.getPatient();
         List<BloodSugar> bloodSugarList = bloodSugarDao.findByUserAndMonth(user.getId(),year,month);
 
         Map<LocalDate,List<BloodSugar>> dailyRecords = new HashMap<>();

@@ -27,4 +27,5 @@ public interface UserService {
     List<GetConnectingInfoDto> getConnectingInfo(HttpServletRequest request);
     GetUserInfoMyPage getUserInfoMyPage(HttpServletRequest request);
     UserAlamInfoResponseDto getUserAlamInfo(HttpServletRequest request);
+    UpdateUserInfoResponseDto getUpdateUserInfo(HttpServletRequest request);
 }

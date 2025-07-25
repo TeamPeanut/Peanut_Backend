@@ -1,3 +1,4 @@
+
 # PEANUT (AI를 활용한 당뇨병 환자 관리 어플리케이션) 
 ## 교내 졸업 전시회 및 경진 대회 대상 (1위)
 
@@ -7,12 +8,55 @@
 
 ## 프로젝트 소개
 <img width="583" alt="image" src="https://github.com/user-attachments/assets/b83a41fd-da5b-4590-a7c7-3ab36afc8907" />
+=======
+# Peanut_Backend
+Peanut_Backend
+
+---
+
+### ⚒️ 기술 스택
+
+- SpringBoot
+- SpringSecurity
+- FCM
+- Redis
+
+- FastAPI
+- OAuth2.0
+- Docker
+
+- JPA
+- Yolov5
+- GitHub Action
+
+- QueryDsl
+- TensorFlow
+- MariaDB
+
+---
+
+### 👨‍👧‍👧  팀 구성
+
+- Backend, AI - 1명 🖐️
+- FrontEnd - 1명
+- Desinger - 1명
+
+### 🕓 프로젝트 기간
+
+- 2024.03.01~2024.11.5
+
+## 프로젝트 소개
+
+<img width="701" alt="image" src="https://github.com/user-attachments/assets/9176800a-f451-48c9-9314-8751d0b8f9c8">
+
+
 PEANUT은 현대인의 건강 문제를 예방하고, 당뇨병을 관리하기 위해 기획한 앱 서비스 입니다. 현대인들에게 ‘꾸준한 관리’리는 것은 쉽지 않습니다. 특히 바쁜 일상생활에서 건강한 자신의 몸 상태를 매일 체크하는 것은 어렵습니다. PEANUT은 혈당 관리 서비스를 통해 당뇨 환자들에게 긍정적인 영향을 기대하고 있습니다. 보호자 관리 기능을 통해 당뇨 환자들의 관리 습관을 정착시키는 목표를 가지고 있습니다. 
 
 Yolov5모델로 직접 음식이미지를 학습 시켜 사용자들의 식사를 분석하여 혈당 예상 수치를  알려줍니다. 또한 혈당, 복약, 인슐린, 식사 등의 관리를 할 수 있으며, 실시간 알림과 보호자 관리 기능으로 당뇨 환자들의 좋은 습관을 정착시켜 주는 앱 서비스입니다.
 
----
 ### 주요기능
+
+
 - 당뇨 환자에게 필수적인 인슐린과 약을 사용자가 직접 추가 및 설정 가능합니다.
 설정한 정보에 맞춘 알림이 발신되어 까먹는 일을 방지합니다.
 - 혼자서 관리하기 힘든 사용자들을 위하여 보호자 연결 기능을 통해 전체적인 건강 관리를 밀착 케어 받을 수 있도록 하였습니다.
@@ -61,6 +105,7 @@ Yolov5모델로 직접 음식이미지를 학습 시켜 사용자들의 식사�
 ### 서버아키텍쳐
 
 - 프로젝트는 운영 환경 관리에 맞게끔 Docker 컨테이너를 사용하여 설정하였고, GitAction을 활용한 CI/CD 파이프라인을 구축한 상태입니다.
+
 - 음식 인식 API는 아래와 같이 모놀리식으로 구성했습니다.
 
 <img width="378" alt="image" src="https://github.com/user-attachments/assets/8ec86e82-1419-4eb2-ab0b-1ab15d63f13a" />
@@ -68,4 +113,10 @@ Yolov5모델로 직접 음식이미지를 학습 시켜 사용자들의 식사�
 
 ### 시연영상
 https://github.com/user-attachments/assets/64cd80a4-bee7-4cc6-95df-a26e48e90ee9
+
+
+- 음식 인식 API는 아래와 같이 모놀리식으로 구성되어있습니다.
+
+![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/a75896b5-81d1-4853-9dad-c2aebd7c2831/9a891d69-72ab-4fca-9f78-4de9597ddea1/image.png)
+
 

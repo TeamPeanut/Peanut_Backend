@@ -31,7 +31,7 @@ public class JwtProvider {
     @Value("${springboot.jwt.secret}")  // 시크릿 키
     private String secretKey = "asdqwe12321s@!#"; // 임시 시크릿 키
 
-    private final long tokenValidTime = 1000 * 60 * 60;
+    private final long tokenValidTime = 1000 * 60 * 60 * 24;
 
     // 시크릿 키 초기화
     @PostConstruct

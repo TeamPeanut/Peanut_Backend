@@ -18,7 +18,17 @@ public class InsulinDaoImpl implements InsulinDao {
 
     @Override
     public void saveInsulin(Insulin insulin) {
+        insulin.setActiveStatus(true);
         insulinRepository.save(insulin);
+    }
+
+    @Override
+    public void stopInsulin(Long insulinId, Long userId, boolean activeStatus) {
+        Optional<Insulin> insulinOpt = insulinRepository.findInsulinByIdAndUserId(insulinId,userId);
+        Insulin insulin = insulinOpt.get();
+        insulin.setActiveStatus(activeStatus);
+        insulinRepository.save(insulin);
+
     }
 
     @Override

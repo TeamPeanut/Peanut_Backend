@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public interface MedicineRepositoryCustom {
     Optional<Medicine> findByTodayMedicineInfo(Long userId, LocalDate date);
-
+    Optional<Medicine> findMedicineByIdAndUserId(Long id,Long userId);
     Optional<List<Medicine>> findByUserIdAndDate(Long userId, LocalDate date);
     Optional<MedicineRecord> findMedicineRecordByUserIdAndDate(Long userId, LocalDate date);
 

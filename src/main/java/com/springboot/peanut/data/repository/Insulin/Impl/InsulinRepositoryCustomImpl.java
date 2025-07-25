@@ -5,35 +5,24 @@ import com.springboot.peanut.data.entity.Insulin;
 import com.springboot.peanut.data.entity.QInsulin;
 import com.springboot.peanut.data.entity.QUser;
 import com.springboot.peanut.data.repository.Insulin.InsulinRepositoryCustom;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class InsulinRepositoryCustomImpl implements InsulinRepositoryCustom {
 
-    @Autowired
-    private JPAQueryFactory jpaQueryFactory;
-//
-//    @Override
-//    public Optional<Insulin> findByTodayInsulinName(Long userId, LocalDate date) {
-//        QInsulin qInsulin = QInsulin.insulin;
-//
-//        return Optional.ofNullable(jpaQueryFactory
-//                .selectFrom(qInsulin)
-//                .where(qInsulin.user.id.eq(userId)
-//                        .and(qInsulin.create_At.eq(date)))
-//                .fetchOne());
-//    }
+    private final JPAQueryFactory jpaQueryFactory;
 
     @Override
     public Optional<Insulin> findInsulinInfoByDate(Long userId, LocalDate date) {
-       QInsulin qInsulin = QInsulin.insulin;
+        QInsulin qInsulin = QInsulin.insulin;
+        QUser qUser = QUser.user;
         LocalTime currentTime = LocalTime.now();
         String administrationTime;
 
@@ -47,19 +36,22 @@ public class InsulinRepositoryCustomImpl implements InsulinRepositoryCustom {
         } else {
             administrationTime = "자기 전"; // 자기 전
         }
+
         return Optional.ofNullable(jpaQueryFactory
                 .selectFrom(qInsulin)
+                .leftJoin(qInsulin.user, qUser).fetchJoin() // Fetch Join 추가
                 .where(qInsulin.user.id.eq(userId)
-                        .and(qInsulin.administrationTime.any().contains(administrationTime))
-                )
+                        .and(qInsulin.administrationTime.any().contains(administrationTime)))
                 .fetchOne());
     }
 
     @Override
     public List<Insulin> findInsulinByYearAndMonth(Long userId, int year, int month) {
         QInsulin qInsulin = QInsulin.insulin;
+        QUser qUser = QUser.user;
 
         return jpaQueryFactory.selectFrom(qInsulin)
+                .leftJoin(qInsulin.user, qUser).fetchJoin() // Fetch Join 추가
                 .where(qInsulin.user.id.eq(userId)
                         .and(qInsulin.create_At.year().eq(year))
                         .and(qInsulin.create_At.month().eq(month)))
@@ -69,8 +61,23 @@ public class InsulinRepositoryCustomImpl implements InsulinRepositoryCustom {
     @Override
     public Insulin findAllInsulinByUserId(Long userId) {
         QInsulin qInsulin = QInsulin.insulin;
+        QUser qUser = QUser.user;
+
         return jpaQueryFactory.selectFrom(qInsulin)
+                .leftJoin(qInsulin.user, qUser).fetchJoin() // Fetch Join 추가
                 .where(qInsulin.user.id.eq(userId))
                 .fetchOne();
+    }
+
+    @Override
+    public Optional<Insulin> findInsulinByIdAndUserId(Long id, Long userId) {
+        QInsulin qInsulin = QInsulin.insulin;
+        QUser qUser = QUser.user;
+
+        return Optional.ofNullable(jpaQueryFactory.selectFrom(qInsulin)
+                .leftJoin(qInsulin.user, qUser).fetchJoin() // Fetch Join 추가
+                .where(qInsulin.user.id.eq(userId)
+                        .and(qInsulin.id.eq(id)))
+                .fetchOne());
     }
 }

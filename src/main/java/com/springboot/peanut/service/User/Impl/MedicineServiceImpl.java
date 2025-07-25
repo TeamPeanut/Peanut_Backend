@@ -8,6 +8,7 @@ import com.springboot.peanut.data.dto.medicine.MedicineRequestDto;
 import com.springboot.peanut.data.dto.notification.NotificationRequestDto;
 import com.springboot.peanut.data.dto.signDto.ResultDto;
 import com.springboot.peanut.data.entity.*;
+import com.springboot.peanut.data.repository.PatientGuardianRepository;
 import com.springboot.peanut.jwt.JwtAuthenticationService;
 import com.springboot.peanut.service.Result.ResultStatusService;
 import com.springboot.peanut.service.User.MedicineService;
@@ -38,6 +39,7 @@ public class MedicineServiceImpl implements MedicineService {
     private final UserDao userDao;
     private final NotificationService notificationService;
     private final NotificationDao notificationDao;
+    private final PatientGuardianRepository patientGuardianRepository;
 
     @Override
     public ResultDto saveMedicineInfo(MedicineRequestDto medicineRequestDto, HttpServletRequest request) {
@@ -74,6 +76,19 @@ public class MedicineServiceImpl implements MedicineService {
     }
 
     @Override
+    public ResultDto stopMedicine(Long medicineId, boolean activeStatus, HttpServletRequest request) {
+        Optional<User> user = jwtAuthenticationService.authenticationToken(request);
+        Long userId = user.get().getId();
+        ResultDto resultDto = new ResultDto();
+
+        medicineDao.stopMedicine(medicineId, userId, activeStatus);
+        resultDto.setDetailMessage("회원님의 복약 정보가 저장되었습니다.");
+        resultStatusService.setSuccess(resultDto);
+
+        return resultDto;
+
+    }
+    @Override
     public List<MedicineRecordResponseDto> getMedicineInfoList(HttpServletRequest request) {
         Optional<User> user = jwtAuthenticationService.authenticationToken(request);
         if (user.isPresent()) {
@@ -83,7 +98,7 @@ public class MedicineServiceImpl implements MedicineService {
             // 각 약에 대해 반복
             for (Medicine m : medicine) {
                 List<Intake> intakeList = m.getIntakes();
-
+                if(m.isActiveStatus()){
                 // Intake 리스트에서 intakeDays를 추출하여 하나의 리스트로 병합
                 List<String> allIntakeDays = intakeList.stream()
                         .flatMap(intake -> intake.getIntakeDays().stream())
@@ -98,12 +113,26 @@ public class MedicineServiceImpl implements MedicineService {
                 MedicineRecordResponseDto medicineRecordResponseDto = new MedicineRecordResponseDto(
                         m.getId(),
                         m.getMedicineName(),
+                        "복약 중",
                         allIntakeDays,
                         allIntakeTimes
                 );
 
                 // DTO를 리스트에 추가
                 medicineRecordResponseDtoList.add(medicineRecordResponseDto);
+                }else{
+                    MedicineRecordResponseDto medicineRecordResponseDto = new MedicineRecordResponseDto(
+                            m.getId(),
+                            m.getMedicineName(),
+                            "복약 중단",
+                            null,
+                            null
+                    );
+
+                    // DTO를 리스트에 추가
+                    medicineRecordResponseDtoList.add(medicineRecordResponseDto);
+
+                }
             }
             return medicineRecordResponseDtoList;
         }else{
@@ -145,6 +174,39 @@ public class MedicineServiceImpl implements MedicineService {
 
     }
 
+    @Override
+    public MedicineReportStatus getGuardianMedicineInfoList(int year, int month, HttpServletRequest request) {
+        Optional<User> guardian = jwtAuthenticationService.authenticationToken(request);
+        PatientGuardian patientGuardian = patientGuardianRepository.findByGuardianId(guardian.get().getId());
+        User user = patientGuardian.getPatient();
+        if (user!=null) {
+            List<MedicineRecord> medicineRecordList = medicineRecordDao.findMedicineByYearAndMonth(user.getId(), year, month);
+            List<MedicineReportResponseDto> medicineReportResponseDtoList = new ArrayList<>();
+            int cnt = 0;
+            // 각 약에 대해 반복
+            for (MedicineRecord m : medicineRecordList) {
+                LocalDate date = m.getRecordDate();
+                cnt++;
+                String recordStatus = cntStatus(cnt);
+
+                // 각 약에 대한 DTO 생성
+                MedicineReportResponseDto medicineReportResponseDto = new MedicineReportResponseDto(
+                        date,
+                        recordStatus
+                );
+                medicineReportResponseDtoList.add(medicineReportResponseDto);
+            }
+            String monthlyReport = monthlyReport(cnt);
+            MedicineReportStatus medicineReportStatus = new MedicineReportStatus(
+                    medicineReportResponseDtoList,
+                    monthlyReport
+            );
+            return medicineReportStatus;
+        }else{
+            throw new IllegalArgumentException("복용 약이 없습니다.");
+        }
+
+    }
     // 각 시간대에 대한 알림 스케줄링 메서드
     @Scheduled(cron = "0 0 8 * * ?")  // "아침 후" 시간대 알림
     public void sendMorningAfterNotification() throws Exception {
