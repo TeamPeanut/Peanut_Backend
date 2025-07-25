@@ -12,8 +12,6 @@
 # Peanut_Backend
 Peanut_Backend
 
----
-
 ### ⚒️ 기술 스택
 
 - SpringBoot
@@ -46,7 +44,6 @@ Peanut_Backend
 - 2024.03.01~2024.11.5
 
 ### 주요기능
-
 
 - 당뇨 환자에게 필수적인 인슐린과 약을 사용자가 직접 추가 및 설정 가능합니다.
 설정한 정보에 맞춘 알림이 발신되어 까먹는 일을 방지합니다.
@@ -107,7 +104,5 @@ https://github.com/user-attachments/assets/64cd80a4-bee7-4cc6-95df-a26e48e90ee9
 
 
 - 음식 인식 API는 아래와 같이 모놀리식으로 구성되어있습니다.
-
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/a75896b5-81d1-4853-9dad-c2aebd7c2831/9a891d69-72ab-4fca-9f78-4de9597ddea1/image.png)
 
 
