@@ -117,6 +117,4 @@ https://github.com/user-attachments/assets/64cd80a4-bee7-4cc6-95df-a26e48e90ee9
 
 - 음식 인식 API는 아래와 같이 모놀리식으로 구성되어있습니다.
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/a75896b5-81d1-4853-9dad-c2aebd7c2831/9a891d69-72ab-4fca-9f78-4de9597ddea1/image.png)
-
 
